@@ -325,12 +325,12 @@ const Page = () => {
         position: "fixed",
         inset: 0,
         width: "100vw",
-        height: "100vh",
+        height: "100dvh",
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
         padding: "24px",
-        overflow: "hidden",
+        overflow: "auto",
         boxSizing: "border-box",
         background:
           "radial-gradient(circle at 15% 20%, rgba(120,170,220,0.55), transparent 45%), " +

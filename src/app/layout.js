@@ -22,14 +22,16 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-    <TopBar/>
+    
     <html
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
+      <TopBar/>
       <body className="min-h-full flex flex-col">{children}</body>
+      <Footer/>
     </html>
-    <Footer/>
+    
     </ClerkProvider>
   );
 }

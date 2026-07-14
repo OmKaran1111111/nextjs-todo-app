@@ -18,7 +18,6 @@ const AddTask = () => {
   const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
   const isFirstSave = useRef(true);
-  // Load persisted tasks on mount (client-only, avoids SSR/hydration mismatch)
   useEffect(() => {
     const storedTasks = localStorage.getItem("todo_tasks");
     if (storedTasks) {
