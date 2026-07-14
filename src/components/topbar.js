@@ -42,31 +42,36 @@ const TopBar = () => {
 
   return (
     <div>
-      <header className="
+      <header
+        className={`
       bg-transparent px-5 py-6
-      fixed top-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-center p-5">
-        <header style={{ marginTop: '-10px' }} className="text-[beige] text-center 
-          text-[30px] font-bold ">
-            <Link href="/">Todo App</Link>
+      fixed top-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-center p-5`}
+      >
+        <header
+          style={{ marginTop: "-10px" }}
+          className={`text-[beige] text-center
+          text-[30px] font-bold`}
+        >
+          <Link href="/">Todo App</Link>
         </header>
       </header>
 
       <button
-        className="fixed z-[9999] py-[7px] px-[15px] bg-transparent border-none
-          cursor-pointer top-[15px] left-[15px] text-white text-[30px]"
+        className={`fixed z-[9999] py-[7px] px-[15px] bg-transparent border-none
+          cursor-pointer top-[15px] left-[15px] text-white text-[30px]`}
         onClick={toggleSidebar}
       >
         {isOpen ? "✕" : "☰"}
       </button>
 
       <div
-        className="fixed z-[9999] py-[7px] px-[15px] bg-transparent border-none
-          cursor-pointer top-[15px] right-[15px] text-[30px]"
+        className={`fixed z-[9999] py-[7px] px-[15px] bg-transparent border-none
+          cursor-pointer top-[15px] right-[15px] text-[30px]`}
       >
         <Link
           href="/search"
-          className="bg-transparent border-none text-[#edcccc] py-2 px-5
-            text-base cursor-pointer self-center"
+          className={`bg-transparent border-none text-[#edcccc] py-2 px-5
+            text-base cursor-pointer self-center`}
         >
           🔍
         </Link>
@@ -82,8 +87,8 @@ const TopBar = () => {
           ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <button
-          className="fixed z-[101] py-[7px] px-[15px] bg-transparent border-none
-          cursor-pointer top-[15px] left-[15px] text-white text-[30px]"
+          className={`fixed z-[101] py-[7px] px-[15px] bg-transparent border-none
+          cursor-pointer top-[15px] left-[15px] text-white text-[30px]`}
           onClick={toggleSidebar}
         >
           {isOpen ? "✕" : "☰"}
