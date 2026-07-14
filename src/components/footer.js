@@ -21,10 +21,9 @@ const Footer = () => {
   }
 
   return (
-    <footer className="fixed bottom-0 left-0 w-full z-[9998] min-h-[70px] flex items-center 
-      justify-between px-8 pb-5 bg-transparent px-5 py-6
-      fixed 
-      w-full z-[9998] max-h-[40px] flex items-center justify-center p-5">
+    <footer 
+      className="fixed bottom-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-between bg-transparent px-5 py-6"
+    >
       <div className="flex-1" />
 
       <div className="fixed z-[101] bottom-[15px] left-1/2 -translate-x-1/2">

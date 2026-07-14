@@ -103,22 +103,25 @@ const TaskPage = () => {
     );
 
   return (
-    <div
-      style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}
-      className="mx-auto max-w-2xl px-4 sm:px-6"
-    >
-      <div className="pt-6">
-        <TaskDetails
-          task={task}
-          onUpdatePriority={handleUpdatePriority}
-          onUpdateDeadline={handleUpdateDeadline}
-          onToggleComplete={handleToggleComplete}
-          onDelete={handleDelete}
-          onBack={() => router.push("/")}
-          onAddSubtask={handleAddSubtask}
-          onToggleSubtask={handleToggleSubtask}
-          onDeleteSubtask={handleDeleteSubtask}
-        />
+    <div className="min-h-screen" onClick={() => router.push("/")}>
+      <div
+        style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}
+        className="mx-auto max-w-2xl px-4 sm:px-6"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="pt-6">
+          <TaskDetails
+            task={task}
+            onUpdatePriority={handleUpdatePriority}
+            onUpdateDeadline={handleUpdateDeadline}
+            onToggleComplete={handleToggleComplete}
+            onDelete={handleDelete}
+            onBack={() => router.push("/")}
+            onAddSubtask={handleAddSubtask}
+            onToggleSubtask={handleToggleSubtask}
+            onDeleteSubtask={handleDeleteSubtask}
+          />
+        </div>
       </div>
     </div>
   );

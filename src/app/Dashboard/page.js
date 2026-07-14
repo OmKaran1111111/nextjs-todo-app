@@ -3,57 +3,64 @@
 import { useState, useEffect } from "react";
 import dynamic from "next/dynamic";
 import InfoBoxes from "@/components/infoboxes";
+import PriorityBreakdown from "@/components/PriorityBreakdown";
+import UpcomingDeadlines from "@/components/Upcomingdeadlines";
 import TopBar, { TOPBAR_HEIGHT } from "@/components/topbar";
 import Footer, { FOOTER_HEIGHT } from "@/components/footer";
 
-// Recharts measures its container on mount, so it's loaded client-only to
-// avoid a 0-width flash / hydration mismatch during SSR.
 const DonutChart = dynamic(() => import("@/components/donutchart"), {
   ssr: false,
 });
 
 const Dashboard = () => {
-  const [Tasks, setTasks] = useState(() => {
-    if (typeof window === "undefined") return [];
-    const sTasks = localStorage.getItem("todo_tasks");
-    return sTasks ? JSON.parse(sTasks) : [];
-  });
+  const [tasks, setTasks] = useState([]);
+  const [isMounted, setIsMounted] = useState(false); 
 
   useEffect(() => {
-    const handleTasksUpdated = () => {
+    setIsMounted(true);
+
+    const loadTasks = () => {
       const sTasks = localStorage.getItem("todo_tasks");
       setTasks(sTasks ? JSON.parse(sTasks) : []);
     };
-    window.addEventListener("todo_tasks_updated", handleTasksUpdated);
-    return () =>
-      window.removeEventListener("todo_tasks_updated", handleTasksUpdated);
+
+    loadTasks(); 
+
+    window.addEventListener("todo_tasks_updated", loadTasks);
+    return () => window.removeEventListener("todo_tasks_updated", loadTasks);
   }, []);
 
-  const numberOfTasks = Tasks.length;
-  const noOfComp = Tasks.filter((task) => task.completed).length;
+  if (!isMounted) {
+    return null; 
+  }
+
+  const numberOfTasks = tasks.length;
+  const noOfComp = tasks.filter((task) => task.completed).length;
 
   const now = new Date();
 
-  const completedBeforeDeadline = Tasks.filter(
+  const completedBeforeDeadline = tasks.filter(
     (task) =>
       task.completed &&
       task.completedAt &&
-      new Date(task.completedAt) <= new Date(task.deadline),
+      task.deadline &&
+      new Date(task.completedAt) <= new Date(task.deadline)
   ).length;
 
-  const completedAfterDeadline = Tasks.filter(
+  const completedAfterDeadline = tasks.filter(
     (task) =>
       task.completed &&
       task.completedAt &&
-      new Date(task.completedAt) > new Date(task.deadline),
+      task.deadline &&
+      new Date(task.completedAt) > new Date(task.deadline)
   ).length;
 
-  const remainingBeforeDeadline = Tasks.filter(
-    (task) => !task.completed && new Date(task.deadline) >= now,
+  const remainingBeforeDeadline = tasks.filter(
+    (task) => !task.completed && task.deadline && new Date(task.deadline) >= now
   ).length;
 
-  const remainingAfterDeadline = Tasks.filter(
-    (task) => !task.completed && new Date(task.deadline) < now,
+  const remainingAfterDeadline = tasks.filter(
+    (task) => !task.completed && task.deadline && new Date(task.deadline) < now
   ).length;
 
   const data = [
@@ -75,6 +82,7 @@ const Dashboard = () => {
   return (
     <div>
       <TopBar />
+      
       <div style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>
         <div
           className="w-full flex flex-col md:flex-row md:justify-center 
@@ -89,8 +97,17 @@ const Dashboard = () => {
           />
           <DonutChart data={data} colors={COLORS} labels={labels} />
         </div>
-        <Footer />
+
+        <div
+          className="w-full flex flex-col md:flex-row md:justify-center 
+          items-start gap-4 md:gap-8 px-4 mt-4 md:mt-8"
+        >
+          <PriorityBreakdown tasks={tasks} />
+          <UpcomingDeadlines tasks={tasks} />
+        </div>
       </div>
+
+      <Footer />
     </div>
   );
 };

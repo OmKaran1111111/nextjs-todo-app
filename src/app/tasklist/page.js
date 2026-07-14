@@ -215,9 +215,13 @@ const TaskList = () => {
     return (
       <div
         style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}
-        className="px-4 sm:px-6"
+        className="min-h-screen px-4 sm:px-6"
+        onClick={handleClose}
       >
-        <div className="mx-auto max-w-6xl md:flex md:items-start md:gap-6">
+        <div
+          className="mx-auto max-w-6xl md:flex md:items-start md:gap-6"
+          onClick={(e) => e.stopPropagation()}
+        >
           <div className="md:w-[380px] md:shrink-0">
             <div className="flex justify-between items-center mb-3 px-1">
               <h3 className="text-xl font-bold text-[#dae5f4]">All Tasks</h3>

@@ -81,48 +81,57 @@ const Todo_App = () => {
   const router = useRouter();
   const isDesktop = useIsDesktop();
 
-  const [Tasks, setTasks] = useState(() => {
-    if (typeof window === "undefined") return [];
-    const sTasks = localStorage.getItem("todo_tasks");
-    return sTasks ? JSON.parse(sTasks) : [];
-  });
-
+  // 1. Initialize as empty to guarantee SSR matches first render client-side
+  const [tasks, setTasks] = useState([]);
+  const [isMounted, setIsMounted] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
 
+  // 2. Load, Migrate, and Listen all in one mounted effect
   useEffect(() => {
-    setTasks((prev) => {
-      const needsMigration = prev.some(
+    const loadAndMigrateTasks = () => {
+      const sTasks = localStorage.getItem("todo_tasks");
+      let loadedTasks = sTasks ? JSON.parse(sTasks) : [];
+
+      // Migration runs safely right here on the loaded data
+      const needsMigration = loadedTasks.some(
         (task) => task.completed && !task.completedAt,
       );
-      if (!needsMigration) return prev;
-      return prev.map((task) =>
-        task.completed && !task.completedAt
-          ? { ...task, completedAt: new Date().toISOString() }
-          : task,
-      );
-    });
-  }, []);
+      if (needsMigration) {
+        loadedTasks = loadedTasks.map((task) =>
+          task.completed && !task.completedAt
+            ? { ...task, completedAt: new Date().toISOString() }
+            : task,
+        );
+        localStorage.setItem("todo_tasks", JSON.stringify(loadedTasks));
+      }
 
-  useEffect(() => {
-    localStorage.setItem("todo_tasks", JSON.stringify(Tasks));
-  }, [Tasks]);
-
-  useEffect(() => {
-    const handleTasksUpdated = () => {
-      const sTasks = localStorage.getItem("todo_tasks");
-      setTasks(sTasks ? JSON.parse(sTasks) : []);
+      setTasks(loadedTasks);
     };
 
-    window.addEventListener("todo_tasks_updated", handleTasksUpdated);
+    loadAndMigrateTasks();
+    setIsMounted(true); // Signal that we are safe to render on client
+
+    window.addEventListener("todo_tasks_updated", loadAndMigrateTasks);
 
     return () => {
-      window.removeEventListener("todo_tasks_updated", handleTasksUpdated);
+      window.removeEventListener("todo_tasks_updated", loadAndMigrateTasks);
     };
   }, []);
 
-  const sortedTasks = sortByPriority(Tasks);
-  // Default the detail panel to the highest-priority incomplete task; fall
-  // back to the top of the sorted list if everything is done.
+  // 3. Save updates safely (only AFTER the page has fully loaded and mounted)
+  useEffect(() => {
+    if (isMounted) {
+      localStorage.setItem("todo_tasks", JSON.stringify(tasks));
+    }
+  }, [tasks, isMounted]);
+
+  // 4. Return null (or a skeleton layout) until mounting is finished.
+  // This completely eliminates any Hydration Errors.
+  if (!isMounted) {
+    return null; 
+  }
+
+  const sortedTasks = sortByPriority(tasks);
   const defaultTask = sortedTasks.find((task) => !task.completed) || sortedTasks[0];
   const selectedTask =
     sortedTasks.find((task) => task.id === selectedTaskId) || defaultTask;
@@ -137,7 +146,7 @@ const Todo_App = () => {
 
   const handleUpdateTaskPriority = (taskId, newPriority) => {
     setTasks(
-      Tasks.map((task) =>
+      tasks.map((task) =>
         task.id === taskId ? { ...task, priority: newPriority } : task,
       ),
     );
@@ -145,7 +154,7 @@ const Todo_App = () => {
 
   const handleUpdateTaskDeadline = (taskId, newDeadline) => {
     setTasks(
-      Tasks.map((task) =>
+      tasks.map((task) =>
         task.id === taskId ? { ...task, deadline: newDeadline } : task,
       ),
     );
@@ -153,7 +162,7 @@ const Todo_App = () => {
 
   const handleToggleComplete = (taskId) => {
     setTasks(
-      Tasks.map((task) =>
+      tasks.map((task) =>
         task.id === taskId
           ? {
               ...task,
@@ -166,13 +175,13 @@ const Todo_App = () => {
   };
 
   const handleDeleteTask = (idToDelete) => {
-    setTasks(Tasks.filter((task) => task.id !== idToDelete));
+    setTasks(tasks.filter((task) => task.id !== idToDelete));
     if (selectedTaskId === idToDelete) setSelectedTaskId(null);
   };
 
   const handleAddSubtask = (taskId, text) => {
     setTasks(
-      Tasks.map((task) =>
+      tasks.map((task) =>
         task.id === taskId
           ? {
               ...task,
@@ -188,7 +197,7 @@ const Todo_App = () => {
 
   const handleToggleSubtask = (taskId, subtaskId) => {
     setTasks(
-      Tasks.map((task) =>
+      tasks.map((task) =>
         task.id === taskId
           ? {
               ...task,
@@ -205,7 +214,7 @@ const Todo_App = () => {
 
   const handleDeleteSubtask = (taskId, subtaskId) => {
     setTasks(
-      Tasks.map((task) =>
+      tasks.map((task) =>
         task.id === taskId
           ? {
               ...task,
@@ -221,7 +230,7 @@ const Todo_App = () => {
   return (
     <div style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>
       <div className="mx-auto max-w-6xl px-4 sm:px-6 md:flex md:items-start md:gap-6">
-        {/* Left: task list, always sorted by priority */}
+        {/* Left: task list */}
         <div className="md:w-[380px] md:shrink-0">
           <h3 className="mb-3 px-1 text-xl font-bold text-[#dae5f4]">Tasks</h3>
 
@@ -249,8 +258,7 @@ const Todo_App = () => {
           )}
         </div>
 
-        {/* Right: task details panel — desktop only. On mobile, tapping a
-            task name in the list above navigates straight to /task/[id]. */}
+        {/* Right: task details panel */}
         <div className="hidden md:block md:flex-1 md:sticky md:top-[100px]">
           <TaskDetails
             task={selectedTask}
