@@ -6,8 +6,6 @@ import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
 import useIsDesktop from "@/hooks/useIsDesktop";
-import { TOPBAR_HEIGHT } from "@/components/topbar";
-import { FOOTER_HEIGHT } from "@/components/footer";
 
 const TaskList = () => {
   const router = useRouter();
@@ -116,7 +114,6 @@ const TaskList = () => {
     (a, b) => Number(a.completed || false) - Number(b.completed || false),
   );
 
-  // Detail panel default (desktop only): highest-priority incomplete task.
   const highestPriorityTask =
     [...tasks]
       .filter((task) => !task.completed)
@@ -124,26 +121,21 @@ const TaskList = () => {
   const selectedTask =
     tasks.find((task) => task.id === selectedTaskId) || highestPriorityTask;
 
-  // Shared list-item markup. Only the name-click behavior differs between
-  // the desktop panel (select in place) and the mobile page (navigate).
   const renderTaskItem = (task, onSelectName) => (
     <li
       key={task.id}
       className={`flex items-center justify-center relative p-[20px_55px] 
 				sm:p-[20px_55px] p-[16px_45px] mb-3.5 rounded-2xl min-h-[95px] 
-				sm:min-h-[95px] min-h-[80px] bg-transparent backdrop-blur-xl backdrop-saturate-200 
-				border border-white/45 
-				shadow-[0_20px_40px_rgba(0,0,0,0.07),0_6px_12px_rgba(0,0,0,0.03),
-				inset_1px_1px_1px_rgba(255,255,255,0.65),inset_-1px_-1px_2px_rgba(0,0,0,0.1)] 
+				sm:min-h-[95px] min-h-[80px] bg-surface backdrop-blur-xl backdrop-saturate-200 
+				border border-border-strong 
+				shadow-card
 				transition-[transform,background-color,box-shadow] duration-300 
 				ease-[cubic-bezier(0.34,1.56,0.64,1)] hover:-translate-y-1 
-				hover:bg-white/32 hover:shadow-[0_30px_60px_rgba(0,0,0,0.12),
-				0_12px_20px_rgba(0,0,0,0.05),inset_1px_1px_2px_rgba(255,255,255,0.8),
-				inset_-1px_-1px_2px_rgba(0,0,0,0.05)]
+				hover:bg-surface-hover hover:shadow-card-lg
 				${
           task.completed
-            ? `opacity-40 !bg-[rgba(225,225,225,0.05)] !border-white/10 
-				!shadow-[inset_1px_1px_2px_rgba(0,0,0,0.1)] !transform-none line-through text-[#888]`
+            ? `opacity-40 !bg-surface-soft !border-border-soft 
+				!shadow-none !transform-none line-through text-faint`
             : ""
         }`}
     >
@@ -151,10 +143,10 @@ const TaskList = () => {
         <input
           type="checkbox"
           className="absolute left-5 top-1/2 -translate-y-1/2 appearance-none w-5 
-						h-5 border-2 border-[#aaa] rounded-full cursor-pointer transition-all 
-						duration-200 shrink-0 checked:bg-[var(--apple-blue,#0071e3)] 
-						checked:border-[var(--apple-blue,#0071e3)] checked:after:content-['✓'] 
-						checked:after:text-white checked:after:text-[14px] checked:after:absolute 
+						h-5 border-2 border-border-strong rounded-full cursor-pointer transition-all 
+						duration-200 shrink-0 checked:bg-primary 
+						checked:border-primary checked:after:content-['✓'] 
+						checked:after:text-primary-contrast checked:after:text-[14px] checked:after:absolute 
 						checked:after:top-1/2 checked:after:left-1/2 checked:after:-translate-x-1/2 
 						checked:after:-translate-y-1/2"
           checked={task.completed || false}
@@ -164,8 +156,8 @@ const TaskList = () => {
           onClick={() => onSelectName(task)}
           className={`font-bold text-center text-lg sm:text-[25px] break-words cursor-pointer ${
             task.completed
-              ? "text-[#888] line-through [text-shadow:0_1px_1px_rgba(246,165,165,0.4)]"
-              : "text-[#dae5f4]"
+              ? "text-faint line-through"
+              : "text-heading"
           }`}
         >
           {task.text}
@@ -184,7 +176,7 @@ const TaskList = () => {
               }
             />
           </span>
-          <span className="text-[0.85rem] text-[#ff6565] ml-1">
+          <span className="text-[0.85rem] text-danger ml-1">
             {task.deadline}
           </span>
           <RemainingTime targetDate={task.deadline} />
@@ -201,8 +193,8 @@ const TaskList = () => {
         <button
           onClick={() => handleDeleteTask(task.id)}
           className="absolute top-[15px] right-[15px] bg-transparent border-none 
-					text-[#e0d5d5] text-[1.1rem] cursor-pointer p-[2px] leading-none transition-all 
-					duration-200 z-10 hover:text-[#ef4444] hover:bg-[#ef4444]/[0.08]"
+					text-muted text-[1.1rem] cursor-pointer p-[2px] leading-none transition-all 
+					duration-200 z-10 hover:text-danger hover:bg-danger-soft"
         >
           ✕
         </button>
@@ -211,11 +203,9 @@ const TaskList = () => {
   );
 
   if (isDesktop) {
-    // Flat layout, no modal card wrapper — matches the homepage exactly.
     return (
       <div
-        style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}
-        className="min-h-screen px-4 sm:px-6"
+        className="pt-[75px] pb-[70px] min-h-screen px-4 sm:px-6"
         onClick={handleClose}
       >
         <div
@@ -224,19 +214,19 @@ const TaskList = () => {
         >
           <div className="md:w-[380px] md:shrink-0">
             <div className="flex justify-between items-center mb-3 px-1">
-              <h3 className="text-xl font-bold text-[#dae5f4]">All Tasks</h3>
+              <h3 className="text-xl font-bold text-heading">All Tasks</h3>
               <button
                 onClick={handleClose}
                 className="flex h-8 w-8 items-center justify-center rounded-full 
-								bg-black/[0.04] text-base text-[var(--text-main)] transition-all 
-								duration-200 hover:bg-red-500/15 hover:text-red-500 cursor-pointer"
+								bg-surface-muted text-base text-heading transition-all 
+								duration-200 hover:bg-danger-soft hover:text-danger cursor-pointer"
               >
                 ✕
               </button>
             </div>
 
             {sortedTasks.length === 0 ? (
-              <p className="text-[#dae5f4] text-[0.95rem] text-center py-2.5">
+              <p className="text-heading text-[0.95rem] text-center py-2.5">
                 No tasks added yet!
               </p>
             ) : (
@@ -265,31 +255,28 @@ const TaskList = () => {
     );
   }
 
-  // Mobile: original popup/modal experience, tapping a task name now
-  // navigates to its own /task/[id] page.
   return (
     <div
-      className="fixed left-0 right-0 bottom-0 bg-transparent backdrop-blur-[16px] 
+      className="fixed left-0 right-0 bottom-0 top-[75px] bg-transparent backdrop-blur-[16px] 
 			backdrop-saturate-200 flex flex-col items-center z-[500] 
 			animate-[fadeIn_0.25s_ease-out] py-[5vh] sm:py-[8vh] px-5"
-      style={{ top: TOPBAR_HEIGHT }}
       onClick={handleClose}
     >
       <div
         className="w-full max-w-[480px] mx-auto flex flex-col relative flex-1 min-h-0
-					bg-transparent backdrop-blur-[25px] backdrop-saturate-[190%]
-					border border-white/15 rounded-3xl
+					bg-surface-soft backdrop-blur-[25px] backdrop-saturate-[190%]
+					border border-border rounded-3xl
 					px-[15px] py-[18px] sm:px-5 sm:py-6
-					shadow-[0_30px_60px_rgba(0,0,0,0.35)]
+					shadow-card-lg
 					animate-[scaleUp_0.3s_cubic-bezier(0.34,1.56,0.64,1)]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center w-full mb-3 px-1">
-          <h3 className="text-xl font-bold text-[#dae5f4]">All Tasks</h3>
+          <h3 className="text-xl font-bold text-heading">All Tasks</h3>
           <button
             className="flex h-8 w-8 items-center justify-center rounded-full 
-						bg-black/[0.04] text-base text-[var(--text-main)] transition-all 
-						duration-200 hover:bg-red-500/15 hover:text-red-500 cursor-pointer"
+						bg-surface-muted text-base text-heading transition-all 
+						duration-200 hover:bg-danger-soft hover:text-danger cursor-pointer"
             onClick={handleClose}
           >
             ✕
@@ -298,7 +285,7 @@ const TaskList = () => {
 
         <ul className="list-none flex flex-col gap-2.5 w-full max-w-full overflow-x-hidden mt-0.5 overflow-y-auto flex-1 min-h-0">
           {sortedTasks.length === 0 ? (
-            <p className="text-[#dae5f4] text-[0.95rem] text-center py-2.5">
+            <p className="text-heading text-[0.95rem] text-center py-2.5">
               No tasks added yet!
             </p>
           ) : (

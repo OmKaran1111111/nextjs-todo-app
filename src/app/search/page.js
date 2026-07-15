@@ -6,8 +6,6 @@ import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
 import useIsDesktop from "@/hooks/useIsDesktop";
-import { TOPBAR_HEIGHT } from "@/components/topbar";
-import { FOOTER_HEIGHT } from "@/components/footer";
 
 const Search_Task = () => {
   const router = useRouter();
@@ -116,7 +114,6 @@ const Search_Task = () => {
     );
   };
 
-  // Detail panel default (desktop only): highest-priority match in results.
   const highestPriorityMatch =
     [...filteredTasks].sort((a, b) => (a.priority || 4) - (b.priority || 4))[0];
   const selectedTask =
@@ -130,36 +127,29 @@ const Search_Task = () => {
         placeholder="Search tasks..."
         value={searchInput}
         onChange={(e) => setSearchInput(e.target.value)}
-        className="w-full bg-white/5 border border-white/15 rounded-xl 
-        px-4 py-2.5 text-[#dae5f4] placeholder:text-[#7a8aa0] 
-        focus:outline-none focus:border-white/30 backdrop-blur-md"
+        className="w-full bg-surface-soft border border-border rounded-xl 
+        px-4 py-2.5 text-heading placeholder:text-faint 
+        focus:outline-none focus:border-border-strong backdrop-blur-md"
       />
     </form>
   );
-
-  // Shared list-item markup. Only the name-click behavior differs between
-  // the desktop panel (select in place) and the mobile page (navigate).
   const renderTaskItem = (task, onSelectName) => (
     <li
       key={task.id}
       className="flex items-center justify-center 
     relative p-[16px_45px] sm:p-[20px_55px] mb-3.5 rounded-2xl min-h-[80px] 
-    sm:min-h-[95px] backdrop-blur-xl backdrop-saturate-200 border 
-    border-white/45 shadow-[0_20px_40px_rgba(0,0,0,0.07),
-    0_6px_12px_rgba(0,0,0,0.03),inset_1px_1px_1px_rgba(255,255,255,0.65),
-    inset_-1px_-1px_2px_rgba(0,0,0,0.1)] transition-[transform,background-color,
+    sm:min-h-[95px] bg-surface backdrop-blur-xl backdrop-saturate-200 border 
+    border-border-strong shadow-card transition-[transform,background-color,
     box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] 
-    hover:-translate-y-1 hover:bg-white/32 
-    hover:shadow-[0_30px_60px_rgba(0,0,0,0.12),0_12px_20px_rgba(0,0,0,0.05),
-    inset_1px_1px_2px_rgba(255,255,255,0.8),inset_-1px_-1px_2px_rgba(0,0,0,0.05)]"
+    hover:-translate-y-1 hover:bg-surface-hover hover:shadow-card-lg"
     >
       <div className="flex flex-col items-center justify-center flex-1">
         <div
           onClick={() => onSelectName(task)}
           className={`font-bold text-center text-lg sm:text-[25px] break-words cursor-pointer ${
             task.completed
-              ? "text-[#888] line-through [text-shadow:0_1px_1px_rgba(246,165,165,0.4)]"
-              : "text-[#dae5f4]"
+              ? "text-faint line-through"
+              : "text-heading"
           }`}
         >
           {task.text}
@@ -177,7 +167,7 @@ const Search_Task = () => {
               }
             />
           </span>
-          <span className="text-[0.85rem] text-[#ff6565] ml-1">
+          <span className="text-[0.85rem] text-danger ml-1">
             {task.deadline}
           </span>
           <RemainingTime targetDate={task.deadline} />
@@ -195,11 +185,9 @@ const Search_Task = () => {
   );
 
   if (isDesktop) {
-    // Flat layout, no modal card wrapper — matches the homepage exactly.
     return (
       <div
-        style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}
-        className="min-h-screen px-4 sm:px-6"
+        className="pt-[75px] pb-[70px] min-h-screen px-4 sm:px-6"
         onClick={handleClose}
       >
         <div
@@ -208,12 +196,12 @@ const Search_Task = () => {
         >
           <div className="md:w-[380px] md:shrink-0">
             <div className="flex justify-between items-center mb-3 px-1">
-              <h3 className="text-xl font-bold text-[#dae5f4]">Search Tasks</h3>
+              <h3 className="text-xl font-bold text-heading">Search Tasks</h3>
               <button
                 onClick={handleClose}
                 className="flex h-8 w-8 items-center justify-center rounded-full 
-                bg-black/[0.04] text-base text-[var(--text-main)] transition-all 
-                duration-200 hover:bg-red-500/15 hover:text-red-500 cursor-pointer"
+                bg-surface-muted text-base text-heading transition-all 
+                duration-200 hover:bg-danger-soft hover:text-danger cursor-pointer"
               >
                 ✕
               </button>
@@ -245,28 +233,25 @@ const Search_Task = () => {
     );
   }
 
-  // Mobile: original popup/modal experience, tapping a task name now
-  // navigates to its own /task/[id] page.
   return (
     <div
-      className="fixed left-0 right-0 bottom-0 bg-transparent backdrop-blur-[16px] 
+      className="fixed left-0 right-0 bottom-0 top-[75px] bg-transparent backdrop-blur-[16px] 
     backdrop-saturate-200 flex flex-col items-center z-[500] 
     animate-[fadeIn_0.25s_ease-out] py-[5vh] sm:py-[8vh] px-5"
-      style={{ top: TOPBAR_HEIGHT }}
       onClick={handleClose}
     >
       <div
-        className="w-full max-w-2xl flex flex-col bg-white/10 backdrop-blur-2xl 
-        backdrop-saturate-150 border border-white/20 rounded-3xl 
-        shadow-[0_20px_60px_rgba(0,0,0,0.15)] p-5 sm:p-7 max-h-[80vh]"
+        className="w-full max-w-2xl flex flex-col bg-surface-soft backdrop-blur-2xl 
+        backdrop-saturate-150 border border-border rounded-3xl 
+        shadow-card-lg p-5 sm:p-7 max-h-[80vh]"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="flex justify-between items-center w-full mb-3 px-1">
-          <h3 className="text-xl font-bold text-[#dae5f4]">Search Tasks</h3>
+          <h3 className="text-xl font-bold text-heading">Search Tasks</h3>
           <button
             className="flex h-8 w-8 items-center justify-center rounded-full 
-          bg-black/[0.04] text-base text-[var(--text-main)] transition-all 
-          duration-200 hover:bg-red-500/15 hover:text-red-500 cursor-pointer"
+          bg-surface-muted text-base text-heading transition-all 
+          duration-200 hover:bg-danger-soft hover:text-danger cursor-pointer"
             onClick={handleClose}
           >
             ✕

@@ -11,8 +11,8 @@ const Footer = () => {
   const linkClass = (path) =>
     `block py-2 px-5 rounded-full text-base cursor-pointer self-center transition-colors ${
       isActive(path)
-        ? "bg-[#8a5a5a] text-white font-bold"
-        : "bg-transparent text-[#edcccc]"
+        ? "bg-accent text-accent-contrast font-bold"
+        : "bg-transparent text-accent"
     }`;
 
   const hiddenRoutes = ["/login", "/sign-in", "/signup", "/sign-up"];
@@ -21,7 +21,7 @@ const Footer = () => {
   }
 
   return (
-    <footer 
+    <footer
       className="fixed bottom-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-between bg-transparent px-5 py-6"
     >
       <div className="flex-1" />

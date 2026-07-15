@@ -90,7 +90,7 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
       <button
         ref={triggerRef}
         type="button"
-        className="inline-flex items-center justify-center p-2 text-xl bg-transparent rounded-full outline-none transition-transform duration-150 hover:scale-110 hover:bg-slate-200/50 cursor-pointer"
+        className="inline-flex items-center justify-center p-2 text-xl bg-transparent rounded-full outline-none transition-transform duration-150 hover:scale-110 hover:bg-surface-hover cursor-pointer"
         onClick={openMenu}
         title={`Current: ${currentOption.label}`}
       >
@@ -102,15 +102,15 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
           <div
             ref={menuRef}
             style={menuStyle}
-            className="overflow-hidden rounded-lg border border-slate-200 bg-white py-1 shadow-xl"
+            className="overflow-hidden rounded-lg border border-border bg-surface-strong backdrop-blur-xl py-1 shadow-popover"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex justify-between items-center px-3 py-1 border-b border-slate-100 mb-1">
-              <span className="text-xs font-semibold text-slate-500">Set Priority</span>
+            <div className="flex justify-between items-center px-3 py-1 border-b border-border-soft mb-1">
+              <span className="text-xs font-semibold text-muted">Set Priority</span>
               <button
                 type="button"
-                className="flex h-6 w-6 items-center justify-center rounded-full text-slate-400
-                 transition-colors hover:bg-slate-100 hover:text-red-500 cursor-pointer"
+                className="flex h-6 w-6 items-center justify-center rounded-full text-muted
+                 transition-colors hover:bg-surface-hover hover:text-danger cursor-pointer"
                 onClick={() => setIsOpen(false)}
                 aria-label="Close priority dropdown"
               >
@@ -124,8 +124,8 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
                 className={`w-full flex items-center gap-3 px-4 py-3 sm:py-2 text-sm transition-colors duration-150 cursor-pointer
                   ${
                     currentPriority === p.id
-                      ? "bg-slate-50 font-medium text-slate-900"
-                      : "text-slate-700 hover:bg-slate-100"
+                      ? "bg-surface-hover font-medium text-heading"
+                      : "text-body hover:bg-surface-hover"
                   }`}
                 onClick={() => {
                   onSelect(p.id);
@@ -135,7 +135,7 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
                 <span className="text-lg">{p.emoji}</span>
                 <span>{p.label}</span>
                 {currentPriority === p.id && (
-                  <span className="ml-auto text-red-500 font-bold">✓</span>
+                  <span className="ml-auto text-danger font-bold">✓</span>
                 )}
               </button>
             ))}

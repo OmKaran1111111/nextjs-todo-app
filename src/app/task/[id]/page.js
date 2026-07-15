@@ -3,8 +3,6 @@
 import { useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import TaskDetails from "@/components/TaskDetails";
-import { TOPBAR_HEIGHT } from "@/components/topbar";
-import { FOOTER_HEIGHT } from "@/components/footer";
 
 const TaskPage = () => {
   const { id } = useParams();
@@ -105,8 +103,7 @@ const TaskPage = () => {
   return (
     <div className="min-h-screen" onClick={() => router.push("/")}>
       <div
-        style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}
-        className="mx-auto max-w-2xl px-4 sm:px-6"
+        className="pt-[75px] pb-[70px] mx-auto max-w-2xl px-4 sm:px-6"
         onClick={(e) => e.stopPropagation()}
       >
         <div className="pt-6">

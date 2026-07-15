@@ -4,14 +4,15 @@ import { useState } from "react";
 import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import ThemeToggle from "@/components/ThemeToggle";
 
 const navLinkClasses = `
-  text-xl font-bold cursor-pointer p-[15px] rounded-[14px] text-center
-  bg-white/18 border border-white/40
-  shadow-[0_4px_10px_rgba(0,0,0,0.03),inset_1px_1px_1px_rgba(255,255,255,0.6)]
+  text-xl font-bold cursor-pointer p-[15px] rounded-2xl text-center text-heading
+  bg-surface border border-border
+  shadow-card
   transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
-  hover:-translate-y-[3px] hover:scale-[1.02] hover:bg-white/35
-  hover:shadow-[0_10px_20px_rgba(0,0,0,0.08),inset_1px_1px_2px_rgba(255,255,255,0.8)]
+  hover:-translate-y-[3px] hover:scale-[1.02] hover:bg-surface-hover
+  hover:shadow-card-lg
 `;
 
 const TopBar = () => {
@@ -25,7 +26,7 @@ const TopBar = () => {
   const isActive = (path) => pathname === path;
 
   const itemClass = (path) =>
-    isActive(path) ? "!bg-[#8a5a5a] !border-[#8a5a5a] !text-white" : "";
+    isActive(path) ? "!bg-accent !border-accent !text-accent-contrast" : "";
 
   const links = [
     { path: "/", label: "Home" },
@@ -43,52 +44,44 @@ const TopBar = () => {
   return (
     <div>
       <header
-        className={`
-      bg-transparent px-5 py-6
-      fixed top-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-center p-5`}
+        className="bg-transparent px-5 py-6
+        fixed top-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-center p-5"
       >
-        <header
-          style={{ marginTop: "-10px" }}
-          className={`text-[beige] text-center
-          text-[30px] font-bold`}
-        >
+        <header className="text-heading text-center text-[30px] font-bold -mt-2.5">
           <Link href="/">Todo App</Link>
         </header>
       </header>
 
       <button
-        className={`fixed z-[9999] py-[7px] px-[15px] bg-transparent border-none
-          cursor-pointer top-[15px] left-[15px] text-white text-[30px]`}
+        className="fixed z-[9999] py-[7px] px-[15px] bg-transparent border-none
+          cursor-pointer top-[15px] left-[15px] text-heading text-[30px]"
         onClick={toggleSidebar}
       >
         {isOpen ? "✕" : "☰"}
       </button>
 
-      <div
-        className={`fixed z-[9999] py-[7px] px-[15px] bg-transparent border-none
-          cursor-pointer top-[15px] right-[15px] text-[30px]`}
-      >
+      <div className="fixed z-[9999] flex items-center gap-2 top-[15px] right-[15px]">
+        <ThemeToggle />
         <Link
           href="/search"
-          className={`bg-transparent border-none text-[#edcccc] py-2 px-5
-            text-base cursor-pointer self-center`}
+          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full
+            bg-transparent border-none text-accent text-xl cursor-pointer"
         >
           🔍
         </Link>
       </div>
 
-      {/* Sidebar */}
       <div
         className={`fixed top-0 left-0 h-full w-[260px] z-[10000] pt-20
-          bg-white/25 backdrop-blur-[30px] backdrop-saturate-[200%]
-          border-r border-white/45 shadow-[5px_0_25px_rgba(0,0,0,0.05)]
-          text-[#1d1d1f] transition-transform duration-[400ms]
+          bg-surface-strong backdrop-blur-[30px] backdrop-saturate-[200%]
+          border-r border-border shadow-card
+          text-heading transition-transform duration-[400ms]
           ease-[cubic-bezier(0.34,1.56,0.64,1)]
           ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
       >
         <button
-          className={`fixed z-[101] py-[7px] px-[15px] bg-transparent border-none
-          cursor-pointer top-[15px] left-[15px] text-white text-[30px]`}
+          className="fixed z-[101] py-[7px] px-[15px] bg-transparent border-none
+          cursor-pointer top-[15px] left-[15px] text-heading text-[30px]"
           onClick={toggleSidebar}
         >
           {isOpen ? "✕" : "☰"}
@@ -108,7 +101,7 @@ const TopBar = () => {
             </li>
           ))}
           <li
-            className={navLinkClasses}
+            className={`${navLinkClasses} cursor-pointer`}
             onClick={() => {
               closeSidebar();
               signOut({ redirectUrl: "/" });
@@ -121,7 +114,7 @@ const TopBar = () => {
 
       {isOpen && (
         <div
-          className="fixed inset-0 bg-transparent z-[9996] backdrop-blur-[2px]"
+          className="fixed inset-0 bg-black/30 z-[9996] backdrop-blur-[2px]"
           onClick={toggleSidebar}
         ></div>
       )}

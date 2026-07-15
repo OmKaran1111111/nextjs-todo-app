@@ -7,14 +7,14 @@ import { useClerk } from "@clerk/nextjs";
 
 
 const MailIcon = () => (
-  <svg className="text-[#1c2c46] shrink-0 ml-2.5" width="18" height="18" viewBox="0 0 24 24" fill="none">
+  <svg className="text-auth-text shrink-0 ml-2.5" width="18" height="18" viewBox="0 0 24 24" fill="none">
     <path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.6" />
     <path d="m3 6 9 7 9-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const LockIcon = () => (
-  <svg className="text-[#1c2c46] shrink-0 ml-2.5" width="17" height="17" viewBox="0 0 24 24" fill="none">
+  <svg className="text-auth-text shrink-0 ml-2.5" width="17" height="17" viewBox="0 0 24 24" fill="none">
     <rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
     <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
@@ -33,17 +33,17 @@ const BackIcon = () => (
 );
 
 const inputWrapClass =
-  "flex items-center justify-between gap-2 border-b-[1.5px] border-[#1c2c46]/35 pb-2 focus-within:border-[#1c2c46] transition-colors";
+  "flex items-center justify-between gap-2 border-b-[1.5px] border-auth-border pb-2 focus-within:border-auth-text transition-colors";
 const inputClass =
-  "flex-1 bg-transparent outline-none border-none text-[15px] text-[#182642] placeholder:text-[#1c2c46]/55";
+  "flex-1 bg-transparent outline-none border-none text-[15px] text-auth-heading placeholder:text-auth-text/55";
 const submitClass =
-  "w-full py-3.5 rounded-2xl bg-[#16233d] text-[#f2f5fa] text-[16px] font-semibold tracking-wide hover:bg-[#202f4d] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition";
+  "w-full py-3.5 rounded-2xl bg-auth-button-bg text-auth-button-text text-[16px] font-semibold tracking-wide hover:bg-auth-button-hover active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition";
 const errorClass =
-  "bg-red-900/10 border border-red-900/30 text-red-800 text-[13px] px-3.5 py-2.5 rounded-xl mb-4 text-center";
-const footerClass = "text-center mt-5 text-[13.5px] text-[#33456a]";
-const linkStrongClass = "text-[#16233d] font-semibold cursor-pointer hover:underline";
+  "bg-danger-soft border border-danger/30 text-danger text-[13px] px-3.5 py-2.5 rounded-xl mb-4 text-center";
+const footerClass = "text-center mt-5 text-[13.5px] text-auth-muted";
+const linkStrongClass = "text-auth-button-bg font-semibold cursor-pointer hover:underline";
 const backBtnClass =
-  "inline-flex items-center gap-1.5 text-[13.5px] text-[#33456a] hover:text-[#16233d] mb-3.5";
+  "inline-flex items-center gap-1.5 text-[13.5px] text-auth-muted hover:text-auth-heading mb-3.5";
 
 const INITIAL_MODE = "signUp";
 
@@ -319,56 +319,27 @@ const Page = () => {
 
   return (
     <div
-      className="font-sans"
-      style={{
-        position: "fixed",
-        inset: 0,
-        width: "100vw",
-        height: "100vh",
-        display: "flex",
-        alignItems: "center",
-        justifyContent: "center",
-        padding: "24px",
-        overflow: "hidden",
-        boxSizing: "border-box",
-        background:
-          "radial-gradient(circle at 15% 20%, rgba(120,170,220,0.55), transparent 45%), " +
-          "radial-gradient(circle at 85% 15%, rgba(60,90,140,0.6), transparent 50%), " +
-          "radial-gradient(circle at 30% 85%, rgba(20,40,70,0.7), transparent 55%), " +
-          "linear-gradient(160deg, #6f97c2 0%, #3f5f8a 40%, #1c2c46 100%)",
-      }}
+      className="font-sans fixed inset-0 w-screen h-screen flex items-center justify-center
+      p-6 overflow-hidden box-border [background:var(--auth-backdrop)]"
     >
       <div
-        className="pointer-events-none blur-3xl"
-        style={{ position: "absolute", top: "-80px", left: "-64px", width: "340px", height: "340px", borderRadius: "9999px", background: "rgba(255,255,255,0.2)" }}
+        className="pointer-events-none blur-3xl absolute -top-20 -left-16 w-[340px] h-[340px]
+        rounded-full bg-[var(--auth-blob-1)]"
       />
       <div
-        className="pointer-events-none blur-3xl"
-        style={{ position: "absolute", bottom: "-112px", right: "-96px", width: "420px", height: "420px", borderRadius: "9999px", background: "rgba(10,20,40,0.45)" }}
+        className="pointer-events-none blur-3xl absolute -bottom-28 -right-24 w-[420px] h-[420px]
+        rounded-full bg-[var(--auth-blob-2)]"
       />
 
       <div
-        className="backdrop-blur-2xl backdrop-saturate-150"
-        style={{
-          position: "relative",
-          zIndex: 10,
-          width: "100%",
-          maxWidth: "420px",
-          boxSizing: "border-box",
-          padding: "40px 36px 32px",
-          borderRadius: "28px",
-          background: "linear-gradient(to bottom right, rgba(255,255,255,0.4), rgba(180,205,230,0.2))",
-          border: "1px solid rgba(255,255,255,0.45)",
-          boxShadow: "0 20px 60px rgba(10,20,45,0.35)",
-        }}
+        className="backdrop-blur-2xl backdrop-saturate-150 relative z-10 w-full max-w-[420px]
+        box-border px-9 pt-10 pb-8 rounded-[28px] border border-[var(--auth-card-border)]
+        shadow-[0_20px_60px_rgba(10,20,45,0.35)] [background:var(--auth-card-bg)]"
       >
         <button
-          className="hover:scale-105 transition"
-          style={{
-            position: "absolute", top: "18px", right: "18px", width: "34px", height: "34px",
-            borderRadius: "10px", background: "#16233d", color: "#eef3fa", display: "flex",
-            alignItems: "center", justifyContent: "center", border: "none", cursor: "pointer",
-          }}
+          className="hover:scale-105 transition absolute top-[18px] right-[18px] w-[34px] h-[34px]
+          rounded-[10px] bg-auth-icon-bg text-auth-icon-text flex items-center justify-center
+          border-none cursor-pointer"
           aria-label="Reset form"
           onClick={clearAndClose}
           type="button"
@@ -378,9 +349,9 @@ const Page = () => {
 
         {mode === "signIn" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-[#182642] tracking-wide mt-1 mb-7">Login</h1>
+            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mt-1 mb-7">Login</h1>
             {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleSignIn} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <form onSubmit={handleSignIn} className="flex flex-col gap-[22px]">
               <div className={inputWrapClass}>
                 <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
                 <MailIcon />
@@ -389,12 +360,12 @@ const Page = () => {
                 <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className={inputClass} />
                 <LockIcon />
               </div>
-              <div className="text-[13.5px]" style={{ display: "flex", alignItems: "center", justifyContent: "space-between", marginTop: "2px", marginBottom: "4px" }}>
-                <label className="flex items-center gap-2 text-[#1c2c46] cursor-pointer select-none">
-                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="w-[15px] h-[15px] accent-[#16233d] cursor-pointer" />
+              <div className="text-[13.5px] flex items-center justify-between mt-0.5 mb-1">
+                <label className="flex items-center gap-2 text-auth-text cursor-pointer select-none">
+                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="w-[15px] h-[15px] accent-auth-button-bg cursor-pointer" />
                   Remember me
                 </label>
-                <button type="button" className="font-semibold text-[#1c2c46] hover:underline" onClick={() => switchMode("forgot")}>
+                <button type="button" className="font-semibold text-auth-text hover:underline" onClick={() => switchMode("forgot")}>
                   Forgot Password?
                 </button>
               </div>
@@ -416,9 +387,9 @@ const Page = () => {
             <button className={backBtnClass} onClick={() => (window.location.href = "/login")} type="button">
               <BackIcon /> Back to login
             </button>
-            <h1 className="text-center text-[30px] font-bold text-[#182642] tracking-wide mb-7">Register</h1>
+            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-7">Register</h1>
             {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleSignUp} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <form onSubmit={handleSignUp} className="flex flex-col gap-[22px]">
               <div className={inputWrapClass}>
                 <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
                 <MailIcon />
@@ -443,10 +414,10 @@ const Page = () => {
 
         {mode === "verifySignUp" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-[#182642] tracking-wide mb-2">Verify email</h1>
-            <p className="text-center text-[13.5px] text-[#33456a]/85 mb-6">We sent a code to {email}</p>
+            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">Verify email</h1>
+            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">We sent a code to {email}</p>
             {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleVerifySignUp} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <form onSubmit={handleVerifySignUp} className="flex flex-col gap-[22px]">
               <div className={inputWrapClass}>
                 <input type="text" inputMode="numeric" placeholder="Verification code" value={code} onChange={(e) => setCode(e.target.value)} required className={inputClass} />
               </div>
@@ -459,12 +430,12 @@ const Page = () => {
 
         {mode === "verifySignInFirst" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-[#182642] tracking-wide mb-2">Verify it's you</h1>
-            <p className="text-center text-[13.5px] text-[#33456a]/85 mb-6">
+            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">Verify it's you</h1>
+            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">
               This device hasn't signed in before. We sent a code to {email}
             </p>
             {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleVerifySignInFirst} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <form onSubmit={handleVerifySignInFirst} className="flex flex-col gap-[22px]">
               <div className={inputWrapClass}>
                 <input type="text" inputMode="numeric" placeholder="Verification code" value={code} onChange={(e) => setCode(e.target.value)} required className={inputClass} />
               </div>
@@ -477,8 +448,8 @@ const Page = () => {
 
         {mode === "verifySignInSecond" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-[#182642] tracking-wide mb-2">Two-factor verification</h1>
-            <p className="text-center text-[13.5px] text-[#33456a]/85 mb-6">
+            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">Two-factor verification</h1>
+            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">
               {signInStrategy === "totp"
                 ? "Enter the code from your authenticator app"
                 : signInStrategy === "backup_code"
@@ -488,7 +459,7 @@ const Page = () => {
                 : "We sent a code to your phone"}
             </p>
             {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleVerifySignInSecond} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <form onSubmit={handleVerifySignInSecond} className="flex flex-col gap-[22px]">
               <div className={inputWrapClass}>
                 <input
                   type="text"
@@ -509,12 +480,12 @@ const Page = () => {
 
         {mode === "resetRequiredPassword" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-[#182642] tracking-wide mb-2">Set a new password</h1>
-            <p className="text-center text-[13.5px] text-[#33456a]/85 mb-6">
+            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">Set a new password</h1>
+            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">
               Your account requires a new password before you can continue.
             </p>
             {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleResetRequiredPassword} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <form onSubmit={handleResetRequiredPassword} className="flex flex-col gap-[22px]">
               <div className={inputWrapClass}>
                 <input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className={inputClass} />
                 <LockIcon />
@@ -531,9 +502,9 @@ const Page = () => {
             <button className={backBtnClass} onClick={() => switchMode("signIn")} type="button">
               <BackIcon /> Back to login
             </button>
-            <h1 className="text-center text-[30px] font-bold text-[#182642] tracking-wide mb-7">Reset password</h1>
+            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-7">Reset password</h1>
             {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleForgotRequest} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <form onSubmit={handleForgotRequest} className="flex flex-col gap-[22px]">
               <div className={inputWrapClass}>
                 <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
                 <MailIcon />
@@ -547,12 +518,12 @@ const Page = () => {
 
         {mode === "resetVerify" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-[#182642] tracking-wide mb-2">New password</h1>
-            <p className="text-center text-[13.5px] text-[#33456a]/85 mb-6">
+            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">New password</h1>
+            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">
               Enter the code sent to {email} and your new password
             </p>
             {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleResetPassword} style={{ display: "flex", flexDirection: "column", gap: "22px" }}>
+            <form onSubmit={handleResetPassword} className="flex flex-col gap-[22px]">
               <div className={inputWrapClass}>
                 <input type="text" inputMode="numeric" placeholder="Reset code" value={code} onChange={(e) => setCode(e.target.value)} required className={inputClass} />
               </div>

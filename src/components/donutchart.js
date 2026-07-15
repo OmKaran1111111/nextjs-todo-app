@@ -3,7 +3,6 @@
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
 
 const DonutChart = ({ data, colors, labels }) => {
-  // Calculate total values
   const total = data.reduce((sum, entry) => sum + entry.value, 0);
 
   const getPercent = (value) =>
@@ -17,7 +16,6 @@ const DonutChart = ({ data, colors, labels }) => {
     outerRadius,
     value,
   }) => {
-    // Don't render text labels if there's no data
     if (value === 0 || total === 0) return null;
     const RADIAN = Math.PI / 180;
     const radius = innerRadius + (outerRadius - innerRadius) * 0.5;
@@ -38,32 +36,29 @@ const DonutChart = ({ data, colors, labels }) => {
     );
   };
 
-  // Custom tooltip showing value + percent
   const CustomTooltip = ({ active, payload }) => {
-    if (total === 0) return null; // Don't show tooltip in empty state
+    if (total === 0) return null;
     if (!active || !payload || !payload.length) return null;
     const entry = payload[0].payload;
     return (
-      <div className="rounded-md bg-[#1e293b] px-3 py-2 text-[13px] text-[#dae5f4] shadow-lg border border-white/10">
+      <div className="rounded-md bg-surface-strong backdrop-blur-md px-3 py-2 text-[13px] text-heading shadow-popover border border-border">
         {labels[entry.name]}: {entry.value} ({getPercent(entry.value)}%)
       </div>
     );
   };
 
-  // FALLBACK: If total is 0, render a single 100% placeholder slice colored slate-gray
   const chartData = total === 0 ? [{ name: "noData", value: 1 }] : data;
-  const chartColors = total === 0 ? ["#334155"] : colors; // Slate gray for empty state
+  const chartColors = total === 0 ? ["var(--color-faint)"] : colors;
 
   return (
     <div className="w-full max-w-[600px] flex flex-col md:flex-row items-center justify-center gap-4 
       md:gap-8 self-center mx-auto md:mx-0 md:ml-auto">
       
-      {/* Legend */}
       <ul className="flex flex-row flex-wrap md:flex-col gap-3 md:gap-2.5 justify-center order-2 md:order-1">
         {data.map((entry, index) => (
           <li
             key={entry.name}
-            className="flex items-center gap-2 text-[13px] text-[#dae5f4]"
+            className="flex items-center gap-2 text-[13px] text-heading"
           >
             <span
               className="w-3 h-3 rounded-sm shrink-0"
@@ -74,7 +69,6 @@ const DonutChart = ({ data, colors, labels }) => {
         ))}
       </ul>
 
-      {/* Chart Container */}
       <div className="w-full max-w-[260px] order-1 md:order-2">
         <ResponsiveContainer width="100%" height={260} minWidth={220}>
           <PieChart>
@@ -84,7 +78,7 @@ const DonutChart = ({ data, colors, labels }) => {
               cy="50%"
               innerRadius="30%"
               outerRadius="85%"
-              paddingAngle={total === 0 ? 0 : 2} // Smooth circular fallback when empty
+              paddingAngle={total === 0 ? 0 : 2}
               dataKey="value"
               label={renderSliceLabel}
               labelLine={false}

@@ -6,11 +6,8 @@ import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
 import useIsDesktop from "@/hooks/useIsDesktop";
-import { TOPBAR_HEIGHT } from "@/components/topbar";
-import { FOOTER_HEIGHT } from "@/components/footer";
 
-// Incomplete tasks first (highest priority = lowest number, first), then
-// completed tasks at the bottom, also sorted by priority.
+
 const sortByPriority = (tasks) =>
   [...tasks].sort((a, b) => {
     const completedDiff =
@@ -30,22 +27,22 @@ const TaskRow = ({
 }) => (
   <li
     className={`flex items-center gap-2 sm:gap-3 relative px-3.5 py-3 rounded-2xl 
-    backdrop-blur-xl backdrop-saturate-200 border transition-[transform,background-color,box-shadow] 
+    bg-surface backdrop-blur-xl backdrop-saturate-200 border transition-[transform,background-color,box-shadow] 
     duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] 
-    ${isActive ? "border-white/70 bg-white/25" : "border-white/45"} 
+    ${isActive ? "border-border-strong bg-surface-hover" : "border-border"} 
     ${
       task.completed
-        ? "opacity-40 !bg-[rgba(225,225,225,0.05)] !border-white/10"
-        : "hover:-translate-y-0.5 hover:bg-white/25"
+        ? "opacity-40 !bg-surface-soft !border-border-soft"
+        : "hover:-translate-y-0.5 hover:bg-surface-hover"
     }`}
   >
     <input
       type="checkbox"
-      className="shrink-0 appearance-none w-5 h-5 border-2 border-[#aaa] rounded-full 
-      cursor-pointer transition-all checked:bg-[var(--apple-blue,#0071e3)] 
-      checked:border-[var(--apple-blue,#0071e3)] checked:after:content-['✓'] 
+      className="shrink-0 appearance-none w-5 h-5 border-2 border-border-strong rounded-full 
+      cursor-pointer transition-all checked:bg-primary 
+      checked:border-primary checked:after:content-['✓'] 
       checked:after:relative checked:after:block checked:after:text-center 
-      checked:after:-translate-y-[1px] checked:after:text-[13px] checked:after:text-white"
+      checked:after:-translate-y-[1px] checked:after:text-[13px] checked:after:text-primary-contrast"
       checked={task.completed || false}
       onChange={() => onToggleComplete(task.id)}
     />
@@ -54,7 +51,7 @@ const TaskRow = ({
       onClick={() => onSelect(task)}
       className={`flex-1 min-w-0 truncate text-left font-bold cursor-pointer 
       bg-transparent border-none p-0 ${
-        task.completed ? "text-[#888] line-through" : "text-[#dae5f4]"
+        task.completed ? "text-faint line-through" : "text-heading"
       }`}
     >
       {task.text}
@@ -69,8 +66,8 @@ const TaskRow = ({
 
     <button
       onClick={() => onDelete(task.id)}
-      className="shrink-0 bg-transparent border-none text-[#e0d5d5] text-base 
-      cursor-pointer p-1 transition-all hover:text-red-500"
+      className="shrink-0 bg-transparent border-none text-muted text-base 
+      cursor-pointer p-1 transition-all hover:text-danger"
     >
       ✕
     </button>
@@ -81,18 +78,15 @@ const Todo_App = () => {
   const router = useRouter();
   const isDesktop = useIsDesktop();
 
-  // 1. Initialize as empty to guarantee SSR matches first render client-side
   const [tasks, setTasks] = useState([]);
   const [isMounted, setIsMounted] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
 
-  // 2. Load, Migrate, and Listen all in one mounted effect
   useEffect(() => {
     const loadAndMigrateTasks = () => {
       const sTasks = localStorage.getItem("todo_tasks");
       let loadedTasks = sTasks ? JSON.parse(sTasks) : [];
 
-      // Migration runs safely right here on the loaded data
       const needsMigration = loadedTasks.some(
         (task) => task.completed && !task.completedAt,
       );
@@ -109,7 +103,7 @@ const Todo_App = () => {
     };
 
     loadAndMigrateTasks();
-    setIsMounted(true); // Signal that we are safe to render on client
+    setIsMounted(true);
 
     window.addEventListener("todo_tasks_updated", loadAndMigrateTasks);
 
@@ -118,15 +112,12 @@ const Todo_App = () => {
     };
   }, []);
 
-  // 3. Save updates safely (only AFTER the page has fully loaded and mounted)
   useEffect(() => {
     if (isMounted) {
       localStorage.setItem("todo_tasks", JSON.stringify(tasks));
     }
   }, [tasks, isMounted]);
 
-  // 4. Return null (or a skeleton layout) until mounting is finished.
-  // This completely eliminates any Hydration Errors.
   if (!isMounted) {
     return null; 
   }
@@ -228,14 +219,13 @@ const Todo_App = () => {
   };
 
   return (
-    <div style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>
+    <div className="pt-[75px] pb-[70px]">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 md:flex md:items-start md:gap-6">
-        {/* Left: task list */}
         <div className="md:w-[380px] md:shrink-0">
-          <h3 className="mb-3 px-1 text-xl font-bold text-[#dae5f4]">Tasks</h3>
+          <h3 className="mb-3 px-1 text-xl font-bold text-heading">Tasks</h3>
 
           {sortedTasks.length === 0 ? (
-            <p className="text-[#dae5f4] text-[0.95rem] text-center py-2.5">
+            <p className="text-heading text-[0.95rem] text-center py-2.5">
               No tasks added yet!
             </p>
           ) : (
@@ -258,7 +248,6 @@ const Todo_App = () => {
           )}
         </div>
 
-        {/* Right: task details panel */}
         <div className="hidden md:block md:flex-1 md:sticky md:top-[100px]">
           <TaskDetails
             task={selectedTask}

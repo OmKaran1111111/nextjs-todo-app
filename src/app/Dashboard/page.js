@@ -5,8 +5,8 @@ import dynamic from "next/dynamic";
 import InfoBoxes from "@/components/infoboxes";
 import PriorityBreakdown from "@/components/PriorityBreakdown";
 import UpcomingDeadlines from "@/components/Upcomingdeadlines";
-import TopBar, { TOPBAR_HEIGHT } from "@/components/topbar";
-import Footer, { FOOTER_HEIGHT } from "@/components/footer";
+import TopBar from "@/components/topbar";
+import Footer from "@/components/footer";
 
 const DonutChart = dynamic(() => import("@/components/donutchart"), {
   ssr: false,
@@ -70,7 +70,12 @@ const Dashboard = () => {
     { name: "remainingAfterDeadline", value: remainingAfterDeadline },
   ];
 
-  const COLORS = ["#22C55E", "#F59E0B", "#3B82F6", "#EF4444"];
+  const COLORS = [
+    "var(--color-success)",
+    "var(--color-warning)",
+    "var(--color-info)",
+    "var(--color-danger)",
+  ];
 
   const labels = {
     completedBeforeDeadline: "Completed on time",
@@ -83,7 +88,7 @@ const Dashboard = () => {
     <div>
       <TopBar />
       
-      <div style={{ paddingTop: TOPBAR_HEIGHT, paddingBottom: FOOTER_HEIGHT }}>
+      <div className="pt-[75px] pb-[70px]">
         <div
           className="w-full flex flex-col md:flex-row md:justify-center 
           items-center gap-4 md:gap-8 px-4"
