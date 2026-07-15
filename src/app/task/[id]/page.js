@@ -3,6 +3,7 @@
 import { useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import TaskDetails from "@/components/TaskDetails";
+import styles from "./page.module.css";
 
 const TaskPage = () => {
   const { id } = useParams();
@@ -17,9 +18,9 @@ const TaskPage = () => {
 
   const persist = (nextTasks) => {
     if (isFirstSave.current) {
-      	  isFirstSave.current = false;
-    	  return;
-   	 	}
+      isFirstSave.current = false;
+      return;
+    }
     setTasks(nextTasks);
     localStorage.setItem("todo_tasks", JSON.stringify(nextTasks));
     window.dispatchEvent(new Event("todo_tasks_updated"));
@@ -101,12 +102,12 @@ const TaskPage = () => {
     );
 
   return (
-    <div className="min-h-screen" onClick={() => router.push("/")}>
+    <div className={styles.pageContainer} onClick={() => router.push("/")}>
       <div
-        className="pt-[75px] pb-[70px] mx-auto max-w-2xl px-4 sm:px-6"
+        className={styles.contentWrapper}
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="pt-6">
+        <div className={styles.innerContainer}>
           <TaskDetails
             task={task}
             onUpdatePriority={handleUpdatePriority}

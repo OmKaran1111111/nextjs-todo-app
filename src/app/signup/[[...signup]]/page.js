@@ -4,17 +4,17 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { useSignIn, useSignUp } from "@clerk/nextjs/legacy";
 import { useClerk } from "@clerk/nextjs";
-
+import styles from "./page.module.css";
 
 const MailIcon = () => (
-  <svg className="text-auth-text shrink-0 ml-2.5" width="18" height="18" viewBox="0 0 24 24" fill="none">
+  <svg className={styles.inputIcon} width="18" height="18" viewBox="0 0 24 24" fill="none">
     <path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.6" />
     <path d="m3 6 9 7 9-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const LockIcon = () => (
-  <svg className="text-auth-text shrink-0 ml-2.5" width="17" height="17" viewBox="0 0 24 24" fill="none">
+  <svg className={styles.inputIcon} width="17" height="17" viewBox="0 0 24 24" fill="none">
     <rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
     <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
@@ -31,19 +31,6 @@ const BackIcon = () => (
     <path d="M15 5 8 12l7 7" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
-
-const inputWrapClass =
-  "flex items-center justify-between gap-2 border-b-[1.5px] border-auth-border pb-2 focus-within:border-auth-text transition-colors";
-const inputClass =
-  "flex-1 bg-transparent outline-none border-none text-[15px] text-auth-heading placeholder:text-auth-text/55";
-const submitClass =
-  "w-full py-3.5 rounded-2xl bg-auth-button-bg text-auth-button-text text-[16px] font-semibold tracking-wide hover:bg-auth-button-hover active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed transition";
-const errorClass =
-  "bg-danger-soft border border-danger/30 text-danger text-[13px] px-3.5 py-2.5 rounded-xl mb-4 text-center";
-const footerClass = "text-center mt-5 text-[13.5px] text-auth-muted";
-const linkStrongClass = "text-auth-button-bg font-semibold cursor-pointer hover:underline";
-const backBtnClass =
-  "inline-flex items-center gap-1.5 text-[13.5px] text-auth-muted hover:text-auth-heading mb-3.5";
 
 const INITIAL_MODE = "signUp";
 
@@ -318,28 +305,13 @@ const Page = () => {
   };
 
   return (
-    <div
-      className="font-sans fixed inset-0 w-screen h-screen flex items-center justify-center
-      p-6 overflow-hidden box-border [background:var(--auth-backdrop)]"
-    >
-      <div
-        className="pointer-events-none blur-3xl absolute -top-20 -left-16 w-[340px] h-[340px]
-        rounded-full bg-[var(--auth-blob-1)]"
-      />
-      <div
-        className="pointer-events-none blur-3xl absolute -bottom-28 -right-24 w-[420px] h-[420px]
-        rounded-full bg-[var(--auth-blob-2)]"
-      />
+    <div className={styles.container}>
+      <div className={styles.blob1} />
+      <div className={styles.blob2} />
 
-      <div
-        className="backdrop-blur-2xl backdrop-saturate-150 relative z-10 w-full max-w-[420px]
-        box-border px-9 pt-10 pb-8 rounded-[28px] border border-[var(--auth-card-border)]
-        shadow-[0_20px_60px_rgba(10,20,45,0.35)] [background:var(--auth-card-bg)]"
-      >
+      <div className={styles.card}>
         <button
-          className="hover:scale-105 transition absolute top-[18px] right-[18px] w-[34px] h-[34px]
-          rounded-[10px] bg-auth-icon-bg text-auth-icon-text flex items-center justify-center
-          border-none cursor-pointer"
+          className={styles.closeBtn}
           aria-label="Reset form"
           onClick={clearAndClose}
           type="button"
@@ -349,33 +321,33 @@ const Page = () => {
 
         {mode === "signIn" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mt-1 mb-7">Login</h1>
-            {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleSignIn} className="flex flex-col gap-[22px]">
-              <div className={inputWrapClass}>
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
+            <h1 className={styles.headingLogin}>Login</h1>
+            {error && <div className={styles.error}>{error}</div>}
+            <form onSubmit={handleSignIn} className={styles.form}>
+              <div className={styles.inputWrap}>
+                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={styles.input} />
                 <MailIcon />
               </div>
-              <div className={inputWrapClass}>
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className={inputClass} />
+              <div className={styles.inputWrap}>
+                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className={styles.input} />
                 <LockIcon />
               </div>
-              <div className="text-[13.5px] flex items-center justify-between mt-0.5 mb-1">
-                <label className="flex items-center gap-2 text-auth-text cursor-pointer select-none">
-                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className="w-[15px] h-[15px] accent-auth-button-bg cursor-pointer" />
+              <div className={styles.rememberForgotWrap}>
+                <label className={styles.rememberLabel}>
+                  <input type="checkbox" checked={remember} onChange={(e) => setRemember(e.target.checked)} className={styles.rememberCheckbox} />
                   Remember me
                 </label>
-                <button type="button" className="font-semibold text-auth-text hover:underline" onClick={() => switchMode("forgot")}>
+                <button type="button" className={styles.forgotBtn} onClick={() => switchMode("forgot")}>
                   Forgot Password?
                 </button>
               </div>
-              <button className={submitClass} type="submit" disabled={loading}>
+              <button className={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? "Logging in..." : "Login"}
               </button>
             </form>
-            <p className={footerClass}>
+            <p className={styles.footer}>
               Don't have an account?{" "}
-              <strong className={linkStrongClass} onClick={() => switchMode("signUp")}>
+              <strong className={styles.linkStrong} onClick={() => switchMode("signUp")}>
                 Register
               </strong>
             </p>
@@ -384,28 +356,28 @@ const Page = () => {
 
         {mode === "signUp" && (
           <>
-            <button className={backBtnClass} onClick={() => (window.location.href = "/login")} type="button">
+            <button className={styles.backBtn} onClick={() => (window.location.href = "/login")} type="button">
               <BackIcon /> Back to login
             </button>
-            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-7">Register</h1>
-            {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleSignUp} className="flex flex-col gap-[22px]">
-              <div className={inputWrapClass}>
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
+            <h1 className={styles.headingRegister}>Register</h1>
+            {error && <div className={styles.error}>{error}</div>}
+            <form onSubmit={handleSignUp} className={styles.form}>
+              <div className={styles.inputWrap}>
+                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={styles.input} />
                 <MailIcon />
               </div>
-              <div className={inputWrapClass}>
-                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className={inputClass} />
+              <div className={styles.inputWrap}>
+                <input type="password" placeholder="Password" value={password} onChange={(e) => setPassword(e.target.value)} required className={styles.input} />
                 <LockIcon />
               </div>
               <div id="clerk-captcha" />
-              <button className={submitClass} type="submit" disabled={loading}>
+              <button className={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? "Creating account..." : "Create account"}
               </button>
             </form>
-            <p className={footerClass}>
+            <p className={styles.footer}>
               Already have an account?{" "}
-              <strong className={linkStrongClass} onClick={() => switchMode("signIn")}>
+              <strong className={styles.linkStrong} onClick={() => switchMode("signIn")}>
                 Login
               </strong>
             </p>
@@ -414,14 +386,14 @@ const Page = () => {
 
         {mode === "verifySignUp" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">Verify email</h1>
-            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">We sent a code to {email}</p>
-            {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleVerifySignUp} className="flex flex-col gap-[22px]">
-              <div className={inputWrapClass}>
-                <input type="text" inputMode="numeric" placeholder="Verification code" value={code} onChange={(e) => setCode(e.target.value)} required className={inputClass} />
+            <h1 className={styles.headingVerify}>Verify email</h1>
+            <p className={styles.infoText}>We sent a code to {email}</p>
+            {error && <div className={styles.error}>{error}</div>}
+            <form onSubmit={handleVerifySignUp} className={styles.form}>
+              <div className={styles.inputWrap}>
+                <input type="text" inputMode="numeric" placeholder="Verification code" value={code} onChange={(e) => setCode(e.target.value)} required className={styles.input} />
               </div>
-              <button className={submitClass} type="submit" disabled={loading}>
+              <button className={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? "Verifying..." : "Verify & continue"}
               </button>
             </form>
@@ -430,16 +402,16 @@ const Page = () => {
 
         {mode === "verifySignInFirst" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">Verify it's you</h1>
-            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">
+            <h1 className={styles.headingVerify}>Verify it's you</h1>
+            <p className={styles.infoText}>
               This device hasn't signed in before. We sent a code to {email}
             </p>
-            {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleVerifySignInFirst} className="flex flex-col gap-[22px]">
-              <div className={inputWrapClass}>
-                <input type="text" inputMode="numeric" placeholder="Verification code" value={code} onChange={(e) => setCode(e.target.value)} required className={inputClass} />
+            {error && <div className={styles.error}>{error}</div>}
+            <form onSubmit={handleVerifySignInFirst} className={styles.form}>
+              <div className={styles.inputWrap}>
+                <input type="text" inputMode="numeric" placeholder="Verification code" value={code} onChange={(e) => setCode(e.target.value)} required className={styles.input} />
               </div>
-              <button className={submitClass} type="submit" disabled={loading}>
+              <button className={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? "Verifying..." : "Verify & continue"}
               </button>
             </form>
@@ -448,8 +420,8 @@ const Page = () => {
 
         {mode === "verifySignInSecond" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">Two-factor verification</h1>
-            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">
+            <h1 className={styles.headingVerify}>Two-factor verification</h1>
+            <p className={styles.infoText}>
               {signInStrategy === "totp"
                 ? "Enter the code from your authenticator app"
                 : signInStrategy === "backup_code"
@@ -458,9 +430,9 @@ const Page = () => {
                 ? `This device isn't recognized yet — enter the code we emailed to ${email}`
                 : "We sent a code to your phone"}
             </p>
-            {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleVerifySignInSecond} className="flex flex-col gap-[22px]">
-              <div className={inputWrapClass}>
+            {error && <div className={styles.error}>{error}</div>}
+            <form onSubmit={handleVerifySignInSecond} className={styles.form}>
+              <div className={styles.inputWrap}>
                 <input
                   type="text"
                   inputMode={signInStrategy === "backup_code" ? "text" : "numeric"}
@@ -468,10 +440,10 @@ const Page = () => {
                   value={code}
                   onChange={(e) => setCode(e.target.value)}
                   required
-                  className={inputClass}
+                  className={styles.input}
                 />
               </div>
-              <button className={submitClass} type="submit" disabled={loading}>
+              <button className={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? "Verifying..." : "Verify & continue"}
               </button>
             </form>
@@ -480,17 +452,17 @@ const Page = () => {
 
         {mode === "resetRequiredPassword" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">Set a new password</h1>
-            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">
+            <h1 className={styles.headingVerify}>Set a new password</h1>
+            <p className={styles.infoText}>
               Your account requires a new password before you can continue.
             </p>
-            {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleResetRequiredPassword} className="flex flex-col gap-[22px]">
-              <div className={inputWrapClass}>
-                <input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className={inputClass} />
+            {error && <div className={styles.error}>{error}</div>}
+            <form onSubmit={handleResetRequiredPassword} className={styles.form}>
+              <div className={styles.inputWrap}>
+                <input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className={styles.input} />
                 <LockIcon />
               </div>
-              <button className={submitClass} type="submit" disabled={loading}>
+              <button className={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? "Setting password..." : "Set new password"}
               </button>
             </form>
@@ -499,17 +471,17 @@ const Page = () => {
 
         {mode === "forgot" && (
           <>
-            <button className={backBtnClass} onClick={() => switchMode("signIn")} type="button">
+            <button className={styles.backBtn} onClick={() => switchMode("signIn")} type="button">
               <BackIcon /> Back to login
             </button>
-            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-7">Reset password</h1>
-            {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleForgotRequest} className="flex flex-col gap-[22px]">
-              <div className={inputWrapClass}>
-                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={inputClass} />
+            <h1 className={styles.headingForgot}>Reset password</h1>
+            {error && <div className={styles.error}>{error}</div>}
+            <form onSubmit={handleForgotRequest} className={styles.form}>
+              <div className={styles.inputWrap}>
+                <input type="email" placeholder="Email" value={email} onChange={(e) => setEmail(e.target.value)} required className={styles.input} />
                 <MailIcon />
               </div>
-              <button className={submitClass} type="submit" disabled={loading}>
+              <button className={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? "Sending code..." : "Send reset code"}
               </button>
             </form>
@@ -518,20 +490,20 @@ const Page = () => {
 
         {mode === "resetVerify" && (
           <>
-            <h1 className="text-center text-[30px] font-bold text-auth-heading tracking-wide mb-2">New password</h1>
-            <p className="text-center text-[13.5px] text-auth-muted/85 mb-6">
+            <h1 className={styles.headingReset}>New password</h1>
+            <p className={styles.infoText}>
               Enter the code sent to {email} and your new password
             </p>
-            {error && <div className={errorClass}>{error}</div>}
-            <form onSubmit={handleResetPassword} className="flex flex-col gap-[22px]">
-              <div className={inputWrapClass}>
-                <input type="text" inputMode="numeric" placeholder="Reset code" value={code} onChange={(e) => setCode(e.target.value)} required className={inputClass} />
+            {error && <div className={styles.error}>{error}</div>}
+            <form onSubmit={handleResetPassword} className={styles.form}>
+              <div className={styles.inputWrap}>
+                <input type="text" inputMode="numeric" placeholder="Reset code" value={code} onChange={(e) => setCode(e.target.value)} required className={styles.input} />
               </div>
-              <div className={inputWrapClass}>
-                <input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className={inputClass} />
+              <div className={styles.inputWrap}>
+                <input type="password" placeholder="New password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} required className={styles.input} />
                 <LockIcon />
               </div>
-              <button className={submitClass} type="submit" disabled={loading}>
+              <button className={styles.submitBtn} type="submit" disabled={loading}>
                 {loading ? "Resetting..." : "Reset password"}
               </button>
             </form>

@@ -8,6 +8,8 @@ import UpcomingDeadlines from "@/components/Upcomingdeadlines";
 import TopBar from "@/components/topbar";
 import Footer from "@/components/footer";
 
+import styles from "./dashboard.module.css";
+
 const DonutChart = dynamic(() => import("@/components/donutchart"), {
   ssr: false,
 });
@@ -88,28 +90,17 @@ const Dashboard = () => {
     <div>
       <TopBar />
       
-      <div className="pt-[75px] pb-[70px]">
-        <div
-          className="w-full flex flex-col md:flex-row md:justify-center 
-          items-center gap-4 md:gap-8 px-4"
-        >
-          <InfoBoxes
-            totalTasks={numberOfTasks}
-            completedTasks={noOfComp}
-            remainingTasks={numberOfTasks - noOfComp}
-            remainingOnTime={remainingBeforeDeadline}
-            remainingOverdue={remainingAfterDeadline}
-          />
-          <DonutChart data={data} colors={COLORS} labels={labels} />
-        </div>
-
-        <div
-          className="w-full flex flex-col md:flex-row md:justify-center 
-          items-start gap-4 md:gap-8 px-4 mt-4 md:mt-8"
-        >
-          <PriorityBreakdown tasks={tasks} />
-          <UpcomingDeadlines tasks={tasks} />
-        </div>
+      <div className={styles.contentWrapper}>
+        <InfoBoxes
+          totalTasks={numberOfTasks}
+          completedTasks={noOfComp}
+          remainingTasks={numberOfTasks - noOfComp}
+          remainingOnTime={remainingBeforeDeadline}
+          remainingOverdue={remainingAfterDeadline}
+        />
+        <DonutChart data={data} colors={COLORS} labels={labels} />
+        <PriorityBreakdown tasks={tasks} />
+        <UpcomingDeadlines tasks={tasks} />
       </div>
 
       <Footer />

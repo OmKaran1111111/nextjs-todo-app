@@ -5,15 +5,7 @@ import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
-
-const navLinkClasses = `
-  text-xl font-bold cursor-pointer p-[15px] rounded-2xl text-center text-heading
-  bg-surface border border-border
-  shadow-card
-  transition-all duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)]
-  hover:-translate-y-[3px] hover:scale-[1.02] hover:bg-surface-hover
-  hover:shadow-card-lg
-`;
+import styles from "./components.module.css";
 
 const TopBar = () => {
   const [isOpen, setIsOpen] = useState(false);
@@ -26,7 +18,7 @@ const TopBar = () => {
   const isActive = (path) => pathname === path;
 
   const itemClass = (path) =>
-    isActive(path) ? "!bg-accent !border-accent !text-accent-contrast" : "";
+    isActive(path) ? styles.navLinkActive : "";
 
   const links = [
     { path: "/", label: "Home" },
@@ -43,53 +35,35 @@ const TopBar = () => {
 
   return (
     <div>
-      <header
-        className="bg-transparent px-5 py-6
-        fixed top-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-center p-5"
-      >
-        <header className="text-heading text-center text-[30px] font-bold -mt-2.5">
+      <header className={styles.topbarHeader}>
+        <header className={styles.titleHeader}>
           <Link href="/">Todo App</Link>
         </header>
       </header>
 
-      <button
-        className="fixed z-[9999] py-[7px] px-[15px] bg-transparent border-none
-          cursor-pointer top-[15px] left-[15px] text-heading text-[30px]"
-        onClick={toggleSidebar}
-      >
+      <button className={styles.sidebarToggle} onClick={toggleSidebar}>
         {isOpen ? "✕" : "☰"}
       </button>
 
-      <div className="fixed z-[9999] flex items-center gap-2 top-[15px] right-[15px]">
+      <div className={styles.rightControls}>
         <ThemeToggle />
-        <Link
-          href="/search"
-          className="inline-flex h-9 w-9 shrink-0 items-center justify-center rounded-full
-            bg-transparent border-none text-accent text-xl cursor-pointer"
-        >
+        <Link href="/search" className={styles.searchButton}>
           🔍
         </Link>
       </div>
 
       <div
-        className={`fixed top-0 left-0 h-full w-[260px] z-[10000] pt-20
-          bg-surface-strong backdrop-blur-[30px] backdrop-saturate-[200%]
-          border-r border-border shadow-card
-          text-heading transition-transform duration-[400ms]
-          ease-[cubic-bezier(0.34,1.56,0.64,1)]
-          ${isOpen ? "translate-x-0" : "-translate-x-full"}`}
+        className={`${styles.sidebar} ${
+          isOpen ? styles.sidebarOpen : styles.sidebarClosed
+        }`}
       >
-        <button
-          className="fixed z-[101] py-[7px] px-[15px] bg-transparent border-none
-          cursor-pointer top-[15px] left-[15px] text-heading text-[30px]"
-          onClick={toggleSidebar}
-        >
+        <button className={styles.sidebarInnerToggle} onClick={toggleSidebar}>
           {isOpen ? "✕" : "☰"}
         </button>
 
-        <ul className="list-none px-[15px] flex flex-col gap-[15px]">
+        <ul className={styles.navList}>
           {links.map(({ path, label }) => (
-            <li key={path} className={`${navLinkClasses} ${itemClass(path)}`}>
+            <li key={path} className={`${styles.navLink} ${itemClass(path)}`}>
               <Link
                 href={path}
                 onClick={closeSidebar}
@@ -101,7 +75,7 @@ const TopBar = () => {
             </li>
           ))}
           <li
-            className={`${navLinkClasses} cursor-pointer`}
+            className={styles.navLink}
             onClick={() => {
               closeSidebar();
               signOut({ redirectUrl: "/" });
@@ -112,14 +86,10 @@ const TopBar = () => {
         </ul>
       </div>
 
-      {isOpen && (
-        <div
-          className="fixed inset-0 bg-black/30 z-[9996] backdrop-blur-[2px]"
-          onClick={toggleSidebar}
-        ></div>
-      )}
+      {isOpen && <div className={styles.overlay} onClick={toggleSidebar}></div>}
     </div>
   );
 };
+
 export const TOPBAR_HEIGHT = 75;
 export default TopBar;

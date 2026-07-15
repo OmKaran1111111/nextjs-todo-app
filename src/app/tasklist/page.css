@@ -1,0 +1,340 @@
+.task-item {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+  padding: 16px 45px;
+  margin-bottom: 0.875rem;
+  border-radius: 1rem;
+  min-height: 80px;
+  background-color: var(--surface);
+  backdrop-filter: blur(24px) saturate(2);
+  -webkit-backdrop-filter: blur(24px) saturate(2);
+  border: 1px solid var(--border-strong);
+  box-shadow: var(--shadow-card);
+  transition-property: transform, background-color, box-shadow;
+  transition-duration: 300ms;
+  transition-timing-function: cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.task-item:hover {
+  transform: translateY(-0.25rem);
+  background-color: var(--surface-hover);
+  box-shadow: var(--shadow-card-lg);
+}
+
+@media (min-width: 640px) {
+  .task-item {
+    padding: 20px 55px;
+    min-height: 95px;
+  }
+}
+
+.task-item.completed {
+  opacity: 0.4;
+  background-color: var(--surface-soft) !important;
+  border-color: var(--border-soft) !important;
+  box-shadow: none !important;
+  transform: none !important;
+  text-decoration: line-through;
+  color: var(--faint);
+}
+
+.task-checkbox {
+  position: absolute;
+  left: 1.25rem;
+  top: 50%;
+  transform: translateY(-50%);
+  appearance: none;
+  -webkit-appearance: none;
+  width: 1.25rem;
+  height: 1.25rem;
+  border: 2px solid var(--border-strong);
+  border-radius: 9999px;
+  cursor: pointer;
+  transition: all 200ms;
+  flex-shrink: 0;
+}
+
+.task-checkbox:checked {
+  background-color: var(--primary);
+  border-color: var(--primary);
+}
+
+.task-checkbox:checked::after {
+  content: '✓';
+  color: var(--primary-contrast);
+  font-size: 14px;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.task-content-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  flex: 1 1 0%;
+}
+
+.task-title {
+  font-weight: bold;
+  text-align: center;
+  font-size: 1.125rem;
+  overflow-wrap: break-word;
+  cursor: pointer;
+  color: var(--heading);
+}
+
+@media (min-width: 640px) {
+  .task-title {
+    font-size: 25px;
+  }
+}
+
+.task-title.completed {
+  color: var(--faint);
+  text-decoration: line-through;
+}
+
+.task-meta {
+  margin-top: 4px;
+}
+
+.datepicker-wrapper {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+}
+
+.datepicker-input {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.deadline-text {
+  font-size: 0.85rem;
+  color: var(--danger);
+  margin-left: 0.25rem;
+}
+
+.delete-task-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  background-color: transparent;
+  border: none;
+  color: var(--muted);
+  font-size: 1.1rem;
+  cursor: pointer;
+  padding: 2px;
+  line-height: 1;
+  transition: all 200ms;
+  z-index: 10;
+}
+
+.delete-task-btn:hover {
+  color: var(--danger);
+  background-color: var(--danger-soft);
+}
+
+.desktop-container {
+  padding-top: 75px;
+  padding-bottom: 70px;
+  min-height: 100vh;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .desktop-container {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.desktop-content {
+  margin-left: auto;
+  margin-right: auto;
+  max-width: 72rem;
+}
+
+@media (min-width: 768px) {
+  .desktop-content {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.5rem;
+  }
+}
+
+.sidebar {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .sidebar {
+    width: 380px;
+    flex-shrink: 0;
+  }
+}
+
+.heading-section {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 0.75rem;
+  padding-left: 0.25rem;
+  padding-right: 0.25rem;
+}
+
+.section-title {
+  font-size: 1.25rem;
+  font-weight: bold;
+  color: var(--heading);
+}
+
+.close-btn {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--surface-muted);
+  font-size: 1rem;
+  color: var(--heading);
+  transition: all 200ms;
+  cursor: pointer;
+  border: none;
+}
+
+.close-btn:hover {
+  background-color: var(--danger-soft);
+  color: var(--danger);
+}
+
+.empty-message {
+  color: var(--heading);
+  font-size: 0.95rem;
+  text-align: center;
+  padding-top: 0.625rem;
+  padding-bottom: 0.625rem;
+}
+
+.desktop-list {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  padding: 0;
+  margin: 0;
+}
+
+.sticky-details {
+  width: 100%;
+}
+
+@media (min-width: 768px) {
+  .sticky-details {
+    flex: 1 1 0%;
+    position: sticky;
+    top: 100px;
+  }
+}
+
+.mobile-overlay {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  top: 75px;
+  background-color: transparent;
+  backdrop-filter: blur(16px) saturate(2);
+  -webkit-backdrop-filter: blur(16px) saturate(2);
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  z-index: 500;
+  animation: fadeIn 0.25s ease-out;
+  padding-top: 5vh;
+  padding-bottom: 5vh;
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+@media (min-width: 640px) {
+  .mobile-overlay {
+    padding-top: 8vh;
+    padding-bottom: 8vh;
+  }
+}
+
+.mobile-panel {
+  width: 100%;
+  max-width: 480px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  flex: 1 1 0%;
+  min-height: 0;
+  background-color: var(--surface-soft);
+  backdrop-filter: blur(25px) saturate(1.90);
+  -webkit-backdrop-filter: blur(25px) saturate(1.90);
+  border: 1px solid var(--border);
+  border-radius: 1.5rem;
+  padding: 18px 15px;
+  box-shadow: var(--shadow-card-lg);
+  animation: scaleUp 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@media (min-width: 640px) {
+  .mobile-panel {
+    padding: 24px 20px;
+  }
+}
+
+.mobile-list {
+  list-style-type: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.625rem;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  margin-top: 0.125rem;
+  overflow-y: auto;
+  flex: 1 1 0%;
+  min-height: 0;
+  padding: 0;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes scaleUp {
+  from {
+    transform: scale(0.95);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}

@@ -6,7 +6,7 @@ import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
 import useIsDesktop from "@/hooks/useIsDesktop";
-
+import styles from "./page.module.css";
 
 const sortByPriority = (tasks) =>
   [...tasks].sort((a, b) => {
@@ -26,32 +26,21 @@ const TaskRow = ({
   onDelete,
 }) => (
   <li
-    className={`flex items-center gap-2 sm:gap-3 relative px-3.5 py-3 rounded-2xl 
-    bg-surface backdrop-blur-xl backdrop-saturate-200 border transition-[transform,background-color,box-shadow] 
-    duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] 
-    ${isActive ? "border-border-strong bg-surface-hover" : "border-border"} 
-    ${
-      task.completed
-        ? "opacity-40 !bg-surface-soft !border-border-soft"
-        : "hover:-translate-y-0.5 hover:bg-surface-hover"
+    className={`${styles.taskRow} ${isActive ? styles.taskRowActive : ""} ${
+      task.completed ? styles.taskRowCompleted : styles.taskRowHover
     }`}
   >
     <input
       type="checkbox"
-      className="shrink-0 appearance-none w-5 h-5 border-2 border-border-strong rounded-full 
-      cursor-pointer transition-all checked:bg-primary 
-      checked:border-primary checked:after:content-['✓'] 
-      checked:after:relative checked:after:block checked:after:text-center 
-      checked:after:-translate-y-[1px] checked:after:text-[13px] checked:after:text-primary-contrast"
+      className={styles.checkbox}
       checked={task.completed || false}
       onChange={() => onToggleComplete(task.id)}
     />
 
     <button
       onClick={() => onSelect(task)}
-      className={`flex-1 min-w-0 truncate text-left font-bold cursor-pointer 
-      bg-transparent border-none p-0 ${
-        task.completed ? "text-faint line-through" : "text-heading"
+      className={`${styles.taskTitleBtn} ${
+        task.completed ? styles.taskTitleBtnCompleted : ""
       }`}
     >
       {task.text}
@@ -66,8 +55,7 @@ const TaskRow = ({
 
     <button
       onClick={() => onDelete(task.id)}
-      className="shrink-0 bg-transparent border-none text-muted text-base 
-      cursor-pointer p-1 transition-all hover:text-danger"
+      className={styles.deleteBtn}
     >
       ✕
     </button>
@@ -119,7 +107,7 @@ const Todo_App = () => {
   }, [tasks, isMounted]);
 
   if (!isMounted) {
-    return null; 
+    return null;
   }
 
   const sortedTasks = sortByPriority(tasks);
@@ -219,17 +207,15 @@ const Todo_App = () => {
   };
 
   return (
-    <div className="pt-[75px] pb-[70px]">
-      <div className="mx-auto max-w-6xl px-4 sm:px-6 md:flex md:items-start md:gap-6">
-        <div className="md:w-[380px] md:shrink-0">
-          <h3 className="mb-3 px-1 text-xl font-bold text-heading">Tasks</h3>
+    <div className={styles.appContainer}>
+      <div className={styles.innerContainer}>
+        <div className={styles.leftColumn}>
+          <h3 className={styles.heading}>Tasks</h3>
 
           {sortedTasks.length === 0 ? (
-            <p className="text-heading text-[0.95rem] text-center py-2.5">
-              No tasks added yet!
-            </p>
+            <p className={styles.emptyText}>No tasks added yet!</p>
           ) : (
-            <ul className="list-none flex flex-col gap-2">
+            <ul className={styles.taskList}>
               {sortedTasks.map((task) => (
                 <TaskRow
                   key={task.id}
@@ -248,7 +234,7 @@ const Todo_App = () => {
           )}
         </div>
 
-        <div className="hidden md:block md:flex-1 md:sticky md:top-[100px]">
+        <div className={styles.rightColumn}>
           <TaskDetails
             task={selectedTask}
             onUpdatePriority={handleUpdateTaskPriority}

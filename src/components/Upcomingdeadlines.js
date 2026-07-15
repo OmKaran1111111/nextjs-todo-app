@@ -1,4 +1,5 @@
 import React from "react";
+import styles from "./components.module.css";
 
 const UpcomingDeadlines = ({ tasks }) => {
   const upcoming = tasks
@@ -7,30 +8,23 @@ const UpcomingDeadlines = ({ tasks }) => {
     .slice(0, 5);
 
   return (
-    <div
-      className="w-full max-w-[300px] flex flex-col gap-3 rounded-xl bg-surface 
-      backdrop-blur-[8px] backdrop-saturate-[200%] border border-border 
-      shadow-card p-4"
-    >
-      <span className="text-sm font-bold text-heading">
+    <div className={styles.upcomingContainer}>
+      <span className={styles.upcomingTitle}>
         Upcoming Deadlines
       </span>
 
       {upcoming.length === 0 ? (
-        <p className="text-[12px] text-muted text-center py-2">
+        <p className={styles.upcomingEmptyText}>
           No upcoming deadlines!
         </p>
       ) : (
-        <div className="flex flex-col gap-3">
+        <div className={styles.upcomingList}>
           {upcoming.map((task) => (
-            <div
-              key={task.id}
-              className="flex flex-col border-b border-border-soft pb-2 last:border-0 last:pb-0"
-            >
-              <span className="text-[13px] text-heading font-semibold truncate">
+            <div key={task.id} className={styles.upcomingItem}>
+              <span className={styles.upcomingTaskText}>
                 {task.text}
               </span>
-              <span className="text-[11px] text-muted">
+              <span className={styles.upcomingDateText}>
                 {new Date(task.deadline).toLocaleDateString(undefined, {
                   weekday: "short",
                   month: "short",

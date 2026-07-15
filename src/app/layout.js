@@ -34,19 +34,19 @@ const themeInitScript = `
 export default function RootLayout({ children }) {
   return (
     <ClerkProvider>
-    
-    <html
-      lang="en"
-      className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
-    >
-      <head>
-        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
-      </head>
-      <TopBar/>
-      <body className="min-h-full flex flex-col text-body">{children}</body>
-      <Footer/>
-    </html>
-    
+      <html
+        lang="en"
+        className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+      >
+        <head>
+          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+        </head>
+        <body className="min-h-full flex flex-col text-body">
+          <TopBar />
+          {children}
+          <Footer />
+        </body>
+      </html>
     </ClerkProvider>
   );
 }

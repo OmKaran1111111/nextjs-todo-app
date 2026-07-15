@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import styles from "./components.module.css";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -9,11 +10,7 @@ const Footer = () => {
   const isActive = (path) => pathname === path;
 
   const linkClass = (path) =>
-    `block py-2 px-5 rounded-full text-base cursor-pointer self-center transition-colors ${
-      isActive(path)
-        ? "bg-accent text-accent-contrast font-bold"
-        : "bg-transparent text-accent"
-    }`;
+    `${styles.link} ${isActive(path) ? styles.linkActive : ""}`;
 
   const hiddenRoutes = ["/login", "/sign-in", "/signup", "/sign-up"];
   if (hiddenRoutes.includes(pathname)) {
@@ -21,12 +18,10 @@ const Footer = () => {
   }
 
   return (
-    <footer
-      className="fixed bottom-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-between bg-transparent px-5 py-6"
-    >
-      <div className="flex-1" />
+    <footer className={styles.footer}>
+      <div className={styles.spacer} />
 
-      <div className="fixed z-[101] bottom-[15px] left-1/2 -translate-x-1/2">
+      <div className={styles.centerLink}>
         <Link
           href="/tasklist"
           className={linkClass("/tasklist")}
@@ -36,7 +31,7 @@ const Footer = () => {
         </Link>
       </div>
 
-      <div className="fixed z-[101] bottom-[15px] right-[15px] text-[30px]">
+      <div className={styles.rightLink}>
         <Link
           href="/addtask"
           className={linkClass("/addtask")}

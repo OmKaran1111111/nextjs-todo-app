@@ -1,6 +1,7 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
+import styles from "./components.module.css";
 
 const DonutChart = ({ data, colors, labels }) => {
   const total = data.reduce((sum, entry) => sum + entry.value, 0);
@@ -41,7 +42,7 @@ const DonutChart = ({ data, colors, labels }) => {
     if (!active || !payload || !payload.length) return null;
     const entry = payload[0].payload;
     return (
-      <div className="rounded-md bg-surface-strong backdrop-blur-md px-3 py-2 text-[13px] text-heading shadow-popover border border-border">
+      <div className={styles.tooltip}>
         {labels[entry.name]}: {entry.value} ({getPercent(entry.value)}%)
       </div>
     );
@@ -51,17 +52,12 @@ const DonutChart = ({ data, colors, labels }) => {
   const chartColors = total === 0 ? ["var(--color-faint)"] : colors;
 
   return (
-    <div className="w-full max-w-[600px] flex flex-col md:flex-row items-center justify-center gap-4 
-      md:gap-8 self-center mx-auto md:mx-0 md:ml-auto">
-      
-      <ul className="flex flex-row flex-wrap md:flex-col gap-3 md:gap-2.5 justify-center order-2 md:order-1">
+    <div className={styles.chartContainer}>
+      <ul className={styles.legendList}>
         {data.map((entry, index) => (
-          <li
-            key={entry.name}
-            className="flex items-center gap-2 text-[13px] text-heading"
-          >
+          <li key={entry.name} className={styles.legendItem}>
             <span
-              className="w-3 h-3 rounded-sm shrink-0"
+              className={styles.legendDot}
               style={{ backgroundColor: colors[index % colors.length] }}
             />
             {labels[entry.name]} ({entry.value})
@@ -69,7 +65,7 @@ const DonutChart = ({ data, colors, labels }) => {
         ))}
       </ul>
 
-      <div className="w-full max-w-[260px] order-1 md:order-2">
+      <div className={styles.chartWrapper}>
         <ResponsiveContainer width="100%" height={260} minWidth={220}>
           <PieChart>
             <Pie
