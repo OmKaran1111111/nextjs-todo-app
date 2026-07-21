@@ -64,6 +64,17 @@
   --color-auth-button-text: #f2f5fa;
   --color-auth-icon-bg: #16233d;
   --color-auth-icon-text: #eef3fa;
+  --auth-heading: var(--color-auth-heading);
+  --auth-text: var(--color-auth-text);
+  --auth-muted: var(--color-auth-muted);
+  --auth-border: var(--color-auth-border);
+  --auth-button-bg: var(--color-auth-button-bg);
+  --auth-button-hover: var(--color-auth-button-hover);
+  --auth-button-text: var(--color-auth-button-text);
+  --auth-icon-bg: var(--color-auth-icon-bg);
+  --auth-icon-text: var(--color-auth-icon-text);
+  --danger: var(--color-danger);
+  --danger-soft: var(--color-danger-soft);
 }
 
 .dark {
@@ -129,6 +140,17 @@
   --color-auth-button-text: #16233d;
   --color-auth-icon-bg: #dbe4f4;
   --color-auth-icon-text: #16233d;
+  --auth-heading: var(--color-auth-heading);
+  --auth-text: var(--color-auth-text);
+  --auth-muted: var(--color-auth-muted);
+  --auth-border: var(--color-auth-border);
+  --auth-button-bg: var(--color-auth-button-bg);
+  --auth-button-hover: var(--color-auth-button-hover);
+  --auth-button-text: var(--color-auth-button-text);
+  --auth-icon-bg: var(--color-auth-icon-bg);
+  --auth-icon-text: var(--color-auth-icon-text);
+  --danger: var(--color-danger);
+  --danger-soft: var(--color-danger-soft);
 }
 
 @theme inline {

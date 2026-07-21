@@ -67,14 +67,12 @@ const Page = () => {
       <div className="auth-card">
         <h1 className="auth-title mt-1 mb-4">Login</h1>
         
-        {/* 1. Social Login Buttons */}
         <LoginForm />
 
-        <div className="auth-divider"><span>or</span></div>
+        <br/>
 
         {error && <div className={errorClass}>{error}</div>}
 
-        {/* 2. Email/Password Form */}
         <form onSubmit={handleSignIn} className="auth-form">
           <div className={inputWrapClass}>
             <input 

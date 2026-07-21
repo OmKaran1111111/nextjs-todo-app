@@ -5,5 +5,12 @@
     "name": "omkaran81105",
     "passwordHash": "$2b$10$PBAPG2GxQTzRbA5wMev9fOIBCk7zCK8kxDQmMenI9wCWXs26kBJnK",
     "createdAt": "2026-07-21T12:10:21.421Z"
+  },
+  {
+    "id": "36e61433-e5c2-4eac-808e-60598f165aee",
+    "email": "omkaran@gmail.com",
+    "name": "omkaran",
+    "passwordHash": "$2b$10$yw5ZURNZ0WuWpF0kZp0N6uLO0/vJkhIY6.oCbWV7mFpyM9Oxh5RLC",
+    "createdAt": "2026-07-21T13:11:27.056Z"
   }
 ]

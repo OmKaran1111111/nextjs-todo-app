@@ -4,6 +4,7 @@ import { useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import styles from "./page.module.css";
+import LoginForm from "@/components/LoginForm";
 
 const MailIcon = () => (
   <svg className={styles.inputIcon} width="18" height="18" viewBox="0 0 24 24" fill="none">
@@ -79,11 +80,9 @@ const Page = () => {
         <h1 className={styles.headingRegister}>Register</h1>
         {error && <div className={styles.error}>{error}</div>}
 
-        <button type="button" className={styles.githubBtn} onClick={handleGitHubSignIn}>
-          <GitHubIcon /> Continue with GitHub
-        </button>
+        <LoginForm/>
 
-        <div className={styles.divider}><span>or</span></div>
+        <br/>
 
         <form onSubmit={handleSignUp} className={styles.form}>
           <div className={styles.inputWrap}>
