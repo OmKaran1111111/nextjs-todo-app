@@ -33,13 +33,13 @@ const themeInitScript = `
 
 export default function RootLayout({ children }) {
   return (
-    <ClerkProvider>
       <html
         lang="en"
         className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
+        suppressHydrationWarning
       >
         <head>
-          <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+          {/* <script dangerouslySetInnerHTML={{ __html: themeInitScript }} /> */}
         </head>
         <body className="min-h-full flex flex-col text-body">
           <TopBar />
@@ -47,6 +47,5 @@ export default function RootLayout({ children }) {
           <Footer />
         </body>
       </html>
-    </ClerkProvider>
   );
 }

@@ -1,15 +1,15 @@
 "use client";
 
 import { useState } from "react";
-import { useClerk } from "@clerk/nextjs";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./components.module.css";
+import Logout from "./Logout";
+import { doLogout, doSocialLogin } from "@/app/actions";
 
 const TopBar = () => {
   const [isOpen, setIsOpen] = useState(false);
-  const { signOut } = useClerk();
   const pathname = usePathname();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -78,10 +78,10 @@ const TopBar = () => {
             className={styles.navLink}
             onClick={() => {
               closeSidebar();
-              signOut({ redirectUrl: "/" });
             }}
+            
           >
-            Log Out
+             <Logout/>
           </li>
         </ul>
       </div>
