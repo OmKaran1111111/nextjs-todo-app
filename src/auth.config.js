@@ -7,6 +7,18 @@ export const authConfig = {
     strategy: "jwt",
   },
   callbacks: {
+    authorized({ auth, request }) {
+      const isLoggedIn = !!auth?.user;
+      const { pathname } = request.nextUrl;
+
+      const isPublicPage = pathname === "/login" || pathname.startsWith("/signup");
+
+      if (isPublicPage) {
+        return true;
+      }
+
+      return isLoggedIn;
+    },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
