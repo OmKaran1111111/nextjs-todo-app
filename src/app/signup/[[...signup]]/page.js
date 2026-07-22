@@ -28,8 +28,10 @@ const GitHubIcon = () => (
 
 const Page = () => {
   const router = useRouter();
+  const [step, setStep] = useState("register");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [code, setCode] = useState("");
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -50,10 +52,34 @@ const Page = () => {
         return;
       }
 
-      // Auto sign in right after registering
+      setStep("verify");
+    } catch (err) {
+      setError("Something went wrong. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVerify = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    try {
+      const res = await fetch("/api/register/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email, code }),
+      });
+      const data = await res.json();
+
+      if (!res.ok) {
+        setError(data.error || "Invalid code.");
+        return;
+      }
+
       const result = await signIn("credentials", { email, password, redirect: false });
       if (result?.error) {
-        setError("Account created, but automatic sign-in failed. Please log in.");
+        setError("Verified, but automatic sign-in failed. Please log in.");
         router.push("/login");
         return;
       }
@@ -67,9 +93,40 @@ const Page = () => {
     }
   };
 
-  const handleGitHubSignIn = () => {
-    signIn("github", { callbackUrl: "/" });
-  };
+
+  if (step === "verify") {
+    return (
+      <div className={styles.container}>
+        <div className={styles.blob1} />
+        <div className={styles.blob2} />
+
+        <div className={styles.card}>
+          <h1 className={styles.headingRegister}>Verify your email</h1>
+          <p style={{ textAlign: "center", marginBottom: "1rem" }}>
+            We sent a 6-digit code to {email}
+          </p>
+          {error && <div className={styles.error}>{error}</div>}
+
+          <form onSubmit={handleVerify} className={styles.form}>
+            <div className={styles.inputWrap}>
+              <input
+                type="text"
+                placeholder="Enter code"
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                required
+                maxLength={6}
+                className={styles.input}
+              />
+            </div>
+            <button className={styles.submitBtn} type="submit" disabled={loading}>
+              {loading ? "Verifying..." : "Verify & Create account"}
+            </button>
+          </form>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>

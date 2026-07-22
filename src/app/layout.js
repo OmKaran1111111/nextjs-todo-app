@@ -1,6 +1,5 @@
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
-import { ClerkProvider } from "@clerk/nextjs";
 import TopBar from "@/components/topbar";
 import Footer from "@/components/footer";
 
@@ -39,7 +38,6 @@ export default function RootLayout({ children }) {
         suppressHydrationWarning
       >
         <head>
-          {/* <script dangerouslySetInnerHTML={{ __html: themeInitScript }} /> */}
         </head>
         <body className="min-h-full flex flex-col text-body">
           <TopBar />

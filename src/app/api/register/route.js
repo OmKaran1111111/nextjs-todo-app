@@ -1,29 +1,33 @@
 import { NextResponse } from "next/server";
-import { createUser } from "@/lib/users";
+import bcrypt from "bcryptjs";
+import db from "@/lib/db";
+import { findUserByEmail } from "@/lib/users";
+import { sendVerificationCode } from "@/lib/mailer";
 
 export async function POST(req) {
+  const { email, password, name } = await req.json();
+  if (!email || !password) return NextResponse.json({ error: "Email and password required." }, { status: 400 });
+  if (password.length < 8) return NextResponse.json({ error: "Password must be at least 8 characters." }, { status: 400 });
+  if (findUserByEmail(email)) return NextResponse.json({ error: "Account already exists." }, { status: 400 });
+
+  const passwordHash = await bcrypt.hash(password, 10);
+  const code = Math.floor(100000 + Math.random() * 900000).toString();
+  const expiresAt = new Date(Date.now() + 10 * 60 * 1000).toISOString();
+
+  db.prepare(`
+    INSERT INTO verification_codes (email, name, passwordHash, code, expiresAt)
+    VALUES (?,?,?,?,?)
+    ON CONFLICT(email) DO UPDATE SET name=excluded.name, passwordHash=excluded.passwordHash,
+      code=excluded.code, expiresAt=excluded.expiresAt
+  `).run(email, name || null, passwordHash, code, expiresAt);
+
+  // <-- this is the part that changed
   try {
-    const { email, password, name } = await req.json();
-
-    if (!email || !password) {
-      return NextResponse.json(
-        { error: "Email and password are required." },
-        { status: 400 }
-      );
-    }
-    if (password.length < 8) {
-      return NextResponse.json(
-        { error: "Password must be at least 8 characters." },
-        { status: 400 }
-      );
-    }
-
-    const user = await createUser({ email, password, name });
-    return NextResponse.json({ user }, { status: 201 });
+    await sendVerificationCode(email, code);
   } catch (err) {
-    return NextResponse.json(
-      { error: err.message || "Could not create account." },
-      { status: 400 }
-    );
+    console.error("Mail send failed:", err);
+    return NextResponse.json({ error: "Could not send verification email." }, { status: 500 });
   }
+
+  return NextResponse.json({ message: "Verification code sent." }, { status: 200 });
 }
