@@ -7,6 +7,6 @@ export default auth;
 
 export const config = {
   matcher: [
-    '/((?!_next|[^?]*\\.(?:html?|css|js|jsx|ts|tsx|ico|png|jpg|jpeg|svg|gif|webp|woff2?|ttf|map)).*)',
+    '/((?!api|_next|[^?]*\\.(?:html?|css|js|jsx|ts|tsx|ico|png|jpg|jpeg|svg|gif|webp|woff2?|ttf|map)).*)',
   ],
 };
