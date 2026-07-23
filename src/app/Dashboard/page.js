@@ -17,7 +17,7 @@ const DonutChart = dynamic(() => import("@/components/donutchart"), {
 const Dashboard = () => {
   const { tasks, isLoading } = useTasks();
 
-  if (!isLoading) {
+  if (isLoading) {
     return null; 
   }
 
