@@ -1,15 +1,17 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./components.module.css";
 import Logout from "./Logout";
 import { doLogout, doSocialLogin } from "@/app/actions";
+import useIsDesktop from "@/hooks/useIsDesktop";
 
 const TopBar = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const isDesktop = useIsDesktop();
   const pathname = usePathname();
 
   const toggleSidebar = () => setIsOpen(!isOpen);
@@ -27,6 +29,11 @@ const TopBar = () => {
     { path: "/search", label: "Search Task" },
     { path: "/tasklist", label: "Tasks" },
   ];
+
+  useEffect(() => {
+    document.body.classList.toggle("sidebar-open", isOpen && isDesktop);
+    return () => document.body.classList.remove("sidebar-open");
+  }, [isOpen, isDesktop]);
 
   const hiddenRoutes = ["/login", "/sign-in", "/signup", "/sign-up"];
   if (hiddenRoutes.includes(pathname)) {
@@ -79,14 +86,15 @@ const TopBar = () => {
             onClick={() => {
               closeSidebar();
             }}
-            
           >
              <Logout/>
           </li>
         </ul>
       </div>
 
-      {isOpen && <div className={styles.overlay} onClick={toggleSidebar}></div>}
+      {isOpen && isDesktop && (
+        <div className={styles.overlay} onClick={toggleSidebar}></div>
+      )}
     </div>
   );
 };

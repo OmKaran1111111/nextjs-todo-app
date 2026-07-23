@@ -153,11 +153,11 @@ const AddTask = () => {
         <PriorityDropdown
           currentPriority={task.priority || 4}
           onSelect={(newPriority) =>
-            handleUpdateTaskPriority(task.id, newPriority)
+            updateTaskPriority(task.id, newPriority)
           }
         />
         <button
-          onClick={() => handleDeleteTask(task.id)}
+          onClick={() => deleteTask(task.id)}
           className="task-delete-btn"
         >
           ✕

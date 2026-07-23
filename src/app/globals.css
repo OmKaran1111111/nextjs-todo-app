@@ -236,4 +236,18 @@ body {
   background-attachment: fixed;
   background-position: center;
 }
+#page-content {
+  transition: margin-left 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
 
+@media (min-width: 768px) {
+  body.sidebar-open #page-content {
+    margin-left: 260px;
+  }
+
+  body.sidebar-open .app-footer {
+    transition: margin-left 400ms cubic-bezier(0.34, 1.56, 0.64, 1);
+    margin-left: 260px;
+    width: calc(100% - 260px);
+  }
+}

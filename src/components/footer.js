@@ -18,7 +18,7 @@ const Footer = () => {
   }
 
   return (
-    <footer className={styles.footer}>
+    <footer className={`${styles.footer} app-footer`}>
       <div className={styles.spacer} />
 
       <div className={styles.centerLink}>

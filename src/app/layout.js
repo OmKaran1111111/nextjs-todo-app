@@ -40,7 +40,7 @@ export default function RootLayout({ children }) {
         </head>
         <body className="min-h-full flex flex-col text-body">
           <TopBar />
-          {children}
+          <div id="page-content">{children}</div>
           <Footer />
         </body>
       </html>

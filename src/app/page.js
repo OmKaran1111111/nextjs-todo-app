@@ -78,7 +78,7 @@ const Todo_App = () => {
 
   const [selectedTaskId, setSelectedTaskId] = useState(null);
 
-  if (!isLoading) {
+  if (isLoading) {
     return null;
   }
 
