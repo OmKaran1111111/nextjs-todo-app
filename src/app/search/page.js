@@ -1,119 +1,50 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
 import useIsDesktop from "@/hooks/useIsDesktop";
+import useTasks from "@/hooks/useTasks";
 import styles from "./page.module.css";
 
 const Search_Task = () => {
   const router = useRouter();
   const isDesktop = useIsDesktop();
+  const {
+    tasks,
+    isLoading,
+    updateTaskPriority,
+    updateTaskDeadline,
+    toggleComplete,
+    deleteTask,
+    addSubtask,
+    toggleSubtask,
+    deleteSubtask,
+  } = useTasks();
+
   const [searchInput, setSearchInput] = useState("");
   const [selectedTaskId, setSelectedTaskId] = useState(null);
-  const [tasks, setTasks] = useState(() => {
-    if (typeof window === "undefined") return [];
-    const storedTasks = localStorage.getItem("todo_tasks");
-    return storedTasks ? JSON.parse(storedTasks) : [];
-  });
-  const isFirstSave = useRef(true);
-
-  useEffect(() => {
-    if (isFirstSave.current) {
-      isFirstSave.current = false;
-      return;
-    }
-    localStorage.setItem("todo_tasks", JSON.stringify(tasks));
-  }, [tasks]);
 
   const handleClose = () => {
     router.push("/");
   };
 
-  const handleUpdateTaskDeadline = (taskId, newDeadline) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, deadline: newDeadline } : task,
-      ),
-    );
+  const handleDeleteTask = (idToDelete) => {
+    deleteTask(idToDelete);
+    if (selectedTaskId === idToDelete) setSelectedTaskId(null);
   };
+
+  if (isLoading) {
+    return null;
+  }
 
   const filteredTasks = tasks.filter(
     (task) =>
       !task.completed &&
       task.text.toLowerCase().includes(searchInput.trim().toLowerCase()),
   );
-
-  const handleUpdateTaskPriority = (taskId, newPriority) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, priority: newPriority } : task,
-      ),
-    );
-  };
-
-  const handleToggleComplete = (taskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task,
-      ),
-    );
-  };
-
-  const handleDeleteTask = (idToDelete) => {
-    setTasks(tasks.filter((task) => task.id !== idToDelete));
-    if (selectedTaskId === idToDelete) setSelectedTaskId(null);
-  };
-
-  const handleAddSubtask = (taskId, text) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: [
-                ...(task.subtasks || []),
-                { id: Date.now(), text, completed: false },
-              ],
-            }
-          : task,
-      ),
-    );
-  };
-
-  const handleToggleSubtask = (taskId, subtaskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: (task.subtasks || []).map((subtask) =>
-                subtask.id === subtaskId
-                  ? { ...subtask, completed: !subtask.completed }
-                  : subtask,
-              ),
-            }
-          : task,
-      ),
-    );
-  };
-
-  const handleDeleteSubtask = (taskId, subtaskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: (task.subtasks || []).filter(
-                (subtask) => subtask.id !== subtaskId,
-              ),
-            }
-          : task,
-      ),
-    );
-  };
 
   const highestPriorityMatch =
     [...filteredTasks].sort((a, b) => (a.priority || 4) - (b.priority || 4))[0];
@@ -153,7 +84,7 @@ const Search_Task = () => {
               value={task.deadline || ""}
               onClick={(e) => e.target.showPicker()}
               onChange={(e) =>
-                handleUpdateTaskDeadline(task.id, e.target.value)
+                updateTaskDeadline(task.id, e.target.value)
               }
             />
           </span>
@@ -165,7 +96,7 @@ const Search_Task = () => {
         <PriorityDropdown
           currentPriority={task.priority || 4}
           onSelect={(newPriority) =>
-            handleUpdateTaskPriority(task.id, newPriority)
+            updateTaskPriority(task.id, newPriority)
           }
         />
       </div>
@@ -196,13 +127,13 @@ const Search_Task = () => {
           <div className={styles.rightColumn}>
             <TaskDetails
               task={selectedTask}
-              onUpdatePriority={handleUpdateTaskPriority}
-              onUpdateDeadline={handleUpdateTaskDeadline}
-              onToggleComplete={handleToggleComplete}
+              onUpdatePriority={updateTaskPriority}
+              onUpdateDeadline={updateTaskDeadline}
+              onToggleComplete={toggleComplete}
               onDelete={handleDeleteTask}
-              onAddSubtask={handleAddSubtask}
-              onToggleSubtask={handleToggleSubtask}
-              onDeleteSubtask={handleDeleteSubtask}
+              onAddSubtask={addSubtask}
+              onToggleSubtask={toggleSubtask}
+              onDeleteSubtask={deleteSubtask}
             />
           </div>
         </div>

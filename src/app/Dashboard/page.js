@@ -7,7 +7,7 @@ import PriorityBreakdown from "@/components/PriorityBreakdown";
 import UpcomingDeadlines from "@/components/Upcomingdeadlines";
 import TopBar from "@/components/topbar";
 import Footer from "@/components/footer";
-
+import useTasks from "@/hooks/useTasks";
 import styles from "./dashboard.module.css";
 
 const DonutChart = dynamic(() => import("@/components/donutchart"), {
@@ -15,24 +15,9 @@ const DonutChart = dynamic(() => import("@/components/donutchart"), {
 });
 
 const Dashboard = () => {
-  const [tasks, setTasks] = useState([]);
-  const [isMounted, setIsMounted] = useState(false); 
+  const { tasks, isLoading } = useTasks();
 
-  useEffect(() => {
-    setIsMounted(true);
-
-    const loadTasks = () => {
-      const sTasks = localStorage.getItem("todo_tasks");
-      setTasks(sTasks ? JSON.parse(sTasks) : []);
-    };
-
-    loadTasks(); 
-
-    window.addEventListener("todo_tasks_updated", loadTasks);
-    return () => window.removeEventListener("todo_tasks_updated", loadTasks);
-  }, []);
-
-  if (!isMounted) {
+  if (!isLoading) {
     return null; 
   }
 

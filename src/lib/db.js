@@ -21,6 +21,21 @@ db.exec(`
     code TEXT NOT NULL,
     expiresAt TEXT NOT NULL
   );
+  CREATE TABLE IF NOT EXISTS tasks (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    text TEXT NOT NULL,
+    priority INTEGER DEFAULT 4,
+    completed INTEGER DEFAULT 0,
+    completedAt TEXT,
+    deadline TEXT,
+    subtasks TEXT DEFAULT '[]',
+    createdAt TEXT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_tasks_userId ON tasks(userId);
+
 `);
 
 export default db;

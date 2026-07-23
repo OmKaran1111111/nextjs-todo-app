@@ -1,38 +1,33 @@
 "use client";
 
-import { useEffect, useState, useRef } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
 import useIsDesktop from "@/hooks/useIsDesktop";
+import useTasks from "@/hooks/useTasks";
 import "./page.css";
 
 const AddTask = () => {
   const router = useRouter();
   const isDesktop = useIsDesktop();
+  const {
+    tasks,
+    isLoading,
+    addTask,
+    updateTaskPriority,
+    updateTaskDeadline,
+    toggleComplete,
+    deleteTask,
+    addSubtask,
+    toggleSubtask,
+    deleteSubtask,
+  } = useTasks();
   const [inputValue, setInputValue] = useState("");
   const [selectedPriority, setSelectedPriority] = useState(4);
   const [deadline, setDeadline] = useState(null);
-  const [tasks, setTasks] = useState([]);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
-  const isFirstSave = useRef(true);
-
-  useEffect(() => {
-    const storedTasks = localStorage.getItem("todo_tasks");
-    if (storedTasks) {
-      setTasks(JSON.parse(storedTasks));
-    }
-  }, []);
-
-  useEffect(() => {
-    if (isFirstSave.current) {
-      isFirstSave.current = false;
-      return;
-    }
-    localStorage.setItem("todo_tasks", JSON.stringify(tasks));
-    window.dispatchEvent(new Event("todo_tasks_updated"));
-  }, [tasks]);
 
   const handleClose = () => {
     router.push("/");
@@ -42,100 +37,24 @@ const AddTask = () => {
     setInputValue(e.target.value);
   };
 
-  const handleAddTask = (e) => {
+  const handleAddTask = async (e) => {
     e.preventDefault();
     if (!inputValue.trim()) return;
 
-    const newTask = {
-      id: Date.now(),
+    await addTask({
       text: inputValue,
       priority: selectedPriority,
-      completed: false,
       deadline,
-    };
 
-    setTasks([...tasks, newTask]);
+  })
     setInputValue("");
     setSelectedPriority(4);
     setDeadline(null);
   };
 
-  const handleDeleteTask = (idToDelete) => {
-    setTasks(tasks.filter((task) => task.id !== idToDelete));
-    if (selectedTaskId === idToDelete) setSelectedTaskId(null);
-  };
-
-  const handleUpdateTaskPriority = (taskId, newPriority) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, priority: newPriority } : task,
-      ),
-    );
-  };
-
-  const handleUpdateTaskDeadline = (taskId, newDeadline) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, deadline: newDeadline } : task,
-      ),
-    );
-  };
-
-  const handleToggleComplete = (taskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, completed: !task.completed } : task,
-      ),
-    );
-  };
-
-  const handleAddSubtask = (taskId, text) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: [
-                ...(task.subtasks || []),
-                { id: Date.now(), text, completed: false },
-              ],
-            }
-          : task,
-      ),
-    );
-  };
-
-  const handleToggleSubtask = (taskId, subtaskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: (task.subtasks || []).map((subtask) =>
-                subtask.id === subtaskId
-                  ? { ...subtask, completed: !subtask.completed }
-                  : subtask,
-              ),
-            }
-          : task,
-      ),
-    );
-  };
-
-  const handleDeleteSubtask = (taskId, subtaskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: (task.subtasks || []).filter(
-                (subtask) => subtask.id !== subtaskId,
-              ),
-            }
-          : task,
-      ),
-    );
-  };
+  if(isLoading){
+    return null;
+  }
 
   const sortedTasks = [...tasks].sort(
     (a, b) => Number(a.completed || false) - Number(b.completed || false),
@@ -201,7 +120,7 @@ const AddTask = () => {
           type="checkbox"
           className="task-checkbox"
           checked={task.completed || false}
-          onChange={() => handleToggleComplete(task.id)}
+          onChange={() => toggleComplete(task.id)}
         />
         <div
           onClick={() => onSelectName(task)}
@@ -219,7 +138,7 @@ const AddTask = () => {
               value={task.deadline || ""}
               onClick={(e) => e.target.showPicker()}
               onChange={(e) =>
-                handleUpdateTaskDeadline(task.id, e.target.value)
+                updateTaskDeadline(task.id, e.target.value)
               }
             />
           </span>
@@ -271,13 +190,13 @@ const AddTask = () => {
           <div className="desktop-right-col">
             <TaskDetails
               task={selectedTask}
-              onUpdatePriority={handleUpdateTaskPriority}
-              onUpdateDeadline={handleUpdateTaskDeadline}
-              onToggleComplete={handleToggleComplete}
-              onDelete={handleDeleteTask}
-              onAddSubtask={handleAddSubtask}
-              onToggleSubtask={handleToggleSubtask}
-              onDeleteSubtask={handleDeleteSubtask}
+              onUpdatePriority={updateTaskPriority}
+              onUpdateDeadline={updateTaskDeadline}
+              onToggleComplete={toggleComplete}
+              onDelete={deleteTask}
+              onAddSubtask={addSubtask}
+              onToggleSubtask={toggleSubtask} 
+              onDeleteSubtask={deleteSubtask}
             />
           </div>
         </div>

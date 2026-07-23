@@ -1,13 +1,13 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { useRouter } from "next/navigation";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
 import useIsDesktop from "@/hooks/useIsDesktop";
 import styles from "./page.module.css";
-
+import useTasks from "@/hooks/useTasks";
 const sortByPriority = (tasks) =>
   [...tasks].sort((a, b) => {
     const completedDiff =
@@ -21,7 +21,6 @@ const TaskRow = ({
   isActive,
   onSelect,
   onUpdatePriority,
-  onUpdateDeadline,
   onToggleComplete,
   onDelete,
 }) => (
@@ -65,48 +64,21 @@ const TaskRow = ({
 const Todo_App = () => {
   const router = useRouter();
   const isDesktop = useIsDesktop();
+  const {
+    tasks,
+    isLoading,
+    updateTaskPriority,
+    updateTaskDeadline,
+    toggleComplete,
+    deleteTask,
+    addSubtask,
+    toggleSubtask,
+    deleteSubtask,
+  } = useTasks();
 
-  const [tasks, setTasks] = useState([]);
-  const [isMounted, setIsMounted] = useState(false);
   const [selectedTaskId, setSelectedTaskId] = useState(null);
 
-  useEffect(() => {
-    const loadAndMigrateTasks = () => {
-      const sTasks = localStorage.getItem("todo_tasks");
-      let loadedTasks = sTasks ? JSON.parse(sTasks) : [];
-
-      const needsMigration = loadedTasks.some(
-        (task) => task.completed && !task.completedAt,
-      );
-      if (needsMigration) {
-        loadedTasks = loadedTasks.map((task) =>
-          task.completed && !task.completedAt
-            ? { ...task, completedAt: new Date().toISOString() }
-            : task,
-        );
-        localStorage.setItem("todo_tasks", JSON.stringify(loadedTasks));
-      }
-
-      setTasks(loadedTasks);
-    };
-
-    loadAndMigrateTasks();
-    setIsMounted(true);
-
-    window.addEventListener("todo_tasks_updated", loadAndMigrateTasks);
-
-    return () => {
-      window.removeEventListener("todo_tasks_updated", loadAndMigrateTasks);
-    };
-  }, []);
-
-  useEffect(() => {
-    if (isMounted) {
-      localStorage.setItem("todo_tasks", JSON.stringify(tasks));
-    }
-  }, [tasks, isMounted]);
-
-  if (!isMounted) {
+  if (!isLoading) {
     return null;
   }
 
@@ -121,89 +93,6 @@ const Todo_App = () => {
     } else {
       router.push(`/task/${task.id}`);
     }
-  };
-
-  const handleUpdateTaskPriority = (taskId, newPriority) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, priority: newPriority } : task,
-      ),
-    );
-  };
-
-  const handleUpdateTaskDeadline = (taskId, newDeadline) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId ? { ...task, deadline: newDeadline } : task,
-      ),
-    );
-  };
-
-  const handleToggleComplete = (taskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              completed: !task.completed,
-              completedAt: !task.completed ? new Date().toISOString() : null,
-            }
-          : task,
-      ),
-    );
-  };
-
-  const handleDeleteTask = (idToDelete) => {
-    setTasks(tasks.filter((task) => task.id !== idToDelete));
-    if (selectedTaskId === idToDelete) setSelectedTaskId(null);
-  };
-
-  const handleAddSubtask = (taskId, text) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: [
-                ...(task.subtasks || []),
-                { id: Date.now(), text, completed: false },
-              ],
-            }
-          : task,
-      ),
-    );
-  };
-
-  const handleToggleSubtask = (taskId, subtaskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: (task.subtasks || []).map((subtask) =>
-                subtask.id === subtaskId
-                  ? { ...subtask, completed: !subtask.completed }
-                  : subtask,
-              ),
-            }
-          : task,
-      ),
-    );
-  };
-
-  const handleDeleteSubtask = (taskId, subtaskId) => {
-    setTasks(
-      tasks.map((task) =>
-        task.id === taskId
-          ? {
-              ...task,
-              subtasks: (task.subtasks || []).filter(
-                (subtask) => subtask.id !== subtaskId,
-              ),
-            }
-          : task,
-      ),
-    );
   };
 
   return (
@@ -224,10 +113,9 @@ const Todo_App = () => {
                     isDesktop && !!selectedTask && selectedTask.id === task.id
                   }
                   onSelect={handleSelectTask}
-                  onUpdatePriority={handleUpdateTaskPriority}
-                  onUpdateDeadline={handleUpdateTaskDeadline}
-                  onToggleComplete={handleToggleComplete}
-                  onDelete={handleDeleteTask}
+                  onUpdatePriority={updateTaskPriority}
+                  onToggleComplete={toggleComplete}
+                  onDelete={deleteTask}
                 />
               ))}
             </ul>
@@ -237,13 +125,13 @@ const Todo_App = () => {
         <div className={styles.rightColumn}>
           <TaskDetails
             task={selectedTask}
-            onUpdatePriority={handleUpdateTaskPriority}
-            onUpdateDeadline={handleUpdateTaskDeadline}
-            onToggleComplete={handleToggleComplete}
-            onDelete={handleDeleteTask}
-            onAddSubtask={handleAddSubtask}
-            onToggleSubtask={handleToggleSubtask}
-            onDeleteSubtask={handleDeleteSubtask}
+            onUpdatePriority={updateTaskPriority}
+            onUpdateDeadline={updateTaskDeadline}
+            onToggleComplete={toggleComplete}
+            onDelete={deleteTask}
+            onAddSubtask={addSubtask}
+            onToggleSubtask={toggleSubtask}
+            onDeleteSubtask={deleteSubtask}
           />
         </div>
       </div>
