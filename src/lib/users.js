@@ -16,5 +16,12 @@ export async function verifyPassword(email, password) {
 export function insertVerifiedUser({ id, email, name, passwordHash }) {
   db.prepare(
     "INSERT INTO users (id, email, name, passwordHash, verified, createdAt) VALUES (?,?,?,?,1,?)"
-  ).run(id, email, name, passwordHash, new Date().toISOString());
+  ).run(id, email.trim().toLowerCase(), name, passwordHash, new Date().toISOString());
+}
+
+export function updateUserPassword(email, passwordHash) {
+  const result = db
+    .prepare("UPDATE users SET passwordHash = ? WHERE lower(email) = lower(?)")
+    .run(passwordHash, email);
+  return result.changes > 0;
 }

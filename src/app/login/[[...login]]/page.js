@@ -96,6 +96,16 @@ const Page = () => {
             />
             <LockIcon />
           </div>
+          <div className="remember-forgot-container">
+            <span />
+            <button
+              type="button"
+              className="forgot-btn"
+              onClick={() => router.push("/forgot-password")}
+            >
+              Forgot password?
+            </button>
+          </div>
           <button className={submitClass} type="submit" disabled={loading}>
             {loading ? "Logging in..." : "Login"}
           </button>

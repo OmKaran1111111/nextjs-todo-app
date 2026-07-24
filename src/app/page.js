@@ -5,9 +5,12 @@ import { useRouter } from "next/navigation";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
+import { TaskListSkeleton, TaskDetailsSkeleton } from "@/components/Skeleton";
+import Toast from "@/components/Toast";
 import useIsDesktop from "@/hooks/useIsDesktop";
 import styles from "./page.module.css";
 import useTasks from "@/hooks/useTasks";
+import sharedStyles from "@/components/components.module.css";
 const sortByPriority = (tasks) =>
   [...tasks].sort((a, b) => {
     const completedDiff =
@@ -16,50 +19,78 @@ const sortByPriority = (tasks) =>
     return (a.priority || 4) - (b.priority || 4);
   });
 
-const TaskRow = ({
+function TaskRow({
   task,
   isActive,
   onSelect,
   onUpdatePriority,
   onToggleComplete,
   onDelete,
-}) => (
-  <li
-    className={`${styles.taskRow} ${isActive ? styles.taskRowActive : ""} ${
-      task.completed ? styles.taskRowCompleted : styles.taskRowHover
-    }`}
-  >
-    <input
-      type="checkbox"
-      className={styles.checkbox}
-      checked={task.completed || false}
-      onChange={() => onToggleComplete(task.id)}
-    />
+}) {
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
 
-    <button
-      onClick={() => onSelect(task)}
-      className={`${styles.taskTitleBtn} ${
-        task.completed ? styles.taskTitleBtnCompleted : ""
+  return (
+    <li
+      className={`${styles.taskRow} ${isActive ? styles.taskRowActive : ""} ${
+        task.completed ? styles.taskRowCompleted : styles.taskRowHover
       }`}
     >
-      {task.text}
-    </button>
+      <input
+        type="checkbox"
+        className={styles.checkbox}
+        checked={task.completed || false}
+        onChange={() => onToggleComplete(task.id)}
+      />
 
-    <RemainingTime targetDate={task.deadline} />
+      <button
+        onClick={() => onSelect(task)}
+        className={`${styles.taskTitleBtn} ${
+          task.completed ? styles.taskTitleBtnCompleted : ""
+        }`}
+      >
+        {task.text}
+      </button>
 
-    <PriorityDropdown
-      currentPriority={task.priority || 4}
-      onSelect={(newPriority) => onUpdatePriority(task.id, newPriority)}
-    />
+      {task._status === "saving" && (
+        <span className={`${sharedStyles.statusDot} ${sharedStyles.statusSaving}`} title="Saving…" />
+      )}
+      {task._status === "error" && (
+        <span className={`${sharedStyles.statusDot} ${sharedStyles.statusError}`} title="Couldn't save — reverted" />
+      )}
 
-    <button
-      onClick={() => onDelete(task.id)}
-      className={styles.deleteBtn}
-    >
-      ✕
-    </button>
-  </li>
-);
+      <RemainingTime targetDate={task.deadline} />
+
+      <PriorityDropdown
+        currentPriority={task.priority || 4}
+        onSelect={(newPriority) => onUpdatePriority(task.id, newPriority)}
+      />
+
+      {confirmingDelete ? (
+        <span className={sharedStyles.confirmGroup}>
+          <button
+            onClick={() => onDelete(task.id)}
+            className={sharedStyles.confirmYes}
+          >
+            Yes
+          </button>
+          <button
+            onClick={() => setConfirmingDelete(false)}
+            className={sharedStyles.confirmNo}
+          >
+            Cancel
+          </button>
+        </span>
+      ) : (
+        <button
+          onClick={() => setConfirmingDelete(true)}
+          className={styles.deleteBtn}
+        >
+          ✕
+        </button>
+      )}
+    </li>
+  );
+}
 
 const Todo_App = () => {
   const router = useRouter();
@@ -67,6 +98,8 @@ const Todo_App = () => {
   const {
     tasks,
     isLoading,
+    error,
+    clearError,
     updateTaskPriority,
     updateTaskDeadline,
     toggleComplete,
@@ -79,7 +112,19 @@ const Todo_App = () => {
   const [selectedTaskId, setSelectedTaskId] = useState(null);
 
   if (isLoading) {
-    return null;
+    return (
+      <div className={styles.appContainer}>
+        <div className={styles.innerContainer}>
+          <div className={styles.leftColumn}>
+            <h3 className={styles.heading}>Tasks</h3>
+            <TaskListSkeleton />
+          </div>
+          <div className={styles.rightColumn}>
+            <TaskDetailsSkeleton />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const sortedTasks = sortByPriority(tasks);
@@ -135,6 +180,7 @@ const Todo_App = () => {
           />
         </div>
       </div>
+      <Toast message={error} onDismiss={clearError} />
     </div>
   );
 };

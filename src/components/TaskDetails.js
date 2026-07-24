@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import styles from "./components.module.css";
@@ -24,6 +24,14 @@ const TaskDetails = ({
   onDeleteSubtask,
 }) => {
   const [subtaskInput, setSubtaskInput] = useState("");
+  const [confirmingDelete, setConfirmingDelete] = useState(false);
+  const [confirmingSubtaskId, setConfirmingSubtaskId] = useState(null);
+
+  // Reset any pending confirmation when the selected task changes.
+  useEffect(() => {
+    setConfirmingDelete(false);
+    setConfirmingSubtaskId(null);
+  }, [task?.id]);
 
   if (!task) {
     return (
@@ -51,13 +59,37 @@ const TaskDetails = ({
         >
           {task.text}
         </h2>
-        <button
-          onClick={() => onDelete(task.id)}
-          title="Delete task"
-          className={styles.deleteButton}
-        >
-          ✕
-        </button>
+        {task._status === "saving" && (
+          <span className={`${styles.statusDot} ${styles.statusSaving}`} title="Saving…" />
+        )}
+        {task._status === "error" && (
+          <span className={`${styles.statusDot} ${styles.statusError}`} title="Couldn't save — reverted" />
+        )}
+        {confirmingDelete ? (
+          <span className={styles.confirmGroup}>
+            <span className={styles.confirmText}>Delete task?</span>
+            <button
+              onClick={() => onDelete(task.id)}
+              className={styles.confirmYes}
+            >
+              Yes
+            </button>
+            <button
+              onClick={() => setConfirmingDelete(false)}
+              className={styles.confirmNo}
+            >
+              Cancel
+            </button>
+          </span>
+        ) : (
+          <button
+            onClick={() => setConfirmingDelete(true)}
+            title="Delete task"
+            className={styles.deleteButton}
+          >
+            ✕
+          </button>
+        )}
       </div>
 
       <label className={styles.completeLabel}>
@@ -125,12 +157,32 @@ const TaskDetails = ({
                 >
                   {subtask.text}
                 </span>
-                <button
-                  onClick={() => onDeleteSubtask(task.id, subtask.id)}
-                  className={styles.subtaskDeleteButton}
-                >
-                  ✕
-                </button>
+                {confirmingSubtaskId === subtask.id ? (
+                  <span className={styles.confirmGroup}>
+                    <button
+                      onClick={() => {
+                        onDeleteSubtask(task.id, subtask.id);
+                        setConfirmingSubtaskId(null);
+                      }}
+                      className={styles.confirmYes}
+                    >
+                      Yes
+                    </button>
+                    <button
+                      onClick={() => setConfirmingSubtaskId(null)}
+                      className={styles.confirmNo}
+                    >
+                      Cancel
+                    </button>
+                  </span>
+                ) : (
+                  <button
+                    onClick={() => setConfirmingSubtaskId(subtask.id)}
+                    className={styles.subtaskDeleteButton}
+                  >
+                    ✕
+                  </button>
+                )}
               </li>
             ))
           )}

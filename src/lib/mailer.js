@@ -18,3 +18,12 @@ export async function sendVerificationCode(email, code) {
     text: `Your verification code is ${code}. It expires in 10 minutes.`,
   });
 }
+
+export async function sendPasswordResetCode(email, code) {
+  await transporter.sendMail({
+    from: process.env.EMAIL_FROM,
+    to: email,
+    subject: "Your password reset code",
+    text: `Your password reset code is ${code}. It expires in 10 minutes. If you didn't request this, you can safely ignore this email.`,
+  });
+}

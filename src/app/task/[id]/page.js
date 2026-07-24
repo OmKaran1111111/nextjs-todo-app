@@ -3,6 +3,8 @@
 import { useState, useRef } from "react";
 import { useParams, useRouter } from "next/navigation";
 import TaskDetails from "@/components/TaskDetails";
+import { TaskDetailsSkeleton } from "@/components/Skeleton";
+import Toast from "@/components/Toast";
 import styles from "./page.module.css";
 import useTasks from "@/hooks/useTasks";
 
@@ -12,6 +14,8 @@ const TaskPage = () => {
   const {
     tasks,
     isLoading,
+    error,
+    clearError,
     updateTaskPriority,
     updateTaskDeadline,
     toggleComplete,
@@ -22,7 +26,15 @@ const TaskPage = () => {
   } = useTasks();
 
   if (isLoading) {
-    return null;
+    return (
+      <div className={styles.pageContainer}>
+        <div className={styles.contentWrapper}>
+          <div className={styles.innerContainer}>
+            <TaskDetailsSkeleton />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const task = tasks.find((t) => String(t.id) === String(id));
@@ -54,6 +66,7 @@ const TaskPage = () => {
           />
         </div>
       </div>
+      <Toast message={error} onDismiss={clearError} />
     </div>
   );
 };

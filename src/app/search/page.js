@@ -5,6 +5,8 @@ import { useRouter } from "next/navigation";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
+import { TaskListSkeleton, TaskDetailsSkeleton } from "@/components/Skeleton";
+import Toast from "@/components/Toast";
 import useIsDesktop from "@/hooks/useIsDesktop";
 import useTasks from "@/hooks/useTasks";
 import styles from "./page.module.css";
@@ -15,6 +17,8 @@ const Search_Task = () => {
   const {
     tasks,
     isLoading,
+    error,
+    clearError,
     updateTaskPriority,
     updateTaskDeadline,
     toggleComplete,
@@ -37,7 +41,19 @@ const Search_Task = () => {
   };
 
   if (isLoading) {
-    return null;
+    return (
+      <div className={styles.desktopContainer}>
+        <div className={styles.desktopInner}>
+          <div className={styles.leftColumn}>
+            <h3 className={styles.headerTitle}>Search Tasks</h3>
+            <TaskListSkeleton />
+          </div>
+          <div className={styles.rightColumn}>
+            <TaskDetailsSkeleton />
+          </div>
+        </div>
+      </div>
+    );
   }
 
   const filteredTasks = tasks.filter(
@@ -137,6 +153,7 @@ const Search_Task = () => {
             />
           </div>
         </div>
+        <Toast message={error} onDismiss={clearError} />
       </div>
     );
   }
@@ -159,6 +176,7 @@ const Search_Task = () => {
           )}
         </ul>
       </div>
+      <Toast message={error} onDismiss={clearError} />
     </div>
   );
 };

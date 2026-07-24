@@ -11,7 +11,10 @@ export const authConfig = {
       const isLoggedIn = !!auth?.user;
       const { pathname } = request.nextUrl;
 
-      const isPublicPage = pathname === "/login" || pathname.startsWith("/signup");
+      const isPublicPage =
+        pathname === "/login" ||
+        pathname.startsWith("/signup") ||
+        pathname.startsWith("/forgot-password");
 
       if (isPublicPage) {
         return true;

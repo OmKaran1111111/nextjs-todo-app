@@ -5,6 +5,7 @@ import dynamic from "next/dynamic";
 import InfoBoxes from "@/components/infoboxes";
 import PriorityBreakdown from "@/components/PriorityBreakdown";
 import UpcomingDeadlines from "@/components/Upcomingdeadlines";
+import { TaskListSkeleton } from "@/components/Skeleton";
 import TopBar from "@/components/topbar";
 import Footer from "@/components/footer";
 import useTasks from "@/hooks/useTasks";
@@ -18,7 +19,15 @@ const Dashboard = () => {
   const { tasks, isLoading } = useTasks();
 
   if (isLoading) {
-    return null; 
+    return (
+      <div>
+        <TopBar />
+        <div className={styles.contentWrapper}>
+          <TaskListSkeleton rows={4} />
+        </div>
+        <Footer />
+      </div>
+    );
   }
 
   const numberOfTasks = tasks.length;
