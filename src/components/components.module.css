@@ -956,7 +956,11 @@
   color: var(--color-heading);
   font-size: 30px;
 }
-
+.pinned {
+  background: var(--surface-hover);
+  border-radius: 8px;
+  color: var(--color-heading-strong, var(--color-heading));
+}
 .navList {
   list-style: none;
   padding-left: 15px;

@@ -75,6 +75,22 @@
   --auth-icon-text: var(--color-auth-icon-text);
   --danger: var(--color-danger);
   --danger-soft: var(--color-danger-soft);
+  --bg-elevated: var(--color-bg-elevated);
+  --surface: var(--color-surface);
+  --surface-strong: var(--color-surface-strong);
+  --surface-soft: var(--color-surface-soft);
+  --surface-hover: var(--color-surface-hover);
+  --surface-muted: var(--color-surface-muted);
+  --border: var(--color-border);
+  --border-strong: var(--color-border-strong);
+  --border-soft: var(--color-border-soft);
+  --heading: var(--color-heading);
+  --body: var(--color-body);
+  --muted: var(--color-muted);
+  --faint: var(--color-faint);
+  --primary: var(--color-primary);
+  --primary-hover: var(--color-primary-hover);
+  --primary-contrast: var(--color-primary-contrast);
 }
 
 .dark {
@@ -151,6 +167,21 @@
   --auth-icon-text: var(--color-auth-icon-text);
   --danger: var(--color-danger);
   --danger-soft: var(--color-danger-soft);
+  --border: var(--color-border);
+  --border-strong: var(--color-border-strong);
+  --border-soft: var(--color-border-soft);
+  --surface: var(--color-surface);
+  --surface-hover: var(--color-surface-hover);
+  --surface-soft: var(--color-surface-soft);
+  --surface-muted: var(--color-surface-muted);
+  --heading: var(--color-heading);
+  --body: var(--color-body);
+  --muted: var(--color-muted);
+  --faint: var(--color-faint);
+  --primary: var(--color-primary);
+  --primary-hover: var(--color-primary-hover);
+  --primary-contrast: var(--color-primary-contrast);
+  --bg-elevated: var(--color-bg-elevated);
 }
 
 @theme inline {
