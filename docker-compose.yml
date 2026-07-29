@@ -1,0 +1,13 @@
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: todo_app
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./src/data:/app/src/data
+    env_file:
+      - .env.local
+    restart: unless-stopped
