@@ -48,9 +48,6 @@ next-env.d.ts
 /src/data/*.db-shm
 /src/data/*.db-wal
 
-# =========================================
-# DOCKER-SPECIFIC EXCLUSIONS
-# =========================================
 
 # Exclude git metadata
 .git
