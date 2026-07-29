@@ -2,7 +2,6 @@ import db from "./db.js";
 import bcrypt from "bcryptjs";
 
 async function seed() {
-  console.log("Seeding local database...");
 
   const hashedPassword = await bcrypt.hash("Password123!", 10);
 
