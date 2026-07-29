@@ -5,6 +5,8 @@ import Credentials from "next-auth/providers/credentials";
 import { verifyPassword } from "@/lib/users";
 import { authConfig } from "@/auth.config";
 import { checkRateLimit, resetRateLimit } from "@/lib/rateLimit";
+import db from "@/lib/db";
+import crypto from "crypto";
 
 const LOGIN_MAX_ATTEMPTS = 5;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
@@ -24,8 +26,6 @@ export const {
         const email = credentials.email.trim().toLowerCase();
         const limitKey = `login:${email}`;
 
-        // Count this call against the window up front, so a flood of
-        // concurrent requests can't all sneak in under the cap at once.
         const { allowed } = checkRateLimit(limitKey, {
           maxRequests: LOGIN_MAX_ATTEMPTS,
           windowMs: LOGIN_WINDOW_MS,
@@ -56,4 +56,36 @@ export const {
       },
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      if (token?.email) {
+        const email = token.email.trim().toLowerCase();
+
+        let dbUser = db.prepare("SELECT id FROM users WHERE email = ?").get(email);
+
+        if (!dbUser) {
+          const userId = user?.id || token.sub || crypto.randomUUID();
+          const userName = user?.name || token.name || "";
+          const createdAt = new Date().toISOString();
+
+          db.prepare(
+            `INSERT INTO users (id, email, name, passwordHash, verified, createdAt)
+             VALUES (?, ?, ?, 'OAUTH_ACCOUNT', 1, ?)`
+          ).run(userId, email, userName, createdAt);
+
+          dbUser = { id: userId };
+        }
+
+        token.id = dbUser.id;
+      }
+      return token;
+    },
+
+    async session({ session, token }) {
+      if (session?.user && token?.id) {
+        session.user.id = token.id;
+      }
+      return session;
+    },
+  },
 });

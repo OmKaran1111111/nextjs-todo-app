@@ -1,17 +1,26 @@
 import nodemailer from "nodemailer";
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST,
-  port: Number(process.env.SMTP_PORT),
-  secure: false,
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-});
-
 export async function sendVerificationCode(email, code) {
-  await transporter.sendMail({
+  if (process.env.NODE_ENV !== "production") {
+    console.log("\n=================== [LOCAL DEV MAIL LOG] ===================");
+    console.log(`TO:                ${email}`);
+    console.log(`SUBJECT:           Your verification code`);
+    console.log(`VERIFICATION CODE: ${code}`);
+    console.log("============================================================\n");
+    return { success: true, mode: "console" };
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: Number(process.env.SMTP_PORT) === 465,
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  return transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to: email,
     subject: "Your verification code",
@@ -20,7 +29,26 @@ export async function sendVerificationCode(email, code) {
 }
 
 export async function sendPasswordResetCode(email, code) {
-  await transporter.sendMail({
+  if (process.env.NODE_ENV !== "production") {
+    console.log("\n=================== [LOCAL DEV MAIL LOG] ===================");
+    console.log(`TO:                ${email}`);
+    console.log(`SUBJECT:           Your password reset code`);
+    console.log(`RESET CODE:        ${code}`);
+    console.log("============================================================\n");
+    return { success: true, mode: "console" };
+  }
+
+  const transporter = nodemailer.createTransport({
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT),
+    secure: Number(process.env.SMTP_PORT) === 465, // true for port 465, false for 587
+    auth: {
+      user: process.env.SMTP_USER,
+      pass: process.env.SMTP_PASS,
+    },
+  });
+
+  return transporter.sendMail({
     from: process.env.EMAIL_FROM,
     to: email,
     subject: "Your password reset code",
