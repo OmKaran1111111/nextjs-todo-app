@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
@@ -12,6 +12,9 @@ import useIsDesktop from "@/hooks/useIsDesktop";
 const TopBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
+  const [isTaskMenuOpen, setIsTaskMenuOpen] = useState(false);
+  const [indicatorTop, setIndicatorTop] = useState(0);
+  const rowRefs = useRef({});
   const isDesktop = useIsDesktop();
   const pathname = usePathname();
 
@@ -26,34 +29,47 @@ const TopBar = () => {
   };
 
   const handleMouseEnter = () => {
-    if (isDesktop) {
-      setIsOpen(true);
-    }
+    if (isDesktop) setIsOpen(true);
   };
 
   const handleMouseLeave = () => {
-    if (isDesktop && !isPinned) {
-      setIsOpen(false);
-    }
+    if (isDesktop && !isPinned) setIsOpen(false);
   };
 
   useEffect(() => {
-    if (!isDesktop) {
-      setIsPinned(false);
-    }
+    if (!isDesktop) setIsPinned(false);
   }, [isDesktop]);
 
   const isActive = (path) => pathname === path;
+  const isTaskSectionActive =
+    pathname.startsWith("/tasklist") || pathname.startsWith("/addtask");
 
-  const itemClass = (path) => (isActive(path) ? styles.navLinkActive : "");
+  useEffect(() => {
+    if (isTaskSectionActive) setIsTaskMenuOpen(true);
+  }, [isTaskSectionActive]);
 
   const links = [
     { path: "/", label: "Home" },
     { path: "/Dashboard", label: "DashBoard" },
-    { path: "/addtask", label: "Add Task" },
-    { path: "/search", label: "Search Task" },
-    { path: "/tasklist", label: "Tasks" },
   ];
+
+  const taskMenu = {
+    label: "Task",
+    basePath: "/tasklist",
+    children: [
+      { path: "/tasklist", label: "All Tasks" },
+      { path: "/addtask", label: "Add Task" },
+    ],
+  };
+
+  const activeKey = isTaskSectionActive
+    ? "task-menu"
+    : links.find((l) => isActive(l.path))?.path;
+
+  useEffect(() => {
+    const node = rowRefs.current[activeKey];
+    if (node) setIndicatorTop(node.offsetTop);
+  }, [activeKey, isTaskMenuOpen]);
 
   useEffect(() => {
     const isSidebarActive = (isOpen || isPinned) && isDesktop;
@@ -69,9 +85,9 @@ const TopBar = () => {
   return (
     <div>
       <header className={styles.topbarHeader}>
-        <header className={styles.titleHeader}>
-          <Link href="/">Todo App</Link>
-        </header>
+        <Link href="/" className={styles.wordmark}>
+          Todo App
+        </Link>
       </header>
 
       <button
@@ -79,13 +95,14 @@ const TopBar = () => {
         onClick={toggleSidebar}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
+        aria-label={isOpen || isPinned ? "Close menu" : "Open menu"}
       >
-        {isOpen || isPinned ? "X" : "☰"}
+        <span className={styles.toggleGlyph}>{isOpen || isPinned ? "✕" : "☰"}</span>
       </button>
 
       <div className={styles.rightControls}>
         <ThemeToggle />
-        <Link href="/search" className={styles.searchButton}>
+        <Link href="/tasklist" className={styles.searchButton} aria-label="Search tasks">
           🔍
         </Link>
       </div>
@@ -99,52 +116,93 @@ const TopBar = () => {
       >
         {isDesktop ? (
           <button
-            className={`${styles.sidebarInnerToggle} ${
-              isPinned ? styles.pinned : ""
-            }`}
+            className={`${styles.sidebarInnerToggle} ${isPinned ? styles.pinned : ""}`}
             onClick={togglePin}
             title={isPinned ? "Unpin Sidebar" : "Pin Sidebar"}
             aria-label={isPinned ? "Unpin Sidebar" : "Pin Sidebar"}
           >
             <Image
               src="./pushpin.svg"
-              alt="Pin Sidebar"
-              width={20}
-              height={20}
+              alt=""
+              width={18}
+              height={18}
               style={{
                 transform: isPinned ? "rotate(-45deg)" : "none",
-                transition: "transform 0.2s ease",
+                transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
               }}
             />
           </button>
         ) : (
-          <button className={styles.sidebarInnerToggle} onClick={toggleSidebar}>
+          <button className={styles.sidebarInnerToggle} onClick={toggleSidebar} aria-label="Close menu">
             {isOpen ? "✕" : "☰"}
           </button>
         )}
 
-        <ul className={styles.navList}>
-          {links.map(({ path, label }) => (
-            <li key={path} className={`${styles.navLink} ${itemClass(path)}`}>
-              <Link
-                href={path}
-                onClick={closeSidebar}
-                className="block w-full h-full"
-                aria-current={isActive(path) ? "page" : undefined}
+        <div className={styles.navRail}>
+          <span
+            className={styles.navIndicator}
+            style={{ transform: `translateY(${indicatorTop}px)` }}
+          />
+
+          <ul className={styles.navList}>
+            {links.map(({ path, label }) => (
+              <li
+                key={path}
+                ref={(el) => (rowRefs.current[path] = el)}
+                className={`${styles.navRow} ${isActive(path) ? styles.navRowActive : ""}`}
               >
-                {label}
-              </Link>
+                <Link
+                  href={path}
+                  onClick={closeSidebar}
+                  className={styles.navRowLink}
+                  aria-current={isActive(path) ? "page" : undefined}
+                >
+                  {label}
+                </Link>
+              </li>
+            ))}
+
+            <li
+              ref={(el) => (rowRefs.current["task-menu"] = el)}
+              className={`${styles.navRow} ${isTaskSectionActive ? styles.navRowActive : ""}`}
+            >
+              <button
+                className={styles.navRowToggle}
+                onClick={() => setIsTaskMenuOpen((prev) => !prev)}
+                aria-expanded={isTaskMenuOpen}
+              >
+                <span>{taskMenu.label}</span>
+                <span
+                  className={styles.chevron}
+                  style={{ transform: isTaskMenuOpen ? "rotate(180deg)" : "none" }}
+                >
+                  ▾
+                </span>
+              </button>
             </li>
-          ))}
-          <li
-            className={styles.navLink}
-            onClick={() => {
-              closeSidebar();
-            }}
-          >
-            <Logout />
-          </li>
-        </ul>
+
+            {isTaskMenuOpen && (
+              <ul className={styles.subNavList}>
+                {taskMenu.children.map(({ path, label }) => (
+                  <li key={path} className={styles.subNavRow}>
+                    <Link
+                      href={path}
+                      onClick={closeSidebar}
+                      className={`${styles.subNavLink} ${isActive(path) ? styles.subNavLinkActive : ""}`}
+                      aria-current={isActive(path) ? "page" : undefined}
+                    >
+                      {label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </ul>
+        </div>
+
+        <div className={styles.navFooter}>
+          <Logout />
+        </div>
       </div>
 
       {isOpen && !isDesktop && (
