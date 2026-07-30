@@ -172,7 +172,7 @@ const Search_Task = () => {
 
         <ul className={styles.listMobile}>
           {filteredTasks.map((task) =>
-            renderTaskItem(task, (t) => router.push(`/task/${t.id}`)),
+            renderTaskItem(task, (t) => router.push(`/tasks/${t.id}`)),
           )}
         </ul>
       </div>

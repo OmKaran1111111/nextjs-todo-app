@@ -23,9 +23,9 @@ const Footer = () => {
 
       <div className={styles.centerLink}>
         <Link
-          href="/tasklist"
-          className={linkClass("/tasklist")}
-          aria-current={isActive("/tasklist") ? "page" : undefined}
+          href="/tasks"
+          className={linkClass("/tasks")}
+          aria-current={isActive("/tasks") ? "page" : undefined}
         >
           Load All Tasks
         </Link>
@@ -33,9 +33,9 @@ const Footer = () => {
 
       <div className={styles.rightLink}>
         <Link
-          href="/addtask"
-          className={linkClass("/addtask")}
-          aria-current={isActive("/addtask") ? "page" : undefined}
+          href="/tasks/new"
+          className={linkClass("/tasks/new")}
+          aria-current={isActive("/tasks/new") ? "page" : undefined}
         >
           ➕
         </Link>

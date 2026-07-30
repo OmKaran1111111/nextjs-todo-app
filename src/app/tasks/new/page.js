@@ -218,7 +218,7 @@ const AddTask = () => {
 
         <ul className="mobile-task-list">
           {sortedTasks.map((task) =>
-            renderTaskItem(task, (t) => router.push(`/task/${t.id}`)),
+            renderTaskItem(task, (t) => router.push(`/tasks/${t.id}`)),
           )}
         </ul>
       </div>

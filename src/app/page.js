@@ -136,7 +136,7 @@ const Todo_App = () => {
     if (isDesktop) {
       setSelectedTaskId(task.id);
     } else {
-      router.push(`/task/${task.id}`);
+      router.push(`/tasks/${task.id}`);
     }
   };
 

@@ -42,7 +42,7 @@ const TopBar = () => {
 
   const isActive = (path) => pathname === path;
   const isTaskSectionActive =
-    pathname.startsWith("/tasklist") || pathname.startsWith("/addtask");
+    pathname.startsWith("/tasks") || pathname.startsWith("/tasks/new");
 
   useEffect(() => {
     if (isTaskSectionActive) setIsTaskMenuOpen(true);
@@ -55,10 +55,11 @@ const TopBar = () => {
 
   const taskMenu = {
     label: "Task",
-    basePath: "/tasklist",
+    basePath: "/tasks",
     children: [
-      { path: "/tasklist", label: "All Tasks" },
-      { path: "/addtask", label: "Add Task" },
+      { path: "/tasks", label: "All Tasks" },
+      { path: "/tasks/new", label: "Add Task" },
+      { path: "/tasks/search", label: "Search Task"}
     ],
   };
 
@@ -102,7 +103,7 @@ const TopBar = () => {
 
       <div className={styles.rightControls}>
         <ThemeToggle />
-        <Link href="/tasklist" className={styles.searchButton} aria-label="Search tasks">
+        <Link href="/tasks" className={styles.searchButton} aria-label="Search tasks">
           🔍
         </Link>
       </div>
