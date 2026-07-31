@@ -338,3 +338,131 @@
     opacity: 1;
   }
 }
+
+/* --- Task 3 additions: sort/paginate/expand, same card look as above --- */
+
+.mobile-page-wrap {
+  padding: 90px 1.25rem 60px;
+  display: flex;
+  justify-content: center;
+}
+
+.tasklist-count {
+  font-size: 0.85rem;
+  color: var(--faint);
+}
+
+.tasklist-error {
+  color: var(--danger);
+  font-size: 0.85rem;
+  margin-bottom: 0.75rem;
+}
+
+.sort-bar {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin-bottom: 1rem;
+  flex-wrap: wrap;
+}
+
+.sort-bar-label {
+  font-size: 0.8rem;
+  color: var(--faint);
+  margin-right: 0.25rem;
+}
+
+.sort-chip {
+  border: 1px solid var(--border);
+  background-color: var(--surface-muted);
+  color: var(--muted);
+  border-radius: 9999px;
+  padding: 0.3rem 0.85rem;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, color 0.15s ease-out, border-color 0.15s ease-out;
+}
+
+.sort-chip:hover {
+  color: var(--heading);
+}
+
+.sort-chip-active {
+  background-color: var(--primary);
+  border-color: var(--primary);
+  color: var(--primary-contrast);
+}
+
+.subtask-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  margin-top: 0.35rem;
+  border: none;
+  background: none;
+  color: var(--faint);
+  font-size: 0.78rem;
+  cursor: pointer;
+  padding: 0;
+  transition: color 0.15s ease-out;
+}
+
+.subtask-toggle:hover {
+  color: var(--muted);
+}
+
+.subtask-toggle-chevron {
+  display: inline-block;
+  transition: transform 0.15s ease-out;
+}
+
+.subtask-inline-list {
+  list-style: none;
+  margin: 0.5rem 0 0;
+  padding: 0.5rem 0 0;
+  border-top: 1px solid var(--border-soft);
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  font-size: 0.85rem;
+  color: var(--body);
+}
+
+.subtask-inline-done {
+  text-decoration: line-through;
+  color: var(--faint);
+}
+
+.table-pagination {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  margin-top: 1.25rem;
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+.table-pagination button {
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.75rem;
+  cursor: pointer;
+  color: var(--body);
+  transition: background-color 0.15s ease-out;
+}
+
+.table-pagination button:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.table-pagination select {
+  margin-left: auto;
+  border: 1px solid var(--border);
+  border-radius: 0.5rem;
+  padding: 0.25rem 0.5rem;
+  background-color: var(--surface);
+  color: var(--body);
+}
