@@ -13,8 +13,6 @@ export default function useTasks() {
 
   const clearError = useCallback(() => setError(null), []);
 
-  // Clears a per-task "error" status a few seconds after it's set, so the
-  // UI doesn't keep flagging a task as failed forever.
   const flashTaskError = useCallback((taskId) => {
     setTasks((prev) =>
       prev.map((t) => (t.id === taskId ? { ...t, _status: "error" } : t)),

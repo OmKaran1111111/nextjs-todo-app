@@ -27,7 +27,6 @@ const TaskDetails = ({
   const [confirmingDelete, setConfirmingDelete] = useState(false);
   const [confirmingSubtaskId, setConfirmingSubtaskId] = useState(null);
 
-  // Reset any pending confirmation when the selected task changes.
   useEffect(() => {
     setConfirmingDelete(false);
     setConfirmingSubtaskId(null);

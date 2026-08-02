@@ -3,9 +3,11 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import styles from "./components.module.css";
+import { useSearch } from "./SearchContext";
 
 const Footer = () => {
   const pathname = usePathname();
+  const { requestAddTask } = useSearch();
 
   const isActive = (path) => pathname === path;
 
@@ -16,6 +18,13 @@ const Footer = () => {
   if (hiddenRoutes.includes(pathname)) {
     return null;
   }
+
+  const handleAddClick = (e) => {
+    if (pathname === "/tasks") {
+      e.preventDefault();
+      requestAddTask();
+    }
+  };
 
   return (
     <footer className={`${styles.footer} app-footer`}>
@@ -33,9 +42,10 @@ const Footer = () => {
 
       <div className={styles.rightLink}>
         <Link
-          href="/tasks/new"
-          className={linkClass("/tasks/new")}
-          aria-current={isActive("/tasks/new") ? "page" : undefined}
+          href="/tasks?add=1"
+          className={styles.link}
+          aria-label="Add task"
+          onClick={handleAddClick}
         >
           ➕
         </Link>

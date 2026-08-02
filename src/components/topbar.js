@@ -8,12 +8,15 @@ import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./components.module.css";
 import Logout from "./Logout";
 import useIsDesktop from "@/hooks/useIsDesktop";
+import { useSearch } from "@/components/SearchContext";
 
 const TopBar = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
-  const [isTaskMenuOpen, setIsTaskMenuOpen] = useState(false);
   const [indicatorTop, setIndicatorTop] = useState(0);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const { searchTerm, setSearchTerm } = useSearch();
+  const searchInputRef = useRef(null);
   const rowRefs = useRef({});
   const isDesktop = useIsDesktop();
   const pathname = usePathname();
@@ -41,36 +44,43 @@ const TopBar = () => {
   }, [isDesktop]);
 
   const isActive = (path) => pathname === path;
-  const isTaskSectionActive =
-    pathname.startsWith("/tasks") || pathname.startsWith("/tasks/new");
-
-  useEffect(() => {
-    if (isTaskSectionActive) setIsTaskMenuOpen(true);
-  }, [isTaskSectionActive]);
 
   const links = [
     { path: "/", label: "Home" },
     { path: "/Dashboard", label: "DashBoard" },
+    { path: "/tasks", label: "Tasks" },
   ];
 
-  const taskMenu = {
-    label: "Task",
-    basePath: "/tasks",
-    children: [
-      { path: "/tasks", label: "All Tasks" },
-      { path: "/tasks/new", label: "Add Task" },
-      { path: "/tasks/search", label: "Search Task"}
-    ],
-  };
-
-  const activeKey = isTaskSectionActive
-    ? "task-menu"
-    : links.find((l) => isActive(l.path))?.path;
+  const activeKey = links.find((l) => isActive(l.path))?.path;
 
   useEffect(() => {
     const node = rowRefs.current[activeKey];
     if (node) setIndicatorTop(node.offsetTop);
-  }, [activeKey, isTaskMenuOpen]);
+  }, [activeKey]);
+
+  useEffect(() => {
+    setIsSearchOpen(false);
+  }, [pathname]);
+
+  useEffect(() => {
+    if (isSearchOpen) searchInputRef.current?.focus();
+  }, [isSearchOpen]);
+
+  const handleSearchIconClick = () => {
+    if (isSearchOpen) {
+      setSearchTerm("");
+      setIsSearchOpen(false);
+      return;
+    }
+    setIsSearchOpen(true);
+  };
+
+  const handleSearchKeyDown = (e) => {
+    if (e.key === "Escape") {
+      setIsSearchOpen(false);
+      setSearchTerm("");
+    }
+  };
 
   useEffect(() => {
     const isSidebarActive = (isOpen || isPinned) && isDesktop;
@@ -91,21 +101,51 @@ const TopBar = () => {
         </Link>
       </header>
 
-      <button
-        className={styles.sidebarToggle}
-        onClick={toggleSidebar}
-        onMouseEnter={handleMouseEnter}
-        onMouseLeave={handleMouseLeave}
-        aria-label={isOpen || isPinned ? "Close menu" : "Open menu"}
-      >
-        <span className={styles.toggleGlyph}>{isOpen || isPinned ? "✕" : "☰"}</span>
-      </button>
+      {isDesktop ? (
+
+        <div
+          className={styles.sidebarHoverZone}
+          onMouseEnter={handleMouseEnter}
+          onMouseLeave={handleMouseLeave}
+          aria-hidden="true"
+        />
+      ) : (
+        <button
+          className={styles.sidebarToggle}
+          onClick={toggleSidebar}
+          aria-label={isOpen ? "Close menu" : "Open menu"}
+        >
+          <span className={styles.toggleGlyph}>{isOpen ? "✕" : "☰"}</span>
+        </button>
+      )}
 
       <div className={styles.rightControls}>
         <ThemeToggle />
-        <Link href="/tasks" className={styles.searchButton} aria-label="Search tasks">
-          🔍
-        </Link>
+        <div className={styles.searchExpandWrapper}>
+          {isSearchOpen && (
+            <input
+              ref={searchInputRef}
+              type="text"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              onKeyDown={handleSearchKeyDown}
+              onBlur={() => {
+                if (!searchTerm.trim()) setIsSearchOpen(false);
+              }}
+              placeholder="Search this page..."
+              className={styles.searchExpandInput}
+              aria-label="Search this page"
+            />
+          )}
+          <button
+            type="button"
+            className={styles.searchButton}
+            aria-label={isSearchOpen ? "Close search" : "Search this page"}
+            onClick={handleSearchIconClick}
+          >
+            {isSearchOpen && searchTerm.trim() ? "✕" : "🔍"}
+          </button>
+        </div>
       </div>
 
       <div
@@ -162,42 +202,6 @@ const TopBar = () => {
                 </Link>
               </li>
             ))}
-
-            <li
-              ref={(el) => (rowRefs.current["task-menu"] = el)}
-              className={`${styles.navRow} ${isTaskSectionActive ? styles.navRowActive : ""}`}
-            >
-              <button
-                className={styles.navRowToggle}
-                onClick={() => setIsTaskMenuOpen((prev) => !prev)}
-                aria-expanded={isTaskMenuOpen}
-              >
-                <span>{taskMenu.label}</span>
-                <span
-                  className={styles.chevron}
-                  style={{ transform: isTaskMenuOpen ? "rotate(180deg)" : "none" }}
-                >
-                  ▾
-                </span>
-              </button>
-            </li>
-
-            {isTaskMenuOpen && (
-              <ul className={styles.subNavList}>
-                {taskMenu.children.map(({ path, label }) => (
-                  <li key={path} className={styles.subNavRow}>
-                    <Link
-                      href={path}
-                      onClick={closeSidebar}
-                      className={`${styles.subNavLink} ${isActive(path) ? styles.subNavLinkActive : ""}`}
-                      aria-current={isActive(path) ? "page" : undefined}
-                    >
-                      {label}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            )}
           </ul>
         </div>
 

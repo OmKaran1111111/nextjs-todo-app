@@ -64,11 +64,9 @@ const Search_Task = () => {
 
   const highestPriorityMatch =
     [...filteredTasks].sort((a, b) => (a.priority || 4) - (b.priority || 4))[0];
-  
   const selectedTask =
     filteredTasks.find((task) => task.id === selectedTaskId) ||
-    highestPriorityMatch ||
-    null;
+    highestPriorityMatch;
 
   const searchBox = (
     <form onSubmit={(e) => e.preventDefault()}>
@@ -121,23 +119,6 @@ const Search_Task = () => {
     </li>
   );
 
-  const rightColumnContent = selectedTask ? (
-    <TaskDetails
-      task={selectedTask}
-      onUpdatePriority={updateTaskPriority}
-      onUpdateDeadline={updateTaskDeadline}
-      onToggleComplete={toggleComplete}
-      onDelete={handleDeleteTask}
-      onAddSubtask={addSubtask}
-      onToggleSubtask={toggleSubtask}
-      onDeleteSubtask={deleteSubtask}
-    />
-  ) : (
-    <div style={{ padding: "2rem", textAlign: "center", color: "var(--faint)" }}>
-      <p>No task selected or found.</p>
-    </div>
-  );
-
   if (isDesktop) {
     return (
       <div className={styles.desktopContainer} onClick={handleClose}>
@@ -160,7 +141,16 @@ const Search_Task = () => {
           </div>
 
           <div className={styles.rightColumn}>
-            {rightColumnContent}
+            <TaskDetails
+              task={selectedTask}
+              onUpdatePriority={updateTaskPriority}
+              onUpdateDeadline={updateTaskDeadline}
+              onToggleComplete={toggleComplete}
+              onDelete={handleDeleteTask}
+              onAddSubtask={addSubtask}
+              onToggleSubtask={toggleSubtask}
+              onDeleteSubtask={deleteSubtask}
+            />
           </div>
         </div>
         <Toast message={error} onDismiss={clearError} />

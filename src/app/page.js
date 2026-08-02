@@ -11,6 +11,7 @@ import useIsDesktop from "@/hooks/useIsDesktop";
 import styles from "./page.module.css";
 import useTasks from "@/hooks/useTasks";
 import sharedStyles from "@/components/components.module.css";
+import { useSearch } from "@/components/SearchContext";
 const sortByPriority = (tasks) =>
   [...tasks].sort((a, b) => {
     const completedDiff =
@@ -110,6 +111,7 @@ const Todo_App = () => {
   } = useTasks();
 
   const [selectedTaskId, setSelectedTaskId] = useState(null);
+  const { searchTerm } = useSearch();
 
   if (isLoading) {
     return (
@@ -127,7 +129,9 @@ const Todo_App = () => {
     );
   }
 
-  const sortedTasks = sortByPriority(tasks);
+  const sortedTasks = sortByPriority(tasks).filter((task) =>
+    task.text.toLowerCase().includes(searchTerm.trim().toLowerCase())
+  );
   const defaultTask = sortedTasks.find((task) => !task.completed) || sortedTasks[0];
   const selectedTask =
     sortedTasks.find((task) => task.id === selectedTaskId) || defaultTask;
@@ -147,7 +151,9 @@ const Todo_App = () => {
           <h3 className={styles.heading}>Tasks</h3>
 
           {sortedTasks.length === 0 ? (
-            <p className={styles.emptyText}>No tasks added yet!</p>
+            <p className={styles.emptyText}>
+              {searchTerm.trim() ? "No matching tasks found." : "No tasks added yet!"}
+            </p>
           ) : (
             <ul className={styles.taskList}>
               {sortedTasks.map((task) => (

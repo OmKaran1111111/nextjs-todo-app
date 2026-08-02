@@ -1,12 +1,10 @@
 "use client";
 
-import { useMemo, useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
+import { useMemo, useState, useEffect, useRef } from "react";
 import {
   useReactTable,
   getCoreRowModel,
   getSortedRowModel,
-  getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
 import RemainingTime from "@/components/RemainingTime";
@@ -14,9 +12,18 @@ import Toast from "@/components/Toast";
 import TaskDetails from "@/components/TaskDetails";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import { TaskListSkeleton } from "@/components/Skeleton";
-import useIsDesktop from "@/hooks/useIsDesktop";
 import useTasks from "@/hooks/useTasks";
+import { useSearch } from "@/components/SearchContext";
 import "./page.css";
+
+const SORT_OPTIONS = [
+  { key: "priority-asc", label: "Priority (Highest first)", id: "priority", desc: false },
+  { key: "priority-desc", label: "Priority (Least first)", id: "priority", desc: true },
+  { key: "deadline-asc", label: "Deadline (earliest first)", id: "deadline", desc: false },
+  { key: "deadline-desc", label: "Deadline (Latest first)", id: "deadline", desc: true },
+  { key: "text-asc", label: "Task Name (A → Z)", id: "text", desc: false },
+  { key: "text-desc", label: "Task Name (Z → A)", id: "text", desc: true },
+];
 
 const PRIORITY_META = {
   1: { label: "Priority 1", emoji: "🔴", tone: "danger" },
@@ -104,8 +111,6 @@ const EditTaskForm = ({ task, onSave, onCancel }) => {
 };
 
 const TaskList = () => {
-  const router = useRouter();
-  const isDesktop = useIsDesktop();
   const {
     tasks,
     isLoading,
@@ -122,23 +127,46 @@ const TaskList = () => {
   } = useTasks();
 
   const [sorting, setSorting] = useState([{ id: "priority", desc: false }]);
-  const [pagination, setPagination] = useState({ pageIndex: 0, pageSize: 10 });
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Search state
-  const [searchQuery, setSearchQuery] = useState("");
+  const { searchTerm: searchQuery, setSearchTerm: setSearchQuery, addTaskSignal } = useSearch();
 
-  // Side panel state (for view/add/edit)
   const [sidePanelMode, setSidePanelMode] = useState(null); 
-  const [activeTask, setActiveTask] = useState(null);
+  const [activeTaskId, setActiveTaskId] = useState(null);
 
-  // Add Task form state for side panel
+  const activeTask = useMemo(
+    () => (activeTaskId ? tasks.find((t) => t.id === activeTaskId) || null : null),
+    [tasks, activeTaskId]
+  );
+  const panelRef = useRef(null);
+
+  useEffect(() => {
+    if (sidePanelMode) {
+      panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  }, [sidePanelMode]);
+
   const [inputValue, setInputValue] = useState("");
   const [selectedPriority, setSelectedPriority] = useState(4);
   const [deadline, setDeadline] = useState(null);
 
-  // Filter tasks based on search query
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("add") === "1") {
+      setActiveTaskId(null);
+      setSidePanelMode("add");
+      window.history.replaceState(null, "", "/tasks");
+    }
+  }, []);
+
+  useEffect(() => {
+    if (addTaskSignal > 0) {
+      setActiveTaskId(null);
+      setSidePanelMode("add");
+    }
+  }, [addTaskSignal]);
+
   const filteredTasks = useMemo(() => {
     if (!searchQuery.trim()) return tasks;
     return tasks.filter((task) =>
@@ -147,31 +175,13 @@ const TaskList = () => {
   }, [tasks, searchQuery]);
 
   const handleView = (task) => {
-    if (isDesktop) {
-      setActiveTask(task);
-      setSidePanelMode("view");
-    } else {
-      router.push(`/tasks/${task.id}`);
-    }
+    setActiveTaskId(task.id);
+    setSidePanelMode("view");
   };
 
   const handleEdit = (task) => {
-    if (isDesktop) {
-      setActiveTask(task);
-      setSidePanelMode("edit");
-    } else {
-      router.push(`/tasks/${task.id}/edit`);
-    }
-  };
-
-  const handleAddClick = (e) => {
-    e.preventDefault();
-    if (isDesktop) {
-      setActiveTask(null);
-      setSidePanelMode("add");
-    } else {
-      router.push("/tasks/new");
-    }
+    setActiveTaskId(task.id);
+    setSidePanelMode("edit");
   };
 
   const handleAddTaskSubmit = async (e) => {
@@ -187,7 +197,6 @@ const TaskList = () => {
     setInputValue("");
     setSelectedPriority(4);
     setDeadline(null);
-    setSidePanelMode(null);
   };
 
   const handleSaveEdit = async (taskId, newPriority, newDeadline) => {
@@ -199,7 +208,6 @@ const TaskList = () => {
       tasksToRun.push(updateTaskDeadline(taskId, newDeadline || null));
     }
     await Promise.all(tasksToRun);
-    setSidePanelMode("view");
   };
 
   const columns = useMemo(
@@ -285,18 +293,16 @@ const TaskList = () => {
         ),
       },
     ],
-    [isDesktop, router]
+    []
   );
 
   const table = useReactTable({
     data: filteredTasks,
     columns,
-    state: { sorting, pagination },
+    state: { sorting },
     onSortingChange: setSorting,
-    onPaginationChange: setPagination,
     getCoreRowModel: getCoreRowModel(),
     getSortedRowModel: getSortedRowModel(),
-    getPaginationRowModel: getPaginationRowModel(),
   });
 
   const handleConfirmDelete = async () => {
@@ -305,7 +311,7 @@ const TaskList = () => {
     await deleteTask(deleteTarget.id);
     if (activeTask?.id === deleteTarget.id) {
       setSidePanelMode(null);
-      setActiveTask(null);
+      setActiveTaskId(null);
     }
     setIsDeleting(false);
     setDeleteTarget(null);
@@ -332,7 +338,6 @@ const TaskList = () => {
     <div className="desktop-container">
       <div className={`desktop-content ${sidePanelMode ? "layout-split" : ""}`}>
         
-        {/* Left Side: Table List */}
         <div className="table-area">
           <div className="tasks-panel">
             <div className="tasks-header-row">
@@ -343,19 +348,30 @@ const TaskList = () => {
                 </span>
               </div>
               <div className="header-actions">
-                <input
-                  type="text"
-                  placeholder="Search tasks..."
-                  value={searchQuery}
-                  onChange={(e) => {
-                    setSearchQuery(e.target.value);
-                    setPagination((p) => ({ ...p, pageIndex: 0 }));
-                  }}
-                  className="search-input"
-                />
-                <a href="/tasks/new" className="add-task-top-btn" onClick={handleAddClick}>
-                  + Add Task
-                </a>
+                <div className="sort-menu-wrapper">
+                  <label htmlFor="task-sort-select" className="sort-menu-label">
+                    Sort
+                  </label>
+                  <select
+                    id="task-sort-select"
+                    className="sort-menu-select"
+                    value={
+                      SORT_OPTIONS.find(
+                        (o) => o.id === sorting[0]?.id && o.desc === sorting[0]?.desc
+                      )?.key || ""
+                    }
+                    onChange={(e) => {
+                      const opt = SORT_OPTIONS.find((o) => o.key === e.target.value);
+                      if (opt) setSorting([{ id: opt.id, desc: opt.desc }]);
+                    }}
+                  >
+                    {SORT_OPTIONS.map((opt) => (
+                      <option key={opt.key} value={opt.key}>
+                        {opt.label}
+                      </option>
+                    ))}
+                  </select>
+                </div>
               </div>
             </div>
 
@@ -364,24 +380,11 @@ const TaskList = () => {
                 <thead>
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => {
-                        const canSort = header.column.getCanSort();
-                        const sortDir = header.column.getIsSorted();
-                        return (
-                          <th
-                            key={header.id}
-                            className={canSort ? "sortable-th" : ""}
-                            onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
-                          >
-                            {flexRender(header.column.columnDef.header, header.getContext())}
-                            {canSort && (
-                              <span className="sort-indicator">
-                                {sortDir === "asc" ? " ↑" : sortDir === "desc" ? " ↓" : ""}
-                              </span>
-                            )}
-                          </th>
-                        );
-                      })}
+                      {headerGroup.headers.map((header) => (
+                        <th key={header.id}>
+                          {flexRender(header.column.columnDef.header, header.getContext())}
+                        </th>
+                      ))}
                     </tr>
                   ))}
                 </thead>
@@ -406,38 +409,11 @@ const TaskList = () => {
                 </tbody>
               </table>
             </div>
-
-            {rows.length > 0 && (
-              <div className="table-pagination">
-                <button onClick={() => table.previousPage()} disabled={!table.getCanPreviousPage()}>
-                  ← Prev
-                </button>
-                <span>
-                  Page {pagination.pageIndex + 1} of {table.getPageCount()}
-                </span>
-                <button onClick={() => table.nextPage()} disabled={!table.getCanNextPage()}>
-                  Next →
-                </button>
-                <select
-                  value={pagination.pageSize}
-                  onChange={(e) =>
-                    setPagination((p) => ({ ...p, pageSize: Number(e.target.value), pageIndex: 0 }))
-                  }
-                >
-                  {[10, 25, 50].map((n) => (
-                    <option key={n} value={n}>
-                      {n} / page
-                    </option>
-                  ))}
-                </select>
-              </div>
-            )}
           </div>
         </div>
 
-        {/* Right Side: Sticky Split Pane */}
-        {sidePanelMode && isDesktop && (
-          <div className="sticky-details">
+        {sidePanelMode && (
+          <div className="sticky-details" ref={panelRef}>
             <div className="side-panel-header">
               <button className="close-btn" onClick={() => setSidePanelMode(null)}>✕</button>
             </div>

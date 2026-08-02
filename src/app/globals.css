@@ -246,10 +246,7 @@ html.dark {
 }
 
 body {
-  background:
-    var(--page-backdrop),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.35), rgba(0, 0, 0, 0.35)),
-    url(/light.svg);
+  background-image: url('/light.svg');
   background-size: cover;
   background-attachment: fixed;
   background-position: center;
@@ -259,10 +256,7 @@ body {
 }
 
 .dark body {
-  background:
-    var(--page-backdrop),
-    linear-gradient(0deg, rgba(0, 0, 0, 0.55), rgba(0, 0, 0, 0.55)),
-    url(/dark.svg);
+  background-image: url('/dark.svg');
   background-size: cover;
   background-attachment: fixed;
   background-position: center;

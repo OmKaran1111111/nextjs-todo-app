@@ -1,4 +1,3 @@
-/* --- LAYOUT & CONTAINERS --- */
 .desktop-container {
   padding: 90px 1.25rem 60px;
   min-height: 100vh;
@@ -12,7 +11,6 @@
 }
 
 @media (min-width: 900px) {
-  /* Expand the layout container smoothly when split mode is active */
   .desktop-content.layout-split {
     display: flex;
     align-items: flex-start;
@@ -23,10 +21,9 @@
 
 .table-area {
   flex: 1 1 auto;
-  min-width: 0; /* Prevents flex children from blowing out layout */
+  min-width: 0;
 }
 
-/* --- THE SIDE PANEL --- */
 .sticky-details {
   width: 100%;
   animation: fadeIn 0.25s ease-out;
@@ -37,7 +34,9 @@
     width: 420px;
     flex-shrink: 0;
     position: sticky;
-    top: 100px; /* Maps to the header padding offset */
+    top: 100px;
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
   }
 }
 
@@ -76,7 +75,6 @@
   color: var(--muted);
 }
 
-/* --- TABLE STYLES (From Current Version) --- */
 .tasks-panel {
   width: 100%;
 }
@@ -85,48 +83,58 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 1.25rem;
+  margin-bottom: 0.85rem;
   flex-wrap: wrap;
   gap: 0.75rem;
 }
 
-.add-task-top-btn {
-  display: inline-flex;
+.sort-menu-wrapper {
+  display: flex;
   align-items: center;
-  gap: 0.35rem;
-  background-color: var(--primary);
-  color: var(--primary-contrast);
-  border: none;
-  border-radius: 0.65rem;
-  padding: 0.55rem 1.1rem;
-  font-size: 0.9rem;
-  font-weight: 600;
-  text-decoration: none;
-  cursor: pointer;
-  transition: background-color 0.15s ease-out;
+  gap: 0.4rem;
 }
 
-.add-task-top-btn:hover {
-  background-color: var(--primary-hover);
+.sort-menu-label {
+  font-size: 0.8rem;
+  color: var(--faint);
+  font-weight: 600;
+}
+
+.sort-menu-select {
+  height: 40px;
+  padding: 0 0.6rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border);
+  background-color: var(--surface);
+  color: var(--body);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.sort-menu-select:focus {
+  outline: none;
+  border-color: var(--primary);
 }
 
 .section-title {
-  font-size: 1.25rem;
+  font-size: 1.15rem;
   font-weight: bold;
   color: var(--heading);
-  margin-bottom: 0.25rem;
+  margin-bottom: 0.2rem;
 }
 
 .tasklist-count {
-  font-size: 0.85rem;
+  font-size: 0.8rem;
   color: var(--faint);
 }
 
 .task-table-wrapper {
   width: 100%;
+  max-height: 60vh;
   overflow-x: auto;
+  overflow-y: auto;
   border: 1px solid var(--border);
-  border-radius: 1rem;
+  border-radius: 0.85rem;
   background-color: var(--surface);
   backdrop-filter: blur(24px) saturate(2);
   -webkit-backdrop-filter: blur(24px) saturate(2);
@@ -140,34 +148,24 @@
 }
 
 .task-table thead th {
+  position: sticky;
+  top: 0;
   text-align: left;
-  font-size: 0.78rem;
+  font-size: 0.72rem;
   text-transform: uppercase;
   letter-spacing: 0.04em;
   color: var(--faint);
   font-weight: 600;
-  padding: 0.9rem 1.1rem;
+  padding: 0.55rem 0.85rem;
+  background-color: var(--surface);
   border-bottom: 1px solid var(--border-strong);
   white-space: nowrap;
 }
 
-.task-table thead th.sortable-th {
-  cursor: pointer;
-  user-select: none;
-}
-
-.task-table thead th.sortable-th:hover {
-  color: var(--heading);
-}
-
-.sort-indicator {
-  color: var(--primary);
-}
-
 .task-table tbody td {
-  padding: 0.9rem 1.1rem;
+  padding: 0.55rem 0.85rem;
   border-bottom: 1px solid var(--border-soft);
-  font-size: 0.9rem;
+  font-size: 0.82rem;
   color: var(--body);
   vertical-align: middle;
 }
@@ -190,7 +188,7 @@
 
 .empty-row {
   text-align: center;
-  padding: 2.5rem 1rem !important;
+  padding: 1.75rem 1rem !important;
   color: var(--faint);
 }
 
@@ -221,14 +219,13 @@
   color: var(--muted);
 }
 
-/* --- BADGES & BUTTONS --- */
 .priority-badge {
   display: inline-flex;
   align-items: center;
   gap: 0.3rem;
-  padding: 0.25rem 0.65rem;
+  padding: 0.18rem 0.55rem;
   border-radius: 9999px;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   font-weight: 600;
   white-space: nowrap;
 }
@@ -244,25 +241,25 @@
   gap: 0.2rem;
 }
 
-.deadline-date { font-size: 0.85rem; color: var(--body); }
-.no-deadline { color: var(--faint); font-size: 0.85rem; }
+.deadline-date { font-size: 0.78rem; color: var(--body); }
+.no-deadline { color: var(--faint); font-size: 0.78rem; }
 
 .action-buttons {
   display: flex;
-  gap: 0.4rem;
+  gap: 0.35rem;
   flex-wrap: wrap;
 }
 
 .action-btn {
   display: inline-flex;
   align-items: center;
-  gap: 0.3rem;
+  gap: 0.25rem;
   border: 1px solid var(--border);
   background-color: var(--surface-muted);
   color: var(--body);
-  border-radius: 0.5rem;
-  padding: 0.35rem 0.6rem;
-  font-size: 0.78rem;
+  border-radius: 0.45rem;
+  padding: 0.28rem 0.5rem;
+  font-size: 0.72rem;
   cursor: pointer;
   transition: all 0.15s ease-out;
 }
@@ -275,41 +272,6 @@
   background-color: var(--danger-soft);
 }
 
-/* --- PAGINATION --- */
-.table-pagination {
-  display: flex;
-  align-items: center;
-  gap: 0.75rem;
-  margin-top: 1.25rem;
-  font-size: 0.85rem;
-  color: var(--muted);
-}
-
-.table-pagination button {
-  border: 1px solid var(--border);
-  background-color: var(--surface);
-  border-radius: 0.5rem;
-  padding: 0.3rem 0.75rem;
-  cursor: pointer;
-  color: var(--body);
-  transition: background-color 0.15s ease-out;
-}
-
-.table-pagination button:disabled {
-  opacity: 0.4;
-  cursor: not-allowed;
-}
-
-.table-pagination select {
-  margin-left: auto;
-  border: 1px solid var(--border);
-  border-radius: 0.5rem;
-  padding: 0.25rem 0.5rem;
-  background-color: var(--surface);
-  color: var(--body);
-}
-
-/* --- MODALS & ANIMATIONS --- */
 .delete-modal-overlay {
   position: fixed;
   inset: 0;
@@ -367,7 +329,120 @@
   from { transform: scale(0.95); opacity: 0; }
   to { transform: scale(1); opacity: 1; }
 }
-/* --- EDIT FORM (SIDE PANEL) STYLES --- */
+.add-task-form {
+  width: 100%;
+  max-width: 100%;
+  background-color: transparent;
+  border: none;
+  padding: 0;
+  box-shadow: none;
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  margin-top: 0.625rem;
+  margin-bottom: 0.625rem;
+}
+
+.add-task-form .task-input {
+  flex: 1 1 0%;
+  padding: 0.75rem 1rem;
+  border-radius: 0.75rem;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--bg-elevated) 50%, transparent);
+  font-size: 1rem;
+  line-height: 1.5rem;
+  color: var(--heading);
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.add-task-form .task-input:focus {
+  background-color: var(--bg-elevated);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--color-info-soft);
+}
+
+.add-task-form .date-picker-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.add-task-form .date-icon-wrapper {
+  display: inline-block;
+  position: relative;
+  cursor: pointer;
+  font-size: 2rem;
+}
+
+.add-task-form .date-input-hidden {
+  position: absolute;
+  inset: 0px;
+  opacity: 0;
+  cursor: pointer;
+  width: 100%;
+  height: 100%;
+}
+
+.add-task-form .deadline-text-danger {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--danger);
+  font-weight: 600;
+}
+
+.add-task-form .deadline-text-faint {
+  font-size: 0.875rem;
+  line-height: 1.25rem;
+  color: var(--faint);
+}
+
+.add-task-form .form-bottom-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.add-task-form .priority-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  position: relative;
+  bottom: auto;
+  right: auto;
+}
+
+.add-task-form .priority-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: var(--body);
+}
+
+.add-task-btn {
+  background-color: var(--primary);
+  color: var(--primary-contrast);
+  border: none;
+  padding: 0.75rem 22px;
+  border-radius: 0.75rem;
+  font-weight: 500;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: background-color 200ms cubic-bezier(0.4, 0, 0.2, 1), transform 100ms ease;
+}
+
+.add-task-btn:hover {
+  background-color: var(--primary-hover);
+}
+
+.add-task-btn:active {
+  transform: scale(0.97);
+}
+
 .edit-form-container {
   background-color: var(--surface);
   border-radius: 1.25rem;

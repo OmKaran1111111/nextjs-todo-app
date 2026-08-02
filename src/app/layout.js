@@ -2,6 +2,7 @@ import { Newsreader, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import TopBar from "@/components/topbar";
 import Footer from "@/components/footer";
+import { SearchProvider } from "@/components/SearchContext";
 
 const newsreader = Newsreader({
   variable: "--font-display",
@@ -40,9 +41,11 @@ export default function RootLayout({ children }) {
     >
       <head></head>
       <body className="min-h-full flex flex-col text-body" style={{ fontFamily: "var(--font-sans)" }}>
-        <TopBar />
-        <div id="page-content">{children}</div>
-        <Footer />
+        <SearchProvider>
+          <TopBar />
+          <div id="page-content">{children}</div>
+          <Footer />
+        </SearchProvider>
       </body>
     </html>
   );
