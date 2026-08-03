@@ -61,7 +61,7 @@ export const {
       if (token?.email) {
         const email = token.email.trim().toLowerCase();
 
-        let dbUser = db.prepare("SELECT id FROM users WHERE email = ?").get(email);
+        let dbUser = db.prepare("SELECT id, role FROM users WHERE email = ?").get(email);
 
         if (!dbUser) {
           const userId = user?.id || token.sub || crypto.randomUUID();
@@ -69,14 +69,15 @@ export const {
           const createdAt = new Date().toISOString();
 
           db.prepare(
-            `INSERT INTO users (id, email, name, passwordHash, verified, createdAt)
-             VALUES (?, ?, ?, 'OAUTH_ACCOUNT', 1, ?)`
+            `INSERT INTO users (id, email, name, passwordHash, verified, createdAt, role)
+             VALUES (?, ?, ?, 'OAUTH_ACCOUNT', 1, ?, 'user')`
           ).run(userId, email, userName, createdAt);
 
-          dbUser = { id: userId };
+          dbUser = { id: userId, role: "user" };
         }
 
         token.id = dbUser.id;
+        token.role = dbUser.role || "user";
       }
       return token;
     },
@@ -84,6 +85,7 @@ export const {
     async session({ session, token }) {
       if (session?.user && token?.id) {
         session.user.id = token.id;
+        session.user.role = token.role || "user";
       }
       return session;
     },

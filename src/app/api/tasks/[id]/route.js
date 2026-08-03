@@ -7,6 +7,9 @@ export async function PATCH(request, { params }) {
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
+  if (session.user.role !== "admin") {
+    return NextResponse.json({ error: "Only admins can edit tasks" }, { status: 403 });
+  }
 
   const { id } = await params;
   const updates = await request.json();
@@ -23,6 +26,9 @@ export async function DELETE(_request, { params }) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (session.user.role !== "admin") {
+    return NextResponse.json({ error: "Only admins can delete tasks" }, { status: 403 });
   }
 
   const { id } = await params;

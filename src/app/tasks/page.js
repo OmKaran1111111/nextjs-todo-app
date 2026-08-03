@@ -1,6 +1,7 @@
 "use client";
 
 import { useMemo, useState, useEffect, useRef } from "react";
+import { useSession } from "next-auth/react";
 import {
   useReactTable,
   getCoreRowModel,
@@ -129,8 +130,12 @@ const TaskList = () => {
   const [sorting, setSorting] = useState([{ id: "priority", desc: false }]);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [exportMenuOpen, setExportMenuOpen] = useState(false);
+  const exportMenuRef = useRef(null);
 
   const { searchTerm: searchQuery, setSearchTerm: setSearchQuery, addTaskSignal } = useSearch();
+  const { data: authSession } = useSession();
+  const isAdmin = authSession?.user?.role === "admin";
 
   const [sidePanelMode, setSidePanelMode] = useState(null); 
   const [activeTaskId, setActiveTaskId] = useState(null);
@@ -174,6 +179,57 @@ const TaskList = () => {
     );
   }, [tasks, searchQuery]);
 
+  useEffect(() => {
+    if (!exportMenuOpen) return;
+    const handleClickOutside = (event) => {
+      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
+        setExportMenuOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, [exportMenuOpen]);
+
+  const escapeCsvValue = (value) => {
+    const str = String(value ?? "");
+    return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
+  };
+
+  const downloadCSV = (list, filename) => {
+    const headers = ["Task ID", "Task Name", "Priority", "Deadline", "Completed", "Subtasks"];
+    const rows = list.map((t) => [
+      t.id,
+      t.text,
+      (PRIORITY_META[t.priority || 4] || PRIORITY_META[4]).label,
+      t.deadline || "",
+      t.completed ? "Yes" : "No",
+      (t.subtasks || []).length,
+    ]);
+    const csv = [headers, ...rows]
+      .map((row) => row.map(escapeCsvValue).join(","))
+      .join("\n");
+
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleExportAll = () => {
+    downloadCSV(tasks, `tasks-all-${new Date().toISOString().slice(0, 10)}.csv`);
+    setExportMenuOpen(false);
+  };
+
+  const handleExportFiltered = () => {
+    downloadCSV(filteredTasks, `tasks-filtered-${new Date().toISOString().slice(0, 10)}.csv`);
+    setExportMenuOpen(false);
+  };
+
   const handleView = (task) => {
     setActiveTaskId(task.id);
     setSidePanelMode("view");
@@ -212,6 +268,15 @@ const TaskList = () => {
 
   const columns = useMemo(
     () => [
+      {
+        accessorKey: "id",
+        header: "Task ID",
+        cell: ({ getValue }) => (
+          <span className="task-id-cell" title={getValue()}>
+            #{String(getValue()).slice(0, 8).toUpperCase()}
+          </span>
+        ),
+      },
       {
         accessorKey: "text",
         header: "Task Name",
@@ -273,27 +338,31 @@ const TaskList = () => {
             >
               👁 View
             </button>
-            <button
-              type="button"
-              className="action-btn action-btn-edit"
-              onClick={() => handleEdit(row.original)}
-              title="Edit task"
-            >
-              ✎ Edit
-            </button>
-            <button
-              type="button"
-              className="action-btn action-btn-delete"
-              onClick={() => setDeleteTarget(row.original)}
-              title="Delete task"
-            >
-              🗑 Delete
-            </button>
+            {isAdmin && (
+              <button
+                type="button"
+                className="action-btn action-btn-edit"
+                onClick={() => handleEdit(row.original)}
+                title="Edit task"
+              >
+                ✎ Edit
+              </button>
+            )}
+            {isAdmin && (
+              <button
+                type="button"
+                className="action-btn action-btn-delete"
+                onClick={() => setDeleteTarget(row.original)}
+                title="Delete task"
+              >
+                🗑 Delete
+              </button>
+            )}
           </div>
         ),
       },
     ],
-    []
+    [isAdmin]
   );
 
   const table = useReactTable({
@@ -372,6 +441,35 @@ const TaskList = () => {
                     ))}
                   </select>
                 </div>
+                <div className="export-menu-wrapper" ref={exportMenuRef}>
+                  <button
+                    type="button"
+                    className="export-header-btn"
+                    onClick={() => setExportMenuOpen((v) => !v)}
+                  >
+                    ⬇ Export
+                  </button>
+                  {exportMenuOpen && (
+                    <div className="export-dropdown-menu">
+                      <button type="button" onClick={handleExportAll}>
+                        All tasks ({tasks.length})
+                      </button>
+                      <button type="button" onClick={handleExportFiltered}>
+                        Filtered / visible tasks ({filteredTasks.length})
+                      </button>
+                    </div>
+                  )}
+                </div>
+                <button
+                  type="button"
+                  className="add-task-header-btn"
+                  onClick={() => {
+                    setActiveTaskId(null);
+                    setSidePanelMode("add");
+                  }}
+                >
+                  + Add Task
+                </button>
               </div>
             </div>
 

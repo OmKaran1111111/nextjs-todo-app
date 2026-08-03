@@ -3,6 +3,7 @@ import "./globals.css";
 import TopBar from "@/components/topbar";
 import Footer from "@/components/footer";
 import { SearchProvider } from "@/components/SearchContext";
+import { SessionProvider } from "next-auth/react";
 
 const newsreader = Newsreader({
   variable: "--font-display",
@@ -41,11 +42,13 @@ export default function RootLayout({ children }) {
     >
       <head></head>
       <body className="min-h-full flex flex-col text-body" style={{ fontFamily: "var(--font-sans)" }}>
-        <SearchProvider>
-          <TopBar />
-          <div id="page-content">{children}</div>
-          <Footer />
-        </SearchProvider>
+        <SessionProvider>
+          <SearchProvider>
+            <TopBar />
+            <div id="page-content">{children}</div>
+            <Footer />
+          </SearchProvider>
+        </SessionProvider>
       </body>
     </html>
   );

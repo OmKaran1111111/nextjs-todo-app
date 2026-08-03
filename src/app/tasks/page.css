@@ -562,6 +562,78 @@
   gap: 0.75rem;
 }
 
+.add-task-header-btn {
+  padding: 0.5rem 0.95rem;
+  border-radius: 0.65rem;
+  border: none;
+  background-color: var(--accent, #2563eb);
+  color: #fff;
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease-out;
+}
+
+.add-task-header-btn:hover {
+  filter: brightness(0.92);
+}
+
+.export-menu-wrapper {
+  position: relative;
+}
+
+.export-header-btn {
+  padding: 0.5rem 0.95rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border);
+  background-color: var(--surface-muted);
+  color: var(--body);
+  font-size: 0.88rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 0.15s ease-out;
+}
+
+.export-header-btn:hover {
+  filter: brightness(0.96);
+}
+
+.export-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.4rem);
+  right: 0;
+  min-width: 220px;
+  background-color: var(--surface, #fff);
+  border: 1px solid var(--border);
+  border-radius: 0.65rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+  z-index: 30;
+  overflow: hidden;
+}
+
+.export-dropdown-menu button {
+  display: block;
+  width: 100%;
+  text-align: left;
+  padding: 0.6rem 0.85rem;
+  border: none;
+  background: none;
+  color: var(--body);
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.export-dropdown-menu button:hover {
+  background-color: var(--surface-muted);
+}
+
+.task-id-cell {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.82rem;
+  color: var(--muted, #6b7280);
+  letter-spacing: 0.02em;
+}
+
 .search-input {
   padding: 0.5rem 0.85rem;
   border-radius: 0.65rem;

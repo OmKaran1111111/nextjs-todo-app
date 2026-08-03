@@ -124,4 +124,13 @@ if (!hasAttemptsColumn) {
   db.exec("ALTER TABLE verification_codes ADD COLUMN attempts INTEGER DEFAULT 0");
 }
 
+const hasRoleColumn = db
+  .prepare("PRAGMA table_info(users)")
+  .all()
+  .some((col) => col.name === "role");
+
+if (!hasRoleColumn) {
+  db.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'");
+}
+
 export default db;

@@ -31,7 +31,6 @@ const EditTaskPage = () => {
   const [priority, setPriority] = useState(4);
   const [deadline, setDeadline] = useState("");
   const [isSaving, setIsSaving] = useState(false);
-  const [saved, setSaved] = useState(false);
 
   useEffect(() => {
     if (task) {
@@ -46,7 +45,6 @@ const EditTaskPage = () => {
     e.preventDefault();
     if (!task) return;
     setIsSaving(true);
-    setSaved(false);
 
     const tasksToRun = [];
     if (priority !== (task.priority || 4)) {
@@ -58,7 +56,6 @@ const EditTaskPage = () => {
     await Promise.all(tasksToRun);
 
     setIsSaving(false);
-    setSaved(true);
     router.push("/tasks");
   };
 

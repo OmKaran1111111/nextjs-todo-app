@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint .",
-    "seed": "node src/lib/seed.js"
+    "seed": "node src/lib/seed.js",
+    "make-admin": "node scripts/make-admin.js"
   },
   "dependencies": {
     "@tanstack/react-table": "^8.21.3",
