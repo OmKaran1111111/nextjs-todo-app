@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { usePathname } from "next/navigation";
+import { useSession } from "next-auth/react";
 import ThemeToggle from "@/components/ThemeToggle";
 import styles from "./components.module.css";
 import Logout from "./Logout";
@@ -11,6 +12,7 @@ import useIsDesktop from "@/hooks/useIsDesktop";
 import { useSearch } from "@/components/SearchContext";
 
 const TopBar = () => {
+  const { data: session } = useSession();
   const [isOpen, setIsOpen] = useState(false);
   const [isPinned, setIsPinned] = useState(false);
   const [indicatorTop, setIndicatorTop] = useState(0);
@@ -20,7 +22,7 @@ const TopBar = () => {
   const rowRefs = useRef({});
   const isDesktop = useIsDesktop();
   const pathname = usePathname();
-
+  const isAdmin = session?.user?.role === "admin";
   const toggleSidebar = () => setIsOpen((prev) => !prev);
   const closeSidebar = () => {
     if (!isPinned) setIsOpen(false);
@@ -49,6 +51,7 @@ const TopBar = () => {
     { path: "/", label: "Home" },
     { path: "/Dashboard", label: "DashBoard" },
     { path: "/tasks", label: "Tasks" },
+    ...(isAdmin ? [{ path: "/Manage_Users", label: "Users" }] : []),
   ];
 
   const activeKey = links.find((l) => isActive(l.path))?.path;

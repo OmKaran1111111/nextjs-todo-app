@@ -132,5 +132,14 @@ const hasRoleColumn = db
 if (!hasRoleColumn) {
   db.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'");
 }
+const hasBannedColumn = db
+  .prepare("PRAGMA table_info(users)")
+  .all()
+  .some((col) => col.name === "isBanned");
+
+if (!hasBannedColumn) {
+  db.exec("ALTER TABLE users ADD COLUMN isBanned INTEGER DEFAULT 0");
+}
+
 
 export default db;

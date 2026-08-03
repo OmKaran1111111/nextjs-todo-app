@@ -20,17 +20,27 @@ export const authConfig = {
         return true;
       }
 
-      return isLoggedIn;
+      if (!isLoggedIn) {
+        return false;
+      }
+
+      if (pathname.startsWith("/Manage_Users")) {
+        return auth?.user?.role === "admin";
+      }
+
+      return true;
     },
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.role = user.role;
       }
       return token;
     },
     async session({ session, token }) {
-      if (session.user) {
+      if (session?.user) {
         session.user.id = token.id;
+        session.user.role = token.role;
       }
       return session;
     },

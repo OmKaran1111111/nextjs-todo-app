@@ -1,4 +1,5 @@
 import NextAuth from "next-auth";
+import { CredentialsSignin } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
@@ -57,6 +58,19 @@ export const {
     }),
   ],
   callbacks: {
+  async signIn({ user, account }) {
+    if (account?.provider === "google" || account?.provider === "github") {
+      const email = user.email?.trim().toLowerCase();
+      if (email) {
+        const dbUser = db.prepare("SELECT isBanned FROM users WHERE email = ?").get(email);
+        if (dbUser?.isBanned) {
+          return false;
+        }
+      }
+    }
+    return true;
+  },
+  
     async jwt({ token, user }) {
       if (token?.email) {
         const email = token.email.trim().toLowerCase();
