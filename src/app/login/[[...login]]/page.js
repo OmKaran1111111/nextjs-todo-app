@@ -44,9 +44,12 @@ const Page = () => {
         password,
         redirect: false,
       });
-
       if (result?.error) {
-        setError("Could not sign in. Check your email and password and try again.");
+        if (result.code === "banned") {
+          setError("You can't sign in. \n Reason: you have been banned.");
+        } else {
+          setError("Could not sign in. Check your email and password and try again.");
+        }
         return;
       }
 

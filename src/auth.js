@@ -12,12 +12,10 @@ import crypto from "crypto";
 const LOGIN_MAX_ATTEMPTS = 5;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 
-export const {
-  handlers,
-  auth,
-  signIn,
-  signOut,
-} = NextAuth({
+class BannedError extends CredentialsSignin {
+  code = "banned";
+}
+export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
@@ -32,10 +30,18 @@ export const {
           windowMs: LOGIN_WINDOW_MS,
         });
         if (!allowed) {
-          throw new Error("Too many failed login attempts. Please try again later.");
+          throw new Error(
+            "Too many failed login attempts. Please try again later.",
+          );
         }
 
-        const user = await verifyPassword(email, credentials.password);
+        let user;
+        try {
+          user = await verifyPassword(email, credentials.password);
+        } catch (err) {
+          if (err.message === "Banned") throw new BannedError();
+          throw err;
+        }
         if (user) {
           resetRateLimit(limitKey);
         }
@@ -46,36 +52,48 @@ export const {
       clientId: process.env.GOOGLE_CLIENT_ID,
       clientSecret: process.env.GOOGLE_CLIENT_SECRET,
       authorization: {
-        params: { prompt: "consent", access_type: "offline", response_type: "code" },
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
       },
     }),
     GitHub({
       clientId: process.env.GITHUB_CLIENT_ID,
       clientSecret: process.env.GITHUB_CLIENT_SECRET,
       authorization: {
-        params: { prompt: "consent", access_type: "offline", response_type: "code" },
+        params: {
+          prompt: "consent",
+          access_type: "offline",
+          response_type: "code",
+        },
       },
     }),
   ],
   callbacks: {
-  async signIn({ user, account }) {
-    if (account?.provider === "google" || account?.provider === "github") {
-      const email = user.email?.trim().toLowerCase();
-      if (email) {
-        const dbUser = db.prepare("SELECT isBanned FROM users WHERE email = ?").get(email);
-        if (dbUser?.isBanned) {
-          return false;
+    async signIn({ user, account }) {
+      if (account?.provider === "google" || account?.provider === "github") {
+        const email = user.email?.trim().toLowerCase();
+        if (email) {
+          const dbUser = db
+            .prepare("SELECT isBanned FROM users WHERE email = ?")
+            .get(email);
+          if (dbUser?.isBanned) {
+            return false;
+          }
         }
       }
-    }
-    return true;
-  },
-  
+      return true;
+    },
+
     async jwt({ token, user }) {
       if (token?.email) {
         const email = token.email.trim().toLowerCase();
 
-        let dbUser = db.prepare("SELECT id, role FROM users WHERE email = ?").get(email);
+        let dbUser = db
+          .prepare("SELECT id, role FROM users WHERE email = ?")
+          .get(email);
 
         if (!dbUser) {
           const userId = user?.id || token.sub || crypto.randomUUID();
@@ -84,7 +102,7 @@ export const {
 
           db.prepare(
             `INSERT INTO users (id, email, name, passwordHash, verified, createdAt, role)
-             VALUES (?, ?, ?, 'OAUTH_ACCOUNT', 1, ?, 'user')`
+             VALUES (?, ?, ?, 'OAUTH_ACCOUNT', 1, ?, 'user')`,
           ).run(userId, email, userName, createdAt);
 
           dbUser = { id: userId, role: "user" };

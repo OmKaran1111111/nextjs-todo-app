@@ -1,181 +1,438 @@
 .container {
-  padding: 2rem;
-  max-width: 64rem;
-  margin-left: auto;
-  margin-right: auto;
+  padding: 90px 1.25rem 60px;
+  min-height: 100vh;
+}
+
+.inner {
+  max-width: 1180px;
+  margin: 0 auto;
+}
+
+/* ---------- Header ---------- */
+
+.pageHeader {
+  margin-bottom: 1.75rem;
+}
+
+.eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  margin: 0 0 0.35rem;
+}
+
+.pageTitle {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 2.1rem;
+  color: var(--heading);
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.01em;
+}
+
+.pageSubtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0;
+  max-width: 46rem;
+}
+
+/* ---------- Stat strip ---------- */
+
+.statRow {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 0.85rem;
+  margin-bottom: 1.75rem;
+}
+
+.statCard {
   display: flex;
   flex-direction: column;
-  gap: 2rem;
+  gap: 0.15rem;
+  padding: 1rem 1.15rem;
+  border-radius: 1rem;
+  background-color: var(--surface);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
 }
 
-.formSection {
-  padding: 1.5rem;
-  background-color: #f9fafb;
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-}
-
-.title {
-  font-size: 1.25rem;
+.statValue {
+  font-size: 1.6rem;
   font-weight: 700;
-  margin-bottom: 1rem;
+  color: var(--heading);
+  line-height: 1.1;
 }
 
-.formGrid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 0.75rem;
+.statLabel {
+  font-size: 0.78rem;
+  color: var(--faint);
 }
 
-@media (min-width: 768px) {
-  .formGrid {
-    grid-template-columns: repeat(4, minmax(0, 1fr));
+/* ---------- Layout ---------- */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  gap: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .layout {
+    flex-direction: row;
+    align-items: flex-start;
   }
 }
 
-.input {
-  padding: 0.5rem;
-  border: 1px solid #d1d5db;
-  border-radius: 0.25rem;
+.cardTitle {
+  font-size: 1.05rem;
+  font-weight: 700;
+  color: var(--heading);
+  margin: 0 0 1rem;
 }
 
-.btnPrimary {
-  background-color: #2563eb;
-  color: #ffffff;
-  font-weight: 500;
-  padding: 0.5rem;
-  border-radius: 0.25rem;
-  border: none;
+/* ---------- Add user card ---------- */
+
+.formCard {
+  width: 100%;
+  border-radius: 1.25rem;
+  background-color: var(--surface);
+  backdrop-filter: blur(24px) saturate(200%);
+  -webkit-backdrop-filter: blur(24px) saturate(200%);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card);
+  padding: 1.5rem;
+}
+
+@media (min-width: 960px) {
+  .formCard {
+    width: 300px;
+    flex-shrink: 0;
+    position: sticky;
+    top: 100px;
+  }
+}
+
+.formGrid {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.fieldLabel {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--muted);
+}
+
+.input,
+.select {
+  padding: 0.6rem 0.75rem;
+  border-radius: 0.65rem;
+  border: 1px solid var(--border);
+  background-color: color-mix(in srgb, var(--bg-elevated) 50%, transparent);
+  font-size: 0.9rem;
+  color: var(--heading);
+  font-weight: 400;
+  outline: 2px solid transparent;
+  outline-offset: 2px;
+  transition: all 200ms cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.input:focus,
+.select:focus {
+  background-color: var(--bg-elevated);
+  border-color: var(--primary);
+  box-shadow: 0 0 0 4px var(--color-info-soft);
+}
+
+.select {
   cursor: pointer;
 }
 
+.btnPrimary {
+  margin-top: 0.25rem;
+  padding: 0.65rem 1rem;
+  border-radius: 0.7rem;
+  border: none;
+  background-color: var(--primary);
+  color: var(--primary-contrast);
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.15s ease-out, transform 0.15s ease-out;
+}
+
 .btnPrimary:hover {
-  background-color: #1d4ed8;
+  background-color: var(--primary-hover);
+}
+
+.btnPrimary:active {
+  transform: scale(0.98);
+}
+
+/* ---------- Roster ---------- */
+
+.rosterSection {
+  flex: 1 1 0%;
+  min-width: 0;
+}
+
+.rosterHeaderRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  margin-bottom: 1rem;
+}
+
+.rosterCount {
+  font-size: 0.8rem;
+  color: var(--faint);
+}
+
+.emptyState {
+  border-radius: 1.25rem;
+  border: 1px dashed var(--border-strong);
+  background-color: var(--surface-soft);
+  padding: 2.5rem 1.5rem;
+  text-align: center;
+}
+
+.emptyTitle {
+  font-weight: 700;
+  color: var(--heading);
+  margin: 0 0 0.25rem;
 }
 
 .emptyText {
-  color: #6b7280;
+  color: var(--faint);
+  font-size: 0.9rem;
+  margin: 0;
 }
 
-.tableContainer {
-  border: 1px solid #e5e7eb;
-  border-radius: 0.5rem;
-  overflow: hidden;
+.tableWrapper {
+  width: 100%;
+  overflow-x: auto;
+  border: 1px solid var(--border);
+  border-radius: 1rem;
+  background-color: var(--surface);
+  backdrop-filter: blur(24px) saturate(2);
+  -webkit-backdrop-filter: blur(24px) saturate(2);
+  box-shadow: var(--shadow-card);
 }
 
 .table {
   width: 100%;
-  text-align: left;
   border-collapse: collapse;
-}
-
-.thead {
-  background-color: #f3f4f6;
-  border-bottom: 1px solid #e5e7eb;
+  min-width: 680px;
 }
 
 .th {
-  padding: 0.75rem;
-}
-
-.tr {
-  border-bottom: 1px solid #e5e7eb;
-}
-
-.tr:last-child {
-  border-bottom: none;
-}
-
-.tr:hover {
-  background-color: #f9fafb;
+  position: sticky;
+  top: 0;
+  text-align: left;
+  font-size: 0.7rem;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--faint);
+  font-weight: 700;
+  padding: 0.75rem 1rem;
+  background-color: var(--surface);
+  border-bottom: 1px solid var(--border-strong);
+  white-space: nowrap;
 }
 
 .td {
-  padding: 0.75rem;
+  padding: 0.7rem 1rem;
+  border-bottom: 1px solid var(--border-soft);
+  font-size: 0.85rem;
+  color: var(--body);
+  vertical-align: middle;
+}
+
+.table tbody tr:last-child .td {
+  border-bottom: none;
+}
+
+.table tbody tr:hover .td {
+  background-color: var(--surface-hover);
+}
+
+.rowBanned .td {
+  opacity: 0.55;
 }
 
 .textRight {
   text-align: right;
 }
 
-.idText {
-  font-family: monospace;
-  font-size: 0.75rem;
+/* ---------- User cell ---------- */
+
+.userCell {
+  display: flex;
+  align-items: center;
+  gap: 0.65rem;
 }
 
-.roleBadge {
-  font-family: monospace;
-  font-size: 0.75rem;
-  text-transform: uppercase;
-  background-color: #f3f4f6;
-  border-radius: 0.25rem;
-  padding: 0.25rem 0.5rem;
+.avatar {
+  flex-shrink: 0;
+  width: 2.15rem;
+  height: 2.15rem;
+  border-radius: 9999px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+}
+
+.avatarAdmin {
+  box-shadow: 0 0 0 2px var(--bg-elevated), 0 0 0 4px var(--color-accent);
+}
+
+.userMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 0.1rem;
+  min-width: 0;
+}
+
+.userName {
+  font-weight: 600;
+  color: var(--heading);
+  font-size: 0.86rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.userEmail {
+  font-size: 0.76rem;
+  color: var(--faint);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  max-width: 220px;
+}
+
+.joinedCell {
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---------- Badges ---------- */
+
+.roleBadgeAdmin,
+.roleBadgeUser {
+  display: inline-flex;
+  align-items: center;
+  padding: 0.2rem 0.6rem;
+  border-radius: 9999px;
+  font-size: 0.72rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.roleBadgeAdmin {
+  background-color: var(--color-accent);
+  color: var(--color-accent-contrast);
+}
+
+.roleBadgeUser {
+  background-color: var(--surface-muted);
+  color: var(--muted);
 }
 
 .statusActive {
-  font-size: 0.75rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 0.78rem;
   font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  background-color: #dcfce7;
-  color: #15803d;
-  border-radius: 0.25rem;
+  white-space: nowrap;
+  color: var(--success);
 }
 
-.statusBanned {
-  font-size: 0.75rem;
-  font-weight: 600;
-  padding: 0.25rem 0.5rem;
-  background-color: #fee2e2;
-  color: #b91c1c;
-  border-radius: 0.25rem;
+.statusDot {
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 9999px;
+  background-color: currentColor;
 }
+
+.revokedStamp {
+  display: inline-block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: var(--danger);
+  border: 2px solid var(--danger);
+  border-radius: 0.2rem;
+  padding: 0.15rem 0.5rem;
+  transform: rotate(-4deg);
+  white-space: nowrap;
+  position: relative;
+}
+
+.revokedStamp::before {
+  content: "";
+  position: absolute;
+  inset: 2px;
+  border: 1px solid var(--danger);
+  border-radius: 0.1rem;
+  opacity: 0.5;
+}
+
+/* ---------- Row actions ---------- */
 
 .actionGroup {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+
+.actionBtnBan,
+.actionBtnUnban,
+.actionBtnDelete {
   display: inline-flex;
-  gap: 0.5rem;
-}
-
-.btnBan {
-  padding: 0.25rem 0.75rem;
+  align-items: center;
+  border: 1px solid var(--border);
+  background-color: var(--surface-muted);
+  color: var(--body);
+  border-radius: 0.5rem;
+  padding: 0.3rem 0.65rem;
   font-size: 0.75rem;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  background-color: #f59e0b;
-  color: #ffffff;
-  border: none;
+  font-weight: 600;
   cursor: pointer;
+  transition: all 0.15s ease-out;
 }
 
-.btnBan:hover {
-  background-color: #d97706;
+.actionBtnBan:hover {
+  border-color: var(--warning);
+  color: var(--warning);
+  background-color: var(--warning-soft);
 }
 
-.btnUnban {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  background-color: #e5e7eb;
-  color: #1f2937;
-  border: none;
-  cursor: pointer;
+.actionBtnUnban:hover {
+  border-color: var(--success);
+  color: var(--success);
+  background-color: var(--success-soft);
 }
 
-.btnUnban:hover {
-  background-color: #d1d5db;
-}
-
-.btnDelete {
-  padding: 0.25rem 0.75rem;
-  font-size: 0.75rem;
-  border-radius: 0.25rem;
-  font-weight: 500;
-  background-color: #dc2626;
-  color: #ffffff;
-  border: none;
-  cursor: pointer;
-}
-
-.btnDelete:hover {
-  background-color: #b91c1c;
+.actionBtnDelete:hover {
+  border-color: var(--danger);
+  color: var(--danger);
+  background-color: var(--danger-soft);
 }
