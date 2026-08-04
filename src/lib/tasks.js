@@ -39,8 +39,13 @@ export function createTaskForUser(userId, { text, priority = 4, deadline = null 
   return getTaskForUser(id, userId);
 }
 
-export function updateTaskForUser(taskId, userId, updates) {
-  const existing = getTaskForUser(taskId, userId);
+export function getTaskById(taskId) {
+  const row = db.prepare("SELECT * FROM tasks WHERE id = ?").get(taskId);
+  return rowToTask(row);
+}
+
+export function updateTask(taskId, updates) {
+  const existing = getTaskById(taskId);
   if (!existing) return null;
 
   const next = { ...existing, ...updates };
@@ -48,7 +53,7 @@ export function updateTaskForUser(taskId, userId, updates) {
   db.prepare(
     `UPDATE tasks
      SET text = ?, priority = ?, completed = ?, completedAt = ?, deadline = ?, subtasks = ?
-     WHERE id = ? AND userId = ?`,
+     WHERE id = ?`,
   ).run(
     next.text,
     next.priority || 4,
@@ -57,15 +62,12 @@ export function updateTaskForUser(taskId, userId, updates) {
     next.deadline || null,
     JSON.stringify(next.subtasks || []),
     taskId,
-    userId,
   );
 
-  return getTaskForUser(taskId, userId);
+  return getTaskById(taskId);
 }
 
-export function deleteTaskForUser(taskId, userId) {
-  const result = db
-    .prepare("DELETE FROM tasks WHERE id = ? AND userId = ?")
-    .run(taskId, userId);
+export function deleteTask(taskId) {
+  const result = db.prepare("DELETE FROM tasks WHERE id = ?").run(taskId);
   return result.changes > 0;
 }

@@ -1,7 +1,9 @@
 "use client";
 
-import { useMemo, useState, useEffect, useRef } from "react";
+import { useMemo, useState, useEffect, useRef, Suspense } from "react";
 import { useSession } from "next-auth/react";
+import { useSearchParams } from "next/navigation";
+import Link from "next/link";
 import {
   useReactTable,
   getCoreRowModel,
@@ -112,6 +114,10 @@ const EditTaskForm = ({ task, onSave, onCancel }) => {
 };
 
 const TaskList = () => {
+  const searchParams = useSearchParams();
+  const viewUserId = searchParams.get("userId");
+  const viewUserName = searchParams.get("name");
+
   const {
     tasks,
     isLoading,
@@ -125,7 +131,7 @@ const TaskList = () => {
     addSubtask,
     toggleSubtask,
     deleteSubtask,
-  } = useTasks();
+  } = useTasks(viewUserId);
 
   const [sorting, setSorting] = useState([{ id: "priority", desc: false }]);
   const [deleteTarget, setDeleteTarget] = useState(null);
@@ -411,10 +417,17 @@ const TaskList = () => {
           <div className="tasks-panel">
             <div className="tasks-header-row">
               <div>
-                <h3 className="section-title">Tasks</h3>
+                <h3 className="section-title">
+                  {viewUserId ? `Tasks — ${viewUserName || "user"}` : "Tasks"}
+                </h3>
                 <span className="tasklist-count">
                   {filteredTasks.length} {searchQuery ? "filtered" : "total"}
                 </span>
+                {viewUserId && (
+                  <Link href="/Manage_Users" className="back-to-users-link">
+                    ← Back to Manage Users
+                  </Link>
+                )}
               </div>
               <div className="header-actions">
                 <div className="sort-menu-wrapper">
@@ -616,4 +629,10 @@ const TaskList = () => {
   );
 };
 
-export default TaskList;
+export default function TasksPage() {
+  return (
+    <Suspense fallback={null}>
+      <TaskList />
+    </Suspense>
+  );
+}

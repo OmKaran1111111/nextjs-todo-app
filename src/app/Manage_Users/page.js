@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { getAllUsers } from "@/lib/users";
 import { addUserAction, deleteUserAction, toggleBanAction } from "@/app/actions";
 import styles from "./page.module.css";
@@ -117,7 +118,10 @@ export default function Manage_Users() {
                       return (
                         <tr key={user.id} className={isBanned ? styles.rowBanned : ""}>
                           <td className={styles.td}>
-                            <div className={styles.userCell}>
+                            <Link
+                              href={`/tasks?userId=${user.id}&name=${encodeURIComponent(user.name || user.email)}`}
+                              className={styles.userCell}
+                            >
                               <span
                                 className={`${styles.avatar} ${isAdmin ? styles.avatarAdmin : ""}`}
                                 style={{ backgroundColor: palette.bg, color: palette.fg }}
@@ -128,7 +132,7 @@ export default function Manage_Users() {
                                 <span className={styles.userName}>{user.name || "—"}</span>
                                 <span className={styles.userEmail}>{user.email}</span>
                               </div>
-                            </div>
+                            </Link>
                           </td>
                           <td className={styles.td}>
                             <span className={isAdmin ? styles.roleBadgeAdmin : styles.roleBadgeUser}>

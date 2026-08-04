@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { updateTaskForUser, deleteTaskForUser } from "@/lib/tasks";
+import { updateTask, deleteTask } from "@/lib/tasks";
 
 export async function PATCH(request, { params }) {
   const session = await auth();
@@ -14,7 +14,7 @@ export async function PATCH(request, { params }) {
   const { id } = await params;
   const updates = await request.json();
 
-  const task = updateTaskForUser(id, session.user.id, updates);
+  const task = updateTask(id, updates);
   if (!task) {
     return NextResponse.json({ error: "Task not found" }, { status: 404 });
   }
@@ -32,7 +32,7 @@ export async function DELETE(_request, { params }) {
   }
 
   const { id } = await params;
-  const deleted = deleteTaskForUser(id, session.user.id);
+  const deleted = deleteTask(id);
   if (!deleted) {
     return NextResponse.json({ error: "Task not found" }, { status: 404 });
   }

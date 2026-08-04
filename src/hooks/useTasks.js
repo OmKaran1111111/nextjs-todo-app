@@ -4,7 +4,7 @@ import { useEffect, useState, useCallback, useRef } from "react";
 
 const ERROR_FLASH_MS = 4000;
 
-export default function useTasks() {
+export default function useTasks(userId) {
   const [tasks, setTasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -30,7 +30,8 @@ export default function useTasks() {
 
   const refresh = useCallback(async () => {
     try {
-      const res = await fetch("/api/tasks");
+      const url = userId ? `/api/tasks?userId=${userId}` : "/api/tasks";
+      const res = await fetch(url);
       if (!res.ok) {
         setError("Couldn't load your tasks. Please try refreshing.");
         return;
@@ -41,9 +42,10 @@ export default function useTasks() {
     } catch {
       setError("Couldn't reach the server. Check your connection.");
     }
-  }, []);
+  }, [userId]);
 
   useEffect(() => {
+    setIsLoading(true);
     refresh().finally(() => setIsLoading(false));
   }, [refresh]);
 
@@ -52,7 +54,7 @@ export default function useTasks() {
       const res = await fetch("/api/tasks", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ text, priority, deadline }),
+        body: JSON.stringify({ text, priority, deadline, userId }),
       });
       if (!res.ok) {
         setError("Couldn't add the task. Please try again.");
@@ -65,7 +67,7 @@ export default function useTasks() {
       setError("Couldn't reach the server. Check your connection.");
       return null;
     }
-  }, []);
+  }, [userId]);
 
   const patchTask = useCallback(async (taskId, updates) => {
     const snapshot = tasksRef.current;
