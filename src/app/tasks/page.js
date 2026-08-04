@@ -42,6 +42,14 @@ const PRIORITY_OPTIONS = [
   { id: 4, label: "Priority 4 (None)", emoji: "⚪" },
 ];
 
+const COLUMN_LABELS = {
+  id: "Task ID",
+  text: "Task Name",
+  priority: "Priority",
+  deadline: "Deadline",
+  actions: "Actions",
+};
+
 const EditTaskForm = ({ task, onSave, onCancel }) => {
   const [priority, setPriority] = useState(task?.priority || 4);
   const [deadline, setDeadline] = useState(task?.deadline || "");
@@ -136,8 +144,6 @@ const TaskList = () => {
   const [sorting, setSorting] = useState([{ id: "priority", desc: false }]);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [isDeleting, setIsDeleting] = useState(false);
-  const [exportMenuOpen, setExportMenuOpen] = useState(false);
-  const exportMenuRef = useRef(null);
 
   const { searchTerm: searchQuery, setSearchTerm: setSearchQuery, addTaskSignal } = useSearch();
   const { data: authSession } = useSession();
@@ -185,17 +191,6 @@ const TaskList = () => {
     );
   }, [tasks, searchQuery]);
 
-  useEffect(() => {
-    if (!exportMenuOpen) return;
-    const handleClickOutside = (event) => {
-      if (exportMenuRef.current && !exportMenuRef.current.contains(event.target)) {
-        setExportMenuOpen(false);
-      }
-    };
-    document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [exportMenuOpen]);
-
   const escapeCsvValue = (value) => {
     const str = String(value ?? "");
     return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str;
@@ -228,12 +223,6 @@ const TaskList = () => {
 
   const handleExportAll = () => {
     downloadCSV(tasks, `tasks-all-${new Date().toISOString().slice(0, 10)}.csv`);
-    setExportMenuOpen(false);
-  };
-
-  const handleExportFiltered = () => {
-    downloadCSV(filteredTasks, `tasks-filtered-${new Date().toISOString().slice(0, 10)}.csv`);
-    setExportMenuOpen(false);
   };
 
   const handleView = (task) => {
@@ -342,7 +331,8 @@ const TaskList = () => {
               onClick={() => handleView(row.original)}
               title="View task"
             >
-              👁 View
+              <span aria-hidden="true">👁</span>
+              <span className="action-btn-label">View</span>
             </button>
             {isAdmin && (
               <button
@@ -351,7 +341,8 @@ const TaskList = () => {
                 onClick={() => handleEdit(row.original)}
                 title="Edit task"
               >
-                ✎ Edit
+                <span aria-hidden="true">✎</span>
+                <span className="action-btn-label">Edit</span>
               </button>
             )}
             {isAdmin && (
@@ -361,7 +352,8 @@ const TaskList = () => {
                 onClick={() => setDeleteTarget(row.original)}
                 title="Delete task"
               >
-                🗑 Delete
+                <span aria-hidden="true">🗑</span>
+                <span className="action-btn-label">Delete</span>
               </button>
             )}
           </div>
@@ -454,25 +446,13 @@ const TaskList = () => {
                     ))}
                   </select>
                 </div>
-                <div className="export-menu-wrapper" ref={exportMenuRef}>
-                  <button
-                    type="button"
-                    className="export-header-btn"
-                    onClick={() => setExportMenuOpen((v) => !v)}
-                  >
-                    ⬇ Export
-                  </button>
-                  {exportMenuOpen && (
-                    <div className="export-dropdown-menu">
-                      <button type="button" onClick={handleExportAll}>
-                        All tasks ({tasks.length})
-                      </button>
-                      <button type="button" onClick={handleExportFiltered}>
-                        Filtered / visible tasks ({filteredTasks.length})
-                      </button>
-                    </div>
-                  )}
-                </div>
+                <button
+                  type="button"
+                  className="export-header-btn"
+                  onClick={handleExportAll}
+                >
+                  ⬇ Export
+                </button>
                 <button
                   type="button"
                   className="add-task-header-btn"
@@ -510,7 +490,7 @@ const TaskList = () => {
                     rows.map((row) => (
                       <tr key={row.id} className={row.original.completed ? "row-completed" : ""}>
                         {row.getVisibleCells().map((cell) => (
-                          <td key={cell.id}>
+                          <td key={cell.id} data-label={COLUMN_LABELS[cell.column.id] || ""}>
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </td>
                         ))}

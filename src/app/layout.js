@@ -4,14 +4,14 @@ import TopBar from "@/components/topbar";
 import Footer from "@/components/footer";
 import { SearchProvider } from "@/components/SearchContext";
 import { SessionProvider } from "next-auth/react";
-
+import useIsDesktop from "@/hooks/useIsDesktop";
 const newsreader = Newsreader({
   variable: "--font-display",
   style: ["italic"],
   weight: ["500", "600"],
   subsets: ["latin"],
 });
-
+const isDesktop=useIsDesktop;
 const bricolage = Bricolage_Grotesque({
   variable: "--font-sans",
   subsets: ["latin"],

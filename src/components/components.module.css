@@ -951,6 +951,28 @@
   transform: translateY(-1px);
 }
 
+.connectDeviceButton {
+  display: inline-flex;
+  align-items: center;
+  height: 40px;
+  padding: 0 0.9rem;
+  border-radius: 10px;
+  background: transparent;
+  border: 1px solid var(--color-border);
+  color: var(--color-accent);
+  font-size: 0.85rem;
+  font-weight: 600;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background-color 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.connectDeviceButton:hover {
+  background-color: var(--color-surface-muted);
+  transform: translateY(-1px);
+}
+
 .searchExpandWrapper {
   display: flex;
   align-items: center;
@@ -1346,4 +1368,90 @@
 
 .confirmNo:hover {
   background: var(--color-surface-muted);
+}
+
+
+.overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  background-color: rgba(15, 23, 42, 0.45);
+  backdrop-filter: blur(2px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+}
+
+.modal {
+  position: relative;
+  width: 100%;
+  max-width: 360px;
+  border-radius: 1.25rem;
+  background-color: var(--bg-elevated);
+  border: 1px solid var(--border);
+  box-shadow: var(--shadow-card-lg);
+  padding: 2rem 1.75rem 1.75rem;
+  text-align: center;
+}
+
+.closeBtn {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: none;
+  background-color: var(--surface-muted);
+  color: var(--muted);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.closeBtn:hover {
+  background-color: var(--border);
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: var(--heading);
+  margin: 0 0 0.5rem;
+}
+
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--muted);
+  margin: 0 0 1.25rem;
+  line-height: 1.4;
+}
+
+.helperText {
+  font-size: 0.85rem;
+  color: var(--faint);
+}
+
+.errorText {
+  font-size: 0.85rem;
+  color: var(--color-danger);
+}
+
+.codeDisplay {
+  font-size: 2.1rem;
+  font-weight: 700;
+  letter-spacing: 0.35em;
+  color: var(--heading);
+  padding: 0.9rem 0.5rem;
+  border-radius: 0.9rem;
+  background-color: var(--surface-muted);
+  border: 1px solid var(--border);
+}
+
+.expiryText {
+  margin-top: 0.75rem;
+  font-size: 0.78rem;
+  color: var(--faint);
 }

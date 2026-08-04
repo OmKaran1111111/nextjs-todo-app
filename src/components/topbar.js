@@ -47,19 +47,45 @@ const TopBar = () => {
 
   const isActive = (path) => pathname === path;
 
-  const links = [
-    { path: "/", label: "Home" },
-    { path: "/Dashboard", label: "DashBoard" },
-    { path: "/tasks", label: "Tasks" },
-    ...(isAdmin ? [{ path: "/Manage_Users", label: "Users" }] : []),
+  const navConfig = [
+    { type: "link", path: "/", label: "Home" },
+    { type: "link", path: "/Dashboard", label: "DashBoard" },
+    {
+      type: "group",
+      id: "task",
+      label: "Task",
+      children: [
+        { path: "/tasks", label: "All Tasks" },
+        { path: "/tasks?add=1", label: "Add Task" },
+      ],
+    },
+    ...(isAdmin ? [{ type: "link", path: "/Manage_Users", label: "Users" }] : []),
   ];
 
-  const activeKey = links.find((l) => isActive(l.path))?.path;
+  const isGroupActive = (group) => group.children.some((child) => isActive(child.path));
+  const getKey = (item) => (item.type === "group" ? item.id : item.path);
+
+  const [expandedGroups, setExpandedGroups] = useState({});
+  const toggleGroup = (id) => setExpandedGroups((prev) => ({ ...prev, [id]: !prev[id] }));
+
+  // Auto-expand a group when one of its own links becomes the active route.
+  useEffect(() => {
+    navConfig.forEach((item) => {
+      if (item.type === "group" && isGroupActive(item)) {
+        setExpandedGroups((prev) => (prev[item.id] ? prev : { ...prev, [item.id]: true }));
+      }
+    });
+  }, [pathname]);
+
+  const activeItem = navConfig.find((item) =>
+    item.type === "group" ? isGroupActive(item) : isActive(item.path)
+  );
+  const activeKey = activeItem ? getKey(activeItem) : undefined;
 
   useEffect(() => {
     const node = rowRefs.current[activeKey];
     if (node) setIndicatorTop(node.offsetTop);
-  }, [activeKey]);
+  }, [activeKey, expandedGroups]);
 
   useEffect(() => {
     setIsSearchOpen(false);
@@ -189,22 +215,71 @@ const TopBar = () => {
           />
 
           <ul className={styles.navList}>
-            {links.map(({ path, label }) => (
-              <li
-                key={path}
-                ref={(el) => (rowRefs.current[path] = el)}
-                className={`${styles.navRow} ${isActive(path) ? styles.navRowActive : ""}`}
-              >
-                <Link
-                  href={path}
-                  onClick={closeSidebar}
-                  className={styles.navRowLink}
-                  aria-current={isActive(path) ? "page" : undefined}
+            {navConfig.map((item) => {
+              if (item.type === "group") {
+                const expanded = !!expandedGroups[item.id];
+                return (
+                  <li
+                    key={item.id}
+                    ref={(el) => (rowRefs.current[item.id] = el)}
+                    className={`${styles.navRow} ${
+                      isGroupActive(item) ? styles.navRowActive : ""
+                    }`}
+                  >
+                    <button
+                      type="button"
+                      className={styles.navRowToggle}
+                      onClick={() => toggleGroup(item.id)}
+                      aria-expanded={expanded}
+                    >
+                      <span>{item.label}</span>
+                      <span
+                        className={styles.chevron}
+                        style={{ transform: expanded ? "rotate(90deg)" : "rotate(0deg)" }}
+                      >
+                        ▸
+                      </span>
+                    </button>
+
+                    {expanded && (
+                      <ul className={styles.subNavList}>
+                        {item.children.map((child) => (
+                          <li key={child.path} className={styles.subNavRow}>
+                            <Link
+                              href={child.path}
+                              onClick={closeSidebar}
+                              className={`${styles.subNavLink} ${
+                                isActive(child.path) ? styles.subNavLinkActive : ""
+                              }`}
+                              aria-current={isActive(child.path) ? "page" : undefined}
+                            >
+                              {child.label}
+                            </Link>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
+                  </li>
+                );
+              }
+
+              return (
+                <li
+                  key={item.path}
+                  ref={(el) => (rowRefs.current[item.path] = el)}
+                  className={`${styles.navRow} ${isActive(item.path) ? styles.navRowActive : ""}`}
                 >
-                  {label}
-                </Link>
-              </li>
-            ))}
+                  <Link
+                    href={item.path}
+                    onClick={closeSidebar}
+                    className={styles.navRowLink}
+                    aria-current={isActive(item.path) ? "page" : undefined}
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              );
+            })}
           </ul>
         </div>
 

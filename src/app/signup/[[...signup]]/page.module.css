@@ -173,6 +173,25 @@
   margin-left: 0.625rem;
 }
 
+.passwordToggleBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--auth-text);
+  opacity: 0.75;
+  flex-shrink: 0;
+  margin-left: 0.625rem;
+  background: none;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  transition: opacity 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.passwordToggleBtn:hover {
+  opacity: 1;
+}
+
 .rememberForgotWrap {
   font-size: 13.5px;
   display: flex;

@@ -51,6 +51,34 @@ db.exec(`
   );
 
   CREATE INDEX IF NOT EXISTS idx_tasks_userId ON tasks(userId);
+
+  CREATE TABLE IF NOT EXISTS devices (
+    id TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    deviceName TEXT,
+    browserName TEXT,
+    browserVersion TEXT,
+    os TEXT,
+    appVersion TEXT,
+    userAgent TEXT,
+    createdAt TEXT NOT NULL,
+    lastActiveAt TEXT NOT NULL,
+    expiresAt TEXT NOT NULL,
+    revoked INTEGER DEFAULT 0,
+    revokedAt TEXT,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+  );
+
+  CREATE INDEX IF NOT EXISTS idx_devices_userId ON devices(userId);
+
+  CREATE TABLE IF NOT EXISTS pairing_codes (
+    code TEXT PRIMARY KEY,
+    userId TEXT NOT NULL,
+    expiresAt TEXT NOT NULL,
+    used INTEGER DEFAULT 0,
+    createdAt TEXT NOT NULL,
+    FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
+  );
 `);
 
 db.pragma("foreign_keys = OFF");

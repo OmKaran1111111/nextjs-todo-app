@@ -3,14 +3,18 @@ import { CredentialsSignin } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
+import { headers } from "next/headers";
 import { verifyPassword } from "@/lib/users";
 import { authConfig } from "@/auth.config";
 import { checkRateLimit, resetRateLimit } from "@/lib/rateLimit";
+import { createDeviceSession, getDeviceById, consumePairingCode } from "@/lib/devices";
 import db from "@/lib/db";
 import crypto from "crypto";
 
 const LOGIN_MAX_ATTEMPTS = 5;
 const LOGIN_WINDOW_MS = 15 * 60 * 1000;
+const PAIRING_MAX_ATTEMPTS = 5;
+const PAIRING_WINDOW_MS = 10 * 60 * 1000;
 
 class BannedError extends CredentialsSignin {
   code = "banned";
@@ -46,6 +50,40 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
           resetRateLimit(limitKey);
         }
         return user;
+      },
+    }),
+    Credentials({
+      id: "pairing-code",
+      name: "Pairing Code",
+      credentials: { code: {}, deviceName: {}, appVersion: {} },
+      authorize: async (credentials, request) => {
+        const code = credentials?.code?.toString().trim();
+        if (!code) return null;
+
+        const ip = request?.headers?.get("x-forwarded-for") || "unknown";
+        const { allowed } = checkRateLimit(`pairing:${ip}`, {
+          maxRequests: PAIRING_MAX_ATTEMPTS,
+          windowMs: PAIRING_WINDOW_MS,
+        });
+        if (!allowed) {
+          throw new Error("Too many attempts. Please try again later.");
+        }
+
+        const record = consumePairingCode(code);
+        if (!record) return null;
+
+        const user = db
+          .prepare("SELECT id, email, name FROM users WHERE id = ?")
+          .get(record.userId);
+        if (!user) return null;
+
+        return {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          deviceName: credentials?.deviceName?.toString() || undefined,
+          appVersion: credentials?.appVersion?.toString() || undefined,
+        };
       },
     }),
     Google({
@@ -88,6 +126,24 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     },
 
     async jwt({ token, user }) {
+      if (user) {
+        const headerList = await headers();
+        const userAgent = headerList.get("user-agent") || "";
+        token.deviceId = createDeviceSession({
+          userId: user.id,
+          userAgent,
+          deviceName: user.deviceName,
+          appVersion: user.appVersion,
+        });
+      }
+
+      if (token?.deviceId) {
+        const device = getDeviceById(token.deviceId);
+        if (!device || device.revoked) {
+          return null;
+        }
+      }
+
       if (token?.email) {
         const email = token.email.trim().toLowerCase();
 
@@ -118,6 +174,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session?.user && token?.id) {
         session.user.id = token.id;
         session.user.role = token.role || "user";
+        session.user.deviceId = token.deviceId;
       }
       return session;
     },

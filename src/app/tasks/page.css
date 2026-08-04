@@ -156,7 +156,143 @@
 .task-table {
   width: 100%;
   border-collapse: collapse;
-  min-width: 720px;
+  min-width: 540px;
+}
+
+/* Icon-only action buttons by default; label re-appears only when there's clearly room */
+.action-btn-label {
+  display: none;
+}
+
+@media (min-width: 1280px) {
+  .action-btn-label {
+    display: inline;
+  }
+}
+
+/* The side panel (view/add/edit) competes for horizontal space with the table,
+   so compact the table whenever it's open regardless of viewport width. */
+.desktop-content.layout-split .task-table {
+  min-width: 420px;
+}
+
+.desktop-content.layout-split .task-table thead th,
+.desktop-content.layout-split .task-table tbody td {
+  padding: 0.45rem 0.6rem;
+  font-size: 0.78rem;
+}
+
+.desktop-content.layout-split .action-btn-label {
+  display: none;
+}
+
+/* A pinned/open sidebar shrinks #page-content by 260px on top of that */
+@media (min-width: 768px) {
+  body.sidebar-open .desktop-content.layout-split .task-table {
+    min-width: 380px;
+  }
+}
+
+@media (max-width: 640px) {
+  .task-table-wrapper {
+    overflow-x: visible;
+    border: none;
+    background: transparent;
+    box-shadow: none;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+  }
+
+  .task-table {
+    min-width: 0;
+    width: 100%;
+  }
+
+  .task-table thead {
+    display: none;
+  }
+
+  .task-table,
+  .task-table tbody,
+  .task-table tr,
+  .task-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .task-table tbody tr {
+    margin-bottom: 0.75rem;
+    padding: 0.35rem 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 0.85rem;
+    background-color: var(--surface);
+    box-shadow: var(--shadow-card);
+  }
+
+  .task-table tbody tr:last-child {
+    margin-bottom: 0;
+  }
+
+  .task-table tbody td {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.55rem 0;
+    border-bottom: 1px solid var(--border-soft);
+    font-size: 0.82rem;
+    text-align: right;
+  }
+
+  .task-table tbody td:last-child {
+    border-bottom: none;
+  }
+
+  .task-table tbody td::before {
+    content: attr(data-label);
+    flex-shrink: 0;
+    font-size: 0.7rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color: var(--faint);
+    text-align: left;
+  }
+
+  .task-table tbody td[data-label="Actions"] {
+    justify-content: flex-start;
+  }
+
+  .task-table tbody td[data-label="Actions"]::before {
+    display: none;
+  }
+
+  .task-table tbody td.empty-row {
+    display: block;
+    text-align: center;
+    padding: 1.75rem 1rem;
+  }
+
+  .task-table tbody td.empty-row::before {
+    content: none;
+  }
+
+  .action-btn-label {
+    display: inline;
+  }
+
+  .priority-badge {
+    padding: 0.14rem 0.4rem;
+    font-size: 0.68rem;
+  }
+
+  .task-id-cell {
+    font-size: 0.72rem;
+  }
+
+  .action-buttons {
+    gap: 0.4rem;
+  }
 }
 
 .task-table thead th {
@@ -590,10 +726,6 @@
   filter: brightness(0.92);
 }
 
-.export-menu-wrapper {
-  position: relative;
-}
-
 .export-header-btn {
   padding: 0.5rem 0.95rem;
   border-radius: 0.65rem;
@@ -608,35 +740,6 @@
 
 .export-header-btn:hover {
   filter: brightness(0.96);
-}
-
-.export-dropdown-menu {
-  position: absolute;
-  top: calc(100% + 0.4rem);
-  right: 0;
-  min-width: 220px;
-  background-color: var(--surface, #fff);
-  border: 1px solid var(--border);
-  border-radius: 0.65rem;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
-  z-index: 30;
-  overflow: hidden;
-}
-
-.export-dropdown-menu button {
-  display: block;
-  width: 100%;
-  text-align: left;
-  padding: 0.6rem 0.85rem;
-  border: none;
-  background: none;
-  color: var(--body);
-  font-size: 0.85rem;
-  cursor: pointer;
-}
-
-.export-dropdown-menu button:hover {
-  background-color: var(--surface-muted);
 }
 
 .task-id-cell {

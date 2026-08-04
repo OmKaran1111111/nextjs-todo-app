@@ -1,7 +1,8 @@
 "use server";
 
-import { signIn, signOut } from "@/auth";
+import { signIn, signOut, auth } from "@/auth";
 import { createUser, deleteUser, toggleBanUser } from "@/lib/users";
+import { createPairingCode, revokeDevice } from "@/lib/devices";
 import { revalidatePath } from "next/cache";
 
 export async function doSocialLogin(formData) {
@@ -39,4 +40,23 @@ export async function toggleBanAction(formData) {
   if (!id) return;
   await toggleBanUser(id);
   revalidatePath("/Manage_Users");
+}
+
+export async function generatePairingCodeAction() {
+  const session = await auth();
+  if (!session?.user?.id) {
+    throw new Error("You must be logged in to connect a new device.");
+  }
+  return createPairingCode(session.user.id);
+}
+
+export async function revokeDeviceAction(formData) {
+  const id = formData.get("id");
+  if (!id) return;
+
+  const session = await auth();
+  if (!session?.user?.id) return;
+
+  revokeDevice(id, session.user.id, session.user.role === "admin");
+  revalidatePath("/Devices");
 }
