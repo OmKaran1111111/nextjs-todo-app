@@ -123,11 +123,21 @@ export function revokeDevice(id, requestingUserId, isAdmin) {
   return true;
 }
 
+const ACTIVE_THRESHOLD_MS = 5 * 60 * 1000; // seen in the last 5 minutes
+const IDLE_THRESHOLD_MS = 24 * 60 * 60 * 1000; // seen in the last 24 hours
+
 export function getDeviceStatus(device) {
   if (device.revoked) return { label: "Revoked", tone: "danger" };
   if (new Date(device.expiresAt) < new Date()) return { label: "Expired", tone: "warning" };
   if (isOutdatedAppVersion(device.appVersion)) return { label: "Outdated app version", tone: "warning" };
-  return { label: "Active", tone: "success" };
+
+  const msSinceActive = device.lastActiveAt
+    ? Date.now() - new Date(device.lastActiveAt).getTime()
+    : Infinity;
+
+  if (msSinceActive <= ACTIVE_THRESHOLD_MS) return { label: "Active", tone: "success" };
+  if (msSinceActive <= IDLE_THRESHOLD_MS) return { label: "Idle", tone: "warning" };
+  return { label: "Inactive", tone: "muted" };
 }
 
 export function createPairingCode(userId) {

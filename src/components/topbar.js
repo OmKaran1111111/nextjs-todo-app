@@ -50,6 +50,7 @@ const TopBar = () => {
   const navConfig = [
     { type: "link", path: "/", label: "Home" },
     { type: "link", path: "/Dashboard", label: "DashBoard" },
+    { type: "link", path: "/Devices", label: "Devices"},
     {
       type: "group",
       id: "task",
