@@ -51,15 +51,7 @@ const TopBar = () => {
     { type: "link", path: "/", label: "Home" },
     { type: "link", path: "/Dashboard", label: "DashBoard" },
     { type: "link", path: "/Devices", label: "Devices"},
-    {
-      type: "group",
-      id: "task",
-      label: "Task",
-      children: [
-        { path: "/tasks", label: "All Tasks" },
-        { path: "/tasks?add=1", label: "Add Task" },
-      ],
-    },
+    { type: "link", path: "/tasks", label: "Task" },
     ...(isAdmin ? [{ type: "link", path: "/Manage_Users", label: "Users" }] : []),
   ];
 
@@ -69,7 +61,6 @@ const TopBar = () => {
   const [expandedGroups, setExpandedGroups] = useState({});
   const toggleGroup = (id) => setExpandedGroups((prev) => ({ ...prev, [id]: !prev[id] }));
 
-  // Auto-expand a group when one of its own links becomes the active route.
   useEffect(() => {
     navConfig.forEach((item) => {
       if (item.type === "group" && isGroupActive(item)) {
