@@ -24,8 +24,15 @@ export const authConfig = {
         return false;
       }
 
+      const permissions = auth?.user?.permissions || [];
+      const isAdmin = auth?.user?.role === "admin";
+
       if (pathname.startsWith("/Manage_Users")) {
-        return auth?.user?.role === "admin";
+        return isAdmin || permissions.includes("users:manage") || permissions.includes("users:view");
+      }
+
+      if (pathname.startsWith("/Roles")) {
+        return isAdmin || permissions.includes("roles:manage");
       }
 
       return true;
@@ -34,6 +41,7 @@ export const authConfig = {
       if (user) {
         token.id = user.id;
         token.role = user.role;
+        token.permissions = user.permissions;
       }
       return token;
     },
@@ -41,6 +49,7 @@ export const authConfig = {
       if (session?.user) {
         session.user.id = token.id;
         session.user.role = token.role;
+        session.user.permissions = token.permissions || [];
       }
       return session;
     },

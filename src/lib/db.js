@@ -82,6 +82,20 @@ function initDb() {
       createdAt TEXT NOT NULL,
       FOREIGN KEY (userId) REFERENCES users(id) ON DELETE CASCADE
     );
+
+    CREATE TABLE IF NOT EXISTS roles (
+      name TEXT PRIMARY KEY,
+      description TEXT,
+      isSystem INTEGER DEFAULT 0,
+      createdAt TEXT NOT NULL
+    );
+
+    CREATE TABLE IF NOT EXISTS role_permissions (
+      role TEXT NOT NULL,
+      permission TEXT NOT NULL,
+      PRIMARY KEY (role, permission),
+      FOREIGN KEY (role) REFERENCES roles(name) ON DELETE CASCADE
+    );
   `);
 
   db.pragma("foreign_keys = OFF");
@@ -173,7 +187,75 @@ function initDb() {
     db.exec("ALTER TABLE users ADD COLUMN isBanned INTEGER DEFAULT 0");
   }
 
+  seedDefaultRoles(db);
+
   return db;
+}
+
+const ALL_PERMISSION_KEYS = [
+  "users:view",
+  "users:manage",
+  "roles:manage",
+  "tasks:view_own",
+  "tasks:manage_own",
+  "tasks:view_all",
+  "devices:view_own",
+  "devices:manage_own",
+  "devices:manage_all",
+];
+
+const DEFAULT_USER_PERMISSIONS = [
+  "tasks:view_own",
+  "tasks:manage_own",
+  "devices:view_own",
+  "devices:manage_own",
+];
+
+function seedDefaultRoles(db) {
+  const roleCount = db.prepare("SELECT COUNT(*) AS count FROM roles").get().count;
+  if (roleCount > 0) {
+
+    const distinctRoles = db
+      .prepare("SELECT DISTINCT role FROM users WHERE role IS NOT NULL AND role != ''")
+      .all()
+      .map((r) => r.role);
+
+    const insertRole = db.prepare(
+      "INSERT OR IGNORE INTO roles (name, description, isSystem, createdAt) VALUES (?, ?, 0, ?)"
+    );
+    const insertPerm = db.prepare(
+      "INSERT OR IGNORE INTO role_permissions (role, permission) VALUES (?, ?)"
+    );
+
+    db.transaction(() => {
+      for (const roleName of distinctRoles) {
+        insertRole.run(roleName, null, new Date().toISOString());
+        const hasPerms = db
+          .prepare("SELECT COUNT(*) AS count FROM role_permissions WHERE role = ?")
+          .get(roleName).count;
+        if (hasPerms === 0) {
+          for (const perm of DEFAULT_USER_PERMISSIONS) insertPerm.run(roleName, perm);
+        }
+      }
+    })();
+    return;
+  }
+
+  const now = new Date().toISOString();
+  const insertRole = db.prepare(
+    "INSERT INTO roles (name, description, isSystem, createdAt) VALUES (?, ?, ?, ?)"
+  );
+  const insertPerm = db.prepare(
+    "INSERT INTO role_permissions (role, permission) VALUES (?, ?)"
+  );
+
+  db.transaction(() => {
+    insertRole.run("admin", "Full access to every module, including user and role management.", 1, now);
+    for (const perm of ALL_PERMISSION_KEYS) insertPerm.run("admin", perm);
+
+    insertRole.run("user", "Standard member with access to their own tasks and devices.", 1, now);
+    for (const perm of DEFAULT_USER_PERMISSIONS) insertPerm.run("user", perm);
+  })();
 }
 
 function getDb() {

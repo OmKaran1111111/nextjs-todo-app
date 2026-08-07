@@ -1,9 +1,11 @@
 "use server";
 
 import { signIn, signOut, auth } from "@/auth";
-import { createUser, deleteUser, toggleBanUser } from "@/lib/users";
+import { createUser, deleteUser, toggleBanUser, updateUser } from "@/lib/users";
+import { createRole, updateRole, deleteRole, getRoleByName } from "@/lib/permissions";
 import { createPairingCode, revokeDevice } from "@/lib/devices";
 import { revalidatePath } from "next/cache";
+import { redirect } from "next/navigation";
 
 export async function doSocialLogin(formData) {
   const action = formData.get("action");
@@ -14,19 +16,47 @@ export async function doLogout() {
   await signOut({ redirectTo: "/login" });
 }
 
+async function requirePermission(permission) {
+  const session = await auth();
+  const isAdmin = session?.user?.role === "admin";
+  const allowed = isAdmin || session?.user?.permissions?.includes(permission);
+  if (!allowed) throw new Error("You don't have permission to do that.");
+  return session;
+}
+
 export async function addUserAction(formData) {
+  await requirePermission("users:manage");
+
   const email = formData.get("email");
   const name = formData.get("name");
   const password = formData.get("password");
   const role = formData.get("role") || "user";
 
   if (!email || !password) return;
+  if (!getRoleByName(role)) throw new Error("Unknown role.");
 
   await createUser({ email, name, password, role });
   revalidatePath("/Manage_Users");
 }
 
+export async function updateUserAction(formData) {
+  await requirePermission("users:manage");
+
+  const id = formData.get("id");
+  const name = formData.get("name");
+  const email = formData.get("email");
+  const role = formData.get("role");
+  if (!id) return;
+  if (role && !getRoleByName(role)) throw new Error("Unknown role.");
+
+  updateUser(id, { name, email, role });
+  revalidatePath("/Manage_Users");
+  redirect("/Manage_Users");
+}
+
 export async function deleteUserAction(formData) {
+  await requirePermission("users:manage");
+
   const id = formData.get("id");
   if (!id) return;
 
@@ -36,9 +66,47 @@ export async function deleteUserAction(formData) {
 
 
 export async function toggleBanAction(formData) {
+  await requirePermission("users:manage");
+
   const id = formData.get("id");
   if (!id) return;
   await toggleBanUser(id);
+  revalidatePath("/Manage_Users");
+}
+
+export async function createRoleAction(formData) {
+  await requirePermission("roles:manage");
+
+  const name = formData.get("name");
+  const description = formData.get("description");
+  const permissions = formData.getAll("permissions");
+
+  createRole({ name, description, permissions });
+  revalidatePath("/Roles");
+  revalidatePath("/Manage_Users");
+}
+
+export async function updateRoleAction(formData) {
+  await requirePermission("roles:manage");
+
+  const name = formData.get("name");
+  const description = formData.get("description");
+  const permissions = formData.getAll("permissions");
+  if (!name) return;
+
+  updateRole(name, { description, permissions });
+  revalidatePath("/Roles");
+  revalidatePath("/Manage_Users");
+}
+
+export async function deleteRoleAction(formData) {
+  await requirePermission("roles:manage");
+
+  const name = formData.get("name");
+  if (!name) return;
+
+  deleteRole(name);
+  revalidatePath("/Roles");
   revalidatePath("/Manage_Users");
 }
 

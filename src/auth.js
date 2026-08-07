@@ -5,6 +5,7 @@ import Google from "next-auth/providers/google";
 import Credentials from "next-auth/providers/credentials";
 import { headers } from "next/headers";
 import { verifyPassword } from "@/lib/users";
+import { getPermissionsForRole } from "@/lib/permissions";
 import { authConfig } from "@/auth.config";
 import { checkRateLimit, resetRateLimit } from "@/lib/rateLimit";
 import { createDeviceSession, getDeviceById, consumePairingCode } from "@/lib/devices";
@@ -166,6 +167,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         token.id = dbUser.id;
         token.role = dbUser.role || "user";
+        token.permissions = getPermissionsForRole(token.role);
       }
       return token;
     },
@@ -174,6 +176,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       if (session?.user && token?.id) {
         session.user.id = token.id;
         session.user.role = token.role || "user";
+        session.user.permissions = token.permissions || [];
         session.user.deviceId = token.deviceId;
       }
       return session;

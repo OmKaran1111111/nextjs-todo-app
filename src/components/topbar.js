@@ -23,6 +23,9 @@ const TopBar = () => {
   const isDesktop = useIsDesktop();
   const pathname = usePathname();
   const isAdmin = session?.user?.role === "admin";
+  const permissions = session?.user?.permissions || [];
+  const canManageUsers = isAdmin || permissions.includes("users:manage") || permissions.includes("users:view");
+  const canManageRoles = isAdmin || permissions.includes("roles:manage");
   const toggleSidebar = () => setIsOpen((prev) => !prev);
   const closeSidebar = () => {
     if (!isPinned) setIsOpen(false);
@@ -52,7 +55,8 @@ const TopBar = () => {
     { type: "link", path: "/Dashboard", label: "DashBoard" },
     { type: "link", path: "/Devices", label: "Devices"},
     { type: "link", path: "/tasks", label: "Task" },
-    ...(isAdmin ? [{ type: "link", path: "/Manage_Users", label: "Users" }] : []),
+    ...(canManageUsers ? [{ type: "link", path: "/Manage_Users", label: "Users" }] : []),
+    ...(canManageRoles ? [{ type: "link", path: "/Roles", label: "Roles" }] : []),
   ];
 
   const isGroupActive = (group) => group.children.some((child) => isActive(child.path));

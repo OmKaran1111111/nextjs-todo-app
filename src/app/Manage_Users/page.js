@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { getAllUsers } from "@/lib/users";
+import { getAllRoles } from "@/lib/permissions";
 import { addUserAction, deleteUserAction, toggleBanAction } from "@/app/actions";
 import styles from "./page.module.css";
 
@@ -41,6 +42,7 @@ function formatJoined(createdAt) {
 
 export default function Manage_Users() {
   const users = getAllUsers();
+  const roles = getAllRoles();
 
   return (
     <main className={styles.container}>
@@ -76,14 +78,23 @@ export default function Manage_Users() {
               <label className={styles.fieldLabel}>
                 Role
                 <select name="role" defaultValue="user" className={styles.select}>
-                  <option value="user">User</option>
-                  <option value="admin">Admin</option>
+                  {roles.map((role) => (
+                    <option key={role.name} value={role.name}>
+                      {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
+                    </option>
+                  ))}
                 </select>
               </label>
               <button type="submit" className={styles.btnPrimary}>
                 Add user
               </button>
             </form>
+            <p className={styles.rosterCount} style={{ marginTop: "0.75rem" }}>
+              Need a different set of permissions?{" "}
+              <Link href="/Roles" style={{ color: "var(--primary)", fontWeight: 600 }}>
+                Manage roles
+              </Link>
+            </p>
           </section>
 
           <section className={styles.rosterSection}>
@@ -136,7 +147,9 @@ export default function Manage_Users() {
                           </td>
                           <td className={styles.td}>
                             <span className={isAdmin ? styles.roleBadgeAdmin : styles.roleBadgeUser}>
-                              {isAdmin ? "Admin" : "User"}
+                              {user.role
+                                ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+                                : "User"}
                             </span>
                           </td>
                           <td className={styles.td}>
@@ -154,6 +167,12 @@ export default function Manage_Users() {
                           </td>
                           <td className={`${styles.td} ${styles.textRight}`}>
                             <div className={styles.actionGroup}>
+                              <Link
+                                href={`/Manage_Users/${user.id}/edit`}
+                                className={styles.actionBtnBan}
+                              >
+                                Edit
+                              </Link>
                               <form action={toggleBanAction}>
                                 <input type="hidden" name="id" value={user.id} />
                                 <button
@@ -185,3 +204,4 @@ export default function Manage_Users() {
     </main>
   );
 }
+ 

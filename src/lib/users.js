@@ -40,6 +40,30 @@ export async function createUser({ email, name, password, role = "user" }) {
     "INSERT INTO users (id, email, name, passwordHash, role, verified, isBanned, createdAt) VALUES (?, ?, ?, ?, ?, 1, 0, ?)"
   ).run(id, email.trim().toLowerCase(), name, passwordHash, role, createdAt);
 }
+export function getUserById(id) {
+  return (
+    db
+      .prepare("SELECT id, email, name, verified, role, isBanned, createdAt FROM users WHERE id = ?")
+      .get(id) || null
+  );
+}
+
+export function updateUser(id, { name, email, role }) {
+  const existing = db.prepare("SELECT id FROM users WHERE id = ?").get(id);
+  if (!existing) throw new Error("User not found.");
+
+  if (email) {
+    const clash = db
+      .prepare("SELECT id FROM users WHERE lower(email) = lower(?) AND id != ?")
+      .get(email, id);
+    if (clash) throw new Error("Another user already has that email.");
+  }
+
+  db.prepare(
+    "UPDATE users SET name = COALESCE(?, name), email = COALESCE(?, email), role = COALESCE(?, role) WHERE id = ?"
+  ).run(name ?? null, email ? email.trim().toLowerCase() : null, role ?? null, id);
+}
+
 export function deleteUser(id) {
   db.prepare("DELETE FROM users WHERE id = ?").run(id);
 }
