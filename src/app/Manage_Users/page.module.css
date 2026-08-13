@@ -8,8 +8,6 @@
   margin: 0 auto;
 }
 
-/* ---------- Header ---------- */
-
 .pageHeader {
   margin-bottom: 1.75rem;
 }
@@ -39,8 +37,6 @@
   margin: 0;
   max-width: 46rem;
 }
-
-/* ---------- Stat strip ---------- */
 
 .statRow {
   display: grid;
@@ -74,8 +70,6 @@
   color: var(--faint);
 }
 
-/* ---------- Layout ---------- */
-
 .layout {
   display: flex;
   flex-direction: column;
@@ -93,10 +87,8 @@
   font-size: 1.05rem;
   font-weight: 700;
   color: var(--heading);
-  margin: 0 0 1rem;
+  margin: 0;
 }
-
-/* ---------- Add user card ---------- */
 
 .formCard {
   width: 100%;
@@ -111,11 +103,58 @@
 
 @media (min-width: 960px) {
   .formCard {
-    width: 300px;
+    width: 340px;
     flex-shrink: 0;
     position: sticky;
     top: 100px;
+    max-height: calc(100vh - 130px);
+    overflow-y: auto;
   }
+}
+
+.formCardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.formCardBody {
+  animation: fadeIn 0.2s ease-out;
+}
+
+.sidePanelSubtitle {
+  font-size: 0.85rem;
+  color: var(--faint);
+  margin: 0.2rem 0 0;
+  word-break: break-word;
+}
+
+.closeBtn {
+  display: flex;
+  height: 2rem;
+  width: 2rem;
+  flex-shrink: 0;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  background-color: var(--surface-muted);
+  font-size: 1rem;
+  color: var(--heading);
+  transition: all 200ms;
+  cursor: pointer;
+  border: none;
+  text-decoration: none;
+}
+
+.closeBtn:hover {
+  background-color: var(--danger-soft);
+  color: var(--danger);
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(2px); }
+  to { opacity: 1; transform: translateY(0); }
 }
 
 .formGrid {
@@ -178,8 +217,6 @@
 .btnPrimary:active {
   transform: scale(0.98);
 }
-
-/* ---------- Roster ---------- */
 
 .rosterSection {
   flex: 1 1 0%;
@@ -274,8 +311,6 @@
   text-align: right;
 }
 
-/* ---------- User cell ---------- */
-
 .userCell {
   display: flex;
   align-items: center;
@@ -331,8 +366,6 @@
   color: var(--muted);
   white-space: nowrap;
 }
-
-/* ---------- Badges ---------- */
 
 .roleBadgeAdmin,
 .roleBadgeUser {
@@ -396,8 +429,6 @@
   opacity: 0.5;
 }
 
-/* ---------- Row actions ---------- */
-
 .actionGroup {
   display: flex;
   justify-content: flex-end;
@@ -407,7 +438,8 @@
 
 .actionBtnBan,
 .actionBtnUnban,
-.actionBtnDelete {
+.actionBtnDelete,
+.actionBtnEdit {
   display: inline-flex;
   align-items: center;
   border: 1px solid var(--border);
@@ -418,6 +450,7 @@
   font-size: 0.75rem;
   font-weight: 600;
   cursor: pointer;
+  text-decoration: none;
   transition: all 0.15s ease-out;
 }
 
@@ -437,4 +470,14 @@
   border-color: var(--danger);
   color: var(--danger);
   background-color: var(--danger-soft);
+}
+
+.actionBtnEdit:hover {
+  border-color: var(--primary);
+  color: var(--primary);
+  background-color: var(--color-info-soft);
+}
+
+.rowActive .td {
+  background-color: var(--color-info-soft);
 }

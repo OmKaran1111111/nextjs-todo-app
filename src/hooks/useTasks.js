@@ -124,9 +124,14 @@ export default function useTasks(userId) {
     [patchTask],
   );
 
+  const findTask = useCallback(
+    (taskId) => tasksRef.current.find((t) => t.id === taskId),
+    [],
+  );
+
   const toggleComplete = useCallback(
     (taskId) => {
-      const task = tasksRef.current.find((t) => t.id === taskId);
+      const task = findTask(taskId);
       if (!task) return;
       const completed = !task.completed;
       return patchTask(taskId, {
@@ -134,12 +139,12 @@ export default function useTasks(userId) {
         completedAt: completed ? new Date().toISOString() : null,
       });
     },
-    [patchTask],
+    [patchTask, findTask],
   );
 
   const addSubtask = useCallback(
     (taskId, text) => {
-      const task = tasksRef.current.find((t) => t.id === taskId);
+      const task = findTask(taskId);
       if (!task) return;
       const subtasks = [
         ...(task.subtasks || []),
@@ -147,29 +152,29 @@ export default function useTasks(userId) {
       ];
       return patchTask(taskId, { subtasks });
     },
-    [patchTask],
+    [patchTask, findTask],
   );
 
   const toggleSubtask = useCallback(
     (taskId, subtaskId) => {
-      const task = tasksRef.current.find((t) => t.id === taskId);
+      const task = findTask(taskId);
       if (!task) return;
       const subtasks = (task.subtasks || []).map((s) =>
         s.id === subtaskId ? { ...s, completed: !s.completed } : s,
       );
       return patchTask(taskId, { subtasks });
     },
-    [patchTask],
+    [patchTask, findTask],
   );
 
   const deleteSubtask = useCallback(
     (taskId, subtaskId) => {
-      const task = tasksRef.current.find((t) => t.id === taskId);
+      const task = findTask(taskId);
       if (!task) return;
       const subtasks = (task.subtasks || []).filter((s) => s.id !== subtaskId);
       return patchTask(taskId, { subtasks });
     },
-    [patchTask],
+    [patchTask, findTask],
   );
 
   return {

@@ -5,7 +5,6 @@ import { createUser, deleteUser, toggleBanUser, updateUser } from "@/lib/users";
 import { createRole, updateRole, deleteRole, getRoleByName } from "@/lib/permissions";
 import { createPairingCode, revokeDevice } from "@/lib/devices";
 import { revalidatePath } from "next/cache";
-import { redirect } from "next/navigation";
 
 export async function doSocialLogin(formData) {
   const action = formData.get("action");
@@ -51,7 +50,6 @@ export async function updateUserAction(formData) {
 
   updateUser(id, { name, email, role });
   revalidatePath("/Manage_Users");
-  redirect("/Manage_Users");
 }
 
 export async function deleteUserAction(formData) {

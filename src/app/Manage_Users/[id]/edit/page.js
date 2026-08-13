@@ -1,8 +1,8 @@
-import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserById } from "@/lib/users";
 import { getAllRoles } from "@/lib/permissions";
 import { updateUserAction } from "@/app/actions";
+import DynamicForm from "@/components/DynamicForm";
 import styles from "../../page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -27,48 +27,27 @@ export default async function EditUser({ params }) {
 
         <section className={styles.formCard} style={{ maxWidth: 420 }}>
           <h2 className={styles.cardTitle}>{user.name || user.email}</h2>
-          <form action={updateUserAction} className={styles.formGrid}>
-            <input type="hidden" name="id" value={user.id} />
-            <label className={styles.fieldLabel}>
-              Name
-              <input
-                type="text"
-                name="name"
-                defaultValue={user.name || ""}
-                placeholder="User Name"
-                className={styles.input}
-              />
-            </label>
-            <label className={styles.fieldLabel}>
-              Email
-              <input
-                type="email"
-                name="email"
-                defaultValue={user.email}
-                required
-                className={styles.input}
-              />
-            </label>
-            <label className={styles.fieldLabel}>
-              Role
-              <select name="role" defaultValue={user.role || "user"} className={styles.select}>
-                {roles.map((role) => (
-                  <option key={role.name} value={role.name}>
-                    {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
-                  </option>
-                ))}
-              </select>
-            </label>
-
-            <div className={styles.actionGroup} style={{ justifyContent: "flex-start" }}>
-              <button type="submit" className={styles.btnPrimary}>
-                Save changes
-              </button>
-              <Link href="/Manage_Users" className={styles.actionBtnBan}>
-                Cancel
-              </Link>
-            </div>
-          </form>
+          <DynamicForm
+            variant="panel"
+            action={updateUserAction}
+            submitLabel="Save changes"
+            cancelHref="/Manage_Users"
+            fields={[
+              { type: "hidden", name: "id", defaultValue: user.id },
+              { type: "text", name: "name", label: "Name", defaultValue: user.name || "", placeholder: "User Name" },
+              { type: "email", name: "email", label: "Email", defaultValue: user.email, required: true },
+              {
+                type: "select",
+                name: "role",
+                label: "Role",
+                defaultValue: user.role || "user",
+                options: roles.map((role) => ({
+                  value: role.name,
+                  label: role.name.charAt(0).toUpperCase() + role.name.slice(1),
+                })),
+              },
+            ]}
+          />
         </section>
       </div>
     </main>

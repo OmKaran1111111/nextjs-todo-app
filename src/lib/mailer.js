@@ -1,16 +1,15 @@
 import nodemailer from "nodemailer";
 
-export async function sendVerificationCode(email, code) {
-  if (process.env.NODE_ENV !== "production") {
-    console.log("\n=================== [LOCAL DEV MAIL LOG] ===================");
-    console.log(`TO:                ${email}`);
-    console.log(`SUBJECT:           Your verification code`);
-    console.log(`VERIFICATION CODE: ${code}`);
-    console.log("============================================================\n");
-    return { success: true, mode: "console" };
-  }
+function logToConsole(email, subjectLabel, codeLabel, code) {
+  console.log("\n=================== [LOCAL DEV MAIL LOG] ===================");
+  console.log(`TO:                ${email}`);
+  console.log(`SUBJECT:           ${subjectLabel}`);
+  console.log(`${codeLabel.padEnd(19)}${code}`);
+  console.log("============================================================\n");
+}
 
-  const transporter = nodemailer.createTransport({
+function getTransporter() {
+  return nodemailer.createTransport({
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT),
     secure: Number(process.env.SMTP_PORT) === 465,
@@ -19,8 +18,15 @@ export async function sendVerificationCode(email, code) {
       pass: process.env.SMTP_PASS,
     },
   });
+}
 
-  return transporter.sendMail({
+export async function sendVerificationCode(email, code) {
+  if (process.env.NODE_ENV !== "production") {
+    logToConsole(email, "Your verification code", "VERIFICATION CODE:", code);
+    return { success: true, mode: "console" };
+  }
+
+  return getTransporter().sendMail({
     from: process.env.EMAIL_FROM,
     to: email,
     subject: "Your verification code",
@@ -30,25 +36,11 @@ export async function sendVerificationCode(email, code) {
 
 export async function sendPasswordResetCode(email, code) {
   if (process.env.NODE_ENV !== "production") {
-    console.log("\n=================== [LOCAL DEV MAIL LOG] ===================");
-    console.log(`TO:                ${email}`);
-    console.log(`SUBJECT:           Your password reset code`);
-    console.log(`RESET CODE:        ${code}`);
-    console.log("============================================================\n");
+    logToConsole(email, "Your password reset code", "RESET CODE:", code);
     return { success: true, mode: "console" };
   }
 
-  const transporter = nodemailer.createTransport({
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT),
-    secure: Number(process.env.SMTP_PORT) === 465,
-    auth: {
-      user: process.env.SMTP_USER,
-      pass: process.env.SMTP_PASS,
-    },
-  });
-
-  return transporter.sendMail({
+  return getTransporter().sendMail({
     from: process.env.EMAIL_FROM,
     to: email,
     subject: "Your password reset code",

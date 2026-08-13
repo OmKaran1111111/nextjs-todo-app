@@ -13,10 +13,10 @@ import {
 import RemainingTime from "@/components/RemainingTime";
 import Toast from "@/components/Toast";
 import TaskDetails from "@/components/TaskDetails";
-import PriorityDropdown from "@/components/PriorityDropdown";
 import { TaskListSkeleton } from "@/components/Skeleton";
 import useTasks from "@/hooks/useTasks";
 import { useSearch } from "@/components/SearchContext";
+import DynamicForm from "@/components/DynamicForm";
 import "./page.css";
 
 const SORT_OPTIONS = [
@@ -48,77 +48,6 @@ const COLUMN_LABELS = {
   priority: "Priority",
   deadline: "Deadline",
   actions: "Actions",
-};
-
-const EditTaskForm = ({ task, onSave, onCancel }) => {
-  const [priority, setPriority] = useState(task?.priority || 4);
-  const [deadline, setDeadline] = useState(task?.deadline || "");
-  const [isSaving, setIsSaving] = useState(false);
-
-  useEffect(() => {
-    if (task) {
-      setPriority(task.priority || 4);
-      setDeadline(task.deadline || "");
-    }
-  }, [task]);
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setIsSaving(true);
-    await onSave(task.id, priority, deadline);
-    setIsSaving(false);
-  };
-
-  return (
-    <form className="edit-form-container" onSubmit={handleSubmit}>
-      <h4 className="side-panel-title">Edit Task</h4>
-      <p className="side-panel-subtitle">{task.text}</p>
-
-      <label className="field-label" htmlFor="priority">
-        Priority
-      </label>
-      <div className="priority-grid">
-        {PRIORITY_OPTIONS.map((p) => (
-          <button
-            type="button"
-            key={p.id}
-            className={`priority-option ${
-              priority === p.id ? "priority-option-active" : ""
-            }`}
-            onClick={() => setPriority(p.id)}
-          >
-            <span>{p.emoji}</span>
-            <span>{p.label}</span>
-          </button>
-        ))}
-      </div>
-
-      <label className="field-label" htmlFor="deadline">
-        Deadline
-      </label>
-      <input
-        id="deadline"
-        type="date"
-        className="date-input"
-        value={deadline || ""}
-        onChange={(e) => setDeadline(e.target.value)}
-      />
-
-      <div className="actions-row">
-        <button
-          type="button"
-          className="cancel-btn"
-          onClick={onCancel}
-          disabled={isSaving}
-        >
-          Cancel
-        </button>
-        <button type="submit" className="save-btn" disabled={isSaving}>
-          {isSaving ? "Saving…" : "Save Changes"}
-        </button>
-      </div>
-    </form>
-  );
 };
 
 const TaskList = () => {
@@ -163,10 +92,6 @@ const TaskList = () => {
       panelRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
     }
   }, [sidePanelMode]);
-
-  const [inputValue, setInputValue] = useState("");
-  const [selectedPriority, setSelectedPriority] = useState(4);
-  const [deadline, setDeadline] = useState(null);
 
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
@@ -235,30 +160,28 @@ const TaskList = () => {
     setSidePanelMode("edit");
   };
 
-  const handleAddTaskSubmit = async (e) => {
-    e.preventDefault();
-    if (!inputValue.trim()) return;
+  const handleAddTaskSubmit = async (values) => {
+    if (!values.text?.trim()) return { error: "Enter a task name." };
 
     await addTask({
-      text: inputValue,
-      priority: selectedPriority,
-      deadline,
+      text: values.text,
+      priority: Number(values.priority) || 4,
+      deadline: values.deadline || null,
     });
-
-    setInputValue("");
-    setSelectedPriority(4);
-    setDeadline(null);
   };
 
-  const handleSaveEdit = async (taskId, newPriority, newDeadline) => {
+  const handleSaveEdit = async (values) => {
+    const newPriority = Number(values.priority) || 4;
+    const newDeadline = values.deadline || "";
     const tasksToRun = [];
     if (newPriority !== (activeTask.priority || 4)) {
-      tasksToRun.push(updateTaskPriority(taskId, newPriority));
+      tasksToRun.push(updateTaskPriority(activeTask.id, newPriority));
     }
     if (newDeadline !== (activeTask.deadline || "")) {
-      tasksToRun.push(updateTaskDeadline(taskId, newDeadline || null));
+      tasksToRun.push(updateTaskDeadline(activeTask.id, newDeadline || null));
     }
     await Promise.all(tasksToRun);
+    setSidePanelMode("view");
   };
 
   const columns = useMemo(
@@ -523,53 +446,51 @@ const TaskList = () => {
             )}
 
             {sidePanelMode === "add" && (
-              <form onSubmit={handleAddTaskSubmit} className="add-task-form">
+              <div className="add-task-form">
                 <h4 className="side-panel-title">Create a New Task</h4>
-                <input
-                  type="text"
-                  placeholder="Enter a new task..."
-                  value={inputValue}
-                  onChange={(e) => setInputValue(e.target.value)}
-                  className="task-input"
+                <DynamicForm
+                  variant="task"
+                  onSubmit={handleAddTaskSubmit}
+                  submitLabel="Add Task"
+                  submitClassName="add-task-btn"
+                  fields={[
+                    { type: "text", name: "text", placeholder: "Enter a new task...", required: true },
+                    {
+                      type: "priority",
+                      name: "priority",
+                      label: "Priority",
+                      defaultValue: 4,
+                      options: PRIORITY_OPTIONS.map((p) => ({ value: p.id, label: p.label, emoji: p.emoji })),
+                    },
+                    { type: "date", name: "deadline", label: "Deadline" },
+                  ]}
                 />
-                <div className="date-picker-wrapper">
-                  <span className="date-icon-wrapper">
-                    📅
-                    <input
-                      type="date"
-                      className="date-input-hidden"
-                      value={deadline || ""}
-                      onClick={(e) => e.target.showPicker()}
-                      onChange={(e) => setDeadline(e.target.value)}
-                    />
-                  </span>
-                  {deadline ? (
-                    <span className="deadline-text-danger">{deadline}</span>
-                  ) : (
-                    <span className="deadline-text-faint">No deadline set</span>
-                  )}
-                </div>
-                <div className="form-bottom-row">
-                  <div className="priority-wrapper">
-                    <PriorityDropdown
-                      currentPriority={selectedPriority}
-                      onSelect={setSelectedPriority}
-                    />
-                    <span className="priority-label">Priority</span>
-                  </div>
-                  <button type="submit" className="add-task-btn">
-                    Add Task
-                  </button>
-                </div>
-              </form>
+              </div>
             )}
 
             {sidePanelMode === "edit" && activeTask && (
-              <EditTaskForm 
-                task={activeTask}
-                onSave={handleSaveEdit}
-                onCancel={() => setSidePanelMode("view")}
-              />
+              <div className="edit-form-container">
+                <h4 className="side-panel-title">Edit Task</h4>
+                <p className="side-panel-subtitle">{activeTask.text}</p>
+                <DynamicForm
+                  key={activeTask.id}
+                  variant="task"
+                  onSubmit={handleSaveEdit}
+                  submitLabel="Save Changes"
+                  cancelLabel="Cancel"
+                  onCancel={() => setSidePanelMode("view")}
+                  fields={[
+                    {
+                      type: "priority",
+                      name: "priority",
+                      label: "Priority",
+                      defaultValue: activeTask.priority || 4,
+                      options: PRIORITY_OPTIONS.map((p) => ({ value: p.id, label: p.label, emoji: p.emoji })),
+                    },
+                    { type: "date", name: "deadline", label: "Deadline", defaultValue: activeTask.deadline || "" },
+                  ]}
+                />
+              </div>
             )}
           </div>
         )}

@@ -3,63 +3,36 @@
 import { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "../signup/[[...signup]]/page.module.css";
+import DynamicForm from "@/components/DynamicForm";
 
 const Page = () => {
   const router = useRouter();
   const [step, setStep] = useState("request");
   const [email, setEmail] = useState("");
-  const [code, setCode] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [info, setInfo] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
 
-  const handleRequest = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setInfo("");
-    try {
-      const res = await fetch("/api/password-reset/request", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Something went wrong. Please try again.");
-        return;
-      }
-      setInfo(data.message);
-      setStep("reset");
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const handleRequest = async ({ email: submittedEmail }) => {
+    const res = await fetch("/api/password-reset/request", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email: submittedEmail }),
+    });
+    const data = await res.json();
+    if (!res.ok) return { error: data.error || "Something went wrong. Please try again." };
+
+    setEmail(submittedEmail);
+    setStep("reset");
   };
 
-  const handleReset = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    try {
-      const res = await fetch("/api/password-reset/confirm", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email, code, newPassword }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        setError(data.error || "Could not reset password.");
-        return;
-      }
-      setStep("done");
-    } catch {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
+  const handleReset = async ({ code, newPassword }) => {
+    const res = await fetch("/api/password-reset/confirm", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email, code, newPassword }),
+    });
+    const data = await res.json();
+    if (!res.ok) return { error: data.error || "Could not reset password." };
+
+    setStep("done");
   };
 
   return (
@@ -71,78 +44,47 @@ const Page = () => {
         {step === "request" && (
           <>
             <h1 className={styles.headingForgot}>Reset your password</h1>
-            <p className={styles.infoText}>
-              Enter your email and we'll send you a reset code.
-            </p>
-            {error && <div className={styles.error}>{error}</div>}
+            <p className={styles.infoText}>Enter your email and we'll send you a reset code.</p>
 
-            <form onSubmit={handleRequest} className={styles.form}>
-              <div className={styles.inputWrap}>
-                <input
-                  type="email"
-                  placeholder="Email"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
-                  className={styles.input}
-                />
-              </div>
-              <button className={styles.submitBtn} type="submit" disabled={loading}>
-                {loading ? "Sending..." : "Send reset code"}
-              </button>
-            </form>
+            <DynamicForm
+              variant="auth"
+              onSubmit={handleRequest}
+              submitLabel="Send reset code"
+              submitLoadingLabel="Sending..."
+              fields={[{ type: "email", name: "email", placeholder: "Email", required: true }]}
+            />
           </>
         )}
 
         {step === "reset" && (
           <>
             <h1 className={styles.headingReset}>Enter your code</h1>
-            <p className={styles.infoText}>
-              {info || `We sent a 6-digit code to ${email}`}
-            </p>
-            {error && <div className={styles.error}>{error}</div>}
+            <p className={styles.infoText}>We sent a 6-digit code to {email}</p>
 
-            <form onSubmit={handleReset} className={styles.form}>
-              <div className={styles.inputWrap}>
-                <input
-                  type="text"
-                  placeholder="Enter code"
-                  value={code}
-                  onChange={(e) => setCode(e.target.value)}
-                  required
-                  maxLength={6}
-                  className={styles.input}
-                />
-              </div>
-              <div className={styles.inputWrap}>
-                <input
-                  type="password"
-                  placeholder="New password (min 8 characters)"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  required
-                  minLength={8}
-                  className={styles.input}
-                />
-              </div>
-              <button className={styles.submitBtn} type="submit" disabled={loading}>
-                {loading ? "Resetting..." : "Reset password"}
-              </button>
-            </form>
+            <DynamicForm
+              variant="auth"
+              onSubmit={handleReset}
+              submitLabel="Reset password"
+              submitLoadingLabel="Resetting..."
+              fields={[
+                { type: "text", name: "code", placeholder: "Enter code", required: true, maxLength: 6 },
+                {
+                  type: "password",
+                  name: "newPassword",
+                  placeholder: "New password (min 8 characters)",
+                  required: true,
+                  minLength: 8,
+                },
+              ]}
+            />
           </>
         )}
 
         {step === "done" && (
           <>
             <h1 className={styles.headingReset}>Password updated</h1>
-            <p className={styles.infoText}>
-              You can now log in with your new password.
-            </p>
-            <button
-              className={styles.submitBtn}
-              type="button"
-              onClick={() => router.push("/login")}
-            >
+            <p className={styles.infoText}>You can now log in with your new password.</p>
+            <button className={styles.submitBtn} type="button" onClick={() => router.push("/login")}>
               Go to login
             </button>
           </>
@@ -151,10 +93,7 @@ const Page = () => {
         {step !== "done" && (
           <p className={styles.footer}>
             Remembered your password?{" "}
-            <strong
-              className={styles.linkStrong}
-              onClick={() => router.push("/login")}
-            >
+            <strong className={styles.linkStrong} onClick={() => router.push("/login")}>
               Log in
             </strong>
           </p>

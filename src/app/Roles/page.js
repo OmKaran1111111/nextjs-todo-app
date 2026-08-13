@@ -1,5 +1,6 @@
 import { getAllRoles, PERMISSION_GROUPS } from "@/lib/permissions";
 import { createRoleAction, updateRoleAction, deleteRoleAction } from "@/app/actions";
+import DynamicForm from "@/components/DynamicForm";
 import styles from "./page.module.css";
 import Link from "next/link";
 
@@ -7,35 +8,14 @@ export const dynamic = "force-dynamic";
 
 const TOTAL_PERMISSIONS = PERMISSION_GROUPS.reduce((sum, group) => sum + group.permissions.length, 0);
 
+const PERMISSION_FIELD_GROUPS = PERMISSION_GROUPS.map((group) => ({
+  id: group.id,
+  label: group.label,
+  options: group.permissions,
+}));
+
 function slugify(name) {
   return name.trim().toLowerCase().replace(/\s+/g, "-");
-}
-
-function PermissionChecklist({ name, checkedKeys = [] }) {
-  return (
-    <div className={styles.permGroupList}>
-      {PERMISSION_GROUPS.map((group) => (
-        <fieldset key={group.id} className={styles.permGroup}>
-          <legend className={styles.permGroupLabel}>{group.label}</legend>
-          {group.permissions.map((perm) => (
-            <label key={perm.key} className={styles.permCheckRow}>
-              <input
-                type="checkbox"
-                name={name}
-                value={perm.key}
-                defaultChecked={checkedKeys.includes(perm.key)}
-                className={styles.permCheckbox}
-              />
-              <span className={styles.permCheckText}>
-                <span className={styles.permCheckLabel}>{perm.label}</span>
-                <span className={styles.permCheckDesc}>{perm.description}</span>
-              </span>
-            </label>
-          ))}
-        </fieldset>
-      ))}
-    </div>
-  );
 }
 
 export default async function Roles({ searchParams }) {
@@ -131,52 +111,42 @@ export default async function Roles({ searchParams }) {
               </Link>
             </div>
 
-            <form action={isAdding ? createRoleAction : updateRoleAction} className={styles.formGrid}>
-              {editingRole && <input type="hidden" name="name" value={editingRole.name} />}
-              
-              {isAdding && (
-                <label className={styles.fieldLabel}>
-                  Role name
-                  <input
-                    type="text"
-                    name="name"
-                    placeholder="e.g. editor"
-                    required
-                    pattern="[A-Za-z0-9_ ]+"
-                    title="Letters, numbers, spaces and underscores only"
-                    className={styles.input}
-                  />
-                </label>
-              )}
-
-              <label className={styles.fieldLabel}>
-                Description
-                <input
-                  type="text"
-                  name="description"
-                  defaultValue={editingRole?.description || ""}
-                  placeholder="What is this role for?"
-                  className={styles.input}
-                />
-              </label>
-
-              <div className={styles.fieldLabel}>
-                Permissions
-                <PermissionChecklist 
-                  name="permissions" 
-                  checkedKeys={editingRole?.permissions || []} 
-                />
-              </div>
-
-              <div className={styles.actionsRow}>
-                <Link href="?" className={styles.cancelBtn}>
-                  Cancel
-                </Link>
-                <button type="submit" className={styles.saveBtn}>
-                  {isAdding ? "Create Role" : "Save Changes"}
-                </button>
-              </div>
-            </form>
+            <DynamicForm
+              variant="panel"
+              action={isAdding ? createRoleAction : updateRoleAction}
+              submitLabel={isAdding ? "Create Role" : "Save Changes"}
+              cancelHref="?"
+              fields={[
+                ...(editingRole ? [{ type: "hidden", name: "name", defaultValue: editingRole.name }] : []),
+                ...(isAdding
+                  ? [
+                      {
+                        type: "text",
+                        name: "name",
+                        label: "Role name",
+                        placeholder: "e.g. editor",
+                        required: true,
+                        pattern: "[A-Za-z0-9_ ]+",
+                        title: "Letters, numbers, spaces and underscores only",
+                      },
+                    ]
+                  : []),
+                {
+                  type: "text",
+                  name: "description",
+                  label: "Description",
+                  defaultValue: editingRole?.description || "",
+                  placeholder: "What is this role for?",
+                },
+                {
+                  type: "checkbox-group",
+                  name: "permissions",
+                  label: "Permissions",
+                  groups: PERMISSION_FIELD_GROUPS,
+                  checkedKeys: editingRole?.permissions || [],
+                },
+              ]}
+            />
           </aside>
         )}
       </div>

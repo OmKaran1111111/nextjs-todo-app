@@ -51,37 +51,21 @@ const TopBar = () => {
   const isActive = (path) => pathname === path;
 
   const navConfig = [
-    { type: "link", path: "/", label: "Home" },
-    { type: "link", path: "/Dashboard", label: "DashBoard" },
-    { type: "link", path: "/Devices", label: "Devices"},
-    { type: "link", path: "/tasks", label: "Task" },
-    ...(canManageUsers ? [{ type: "link", path: "/Manage_Users", label: "Users" }] : []),
-    ...(canManageRoles ? [{ type: "link", path: "/Roles", label: "Roles" }] : []),
+    { path: "/", label: "Home" },
+    { path: "/Dashboard", label: "DashBoard" },
+    { path: "/Devices", label: "Devices" },
+    { path: "/tasks", label: "Task" },
+    ...(canManageUsers ? [{ path: "/Manage_Users", label: "Users" }] : []),
+    ...(canManageRoles ? [{ path: "/Roles", label: "Roles" }] : []),
   ];
 
-  const isGroupActive = (group) => group.children.some((child) => isActive(child.path));
-  const getKey = (item) => (item.type === "group" ? item.id : item.path);
-
-  const [expandedGroups, setExpandedGroups] = useState({});
-  const toggleGroup = (id) => setExpandedGroups((prev) => ({ ...prev, [id]: !prev[id] }));
-
-  useEffect(() => {
-    navConfig.forEach((item) => {
-      if (item.type === "group" && isGroupActive(item)) {
-        setExpandedGroups((prev) => (prev[item.id] ? prev : { ...prev, [item.id]: true }));
-      }
-    });
-  }, [pathname]);
-
-  const activeItem = navConfig.find((item) =>
-    item.type === "group" ? isGroupActive(item) : isActive(item.path)
-  );
-  const activeKey = activeItem ? getKey(activeItem) : undefined;
+  const activeItem = navConfig.find((item) => isActive(item.path));
+  const activeKey = activeItem?.path;
 
   useEffect(() => {
     const node = rowRefs.current[activeKey];
     if (node) setIndicatorTop(node.offsetTop);
-  }, [activeKey, expandedGroups]);
+  }, [activeKey]);
 
   useEffect(() => {
     setIsSearchOpen(false);
@@ -211,71 +195,22 @@ const TopBar = () => {
           />
 
           <ul className={styles.navList}>
-            {navConfig.map((item) => {
-              if (item.type === "group") {
-                const expanded = !!expandedGroups[item.id];
-                return (
-                  <li
-                    key={item.id}
-                    ref={(el) => (rowRefs.current[item.id] = el)}
-                    className={`${styles.navRow} ${
-                      isGroupActive(item) ? styles.navRowActive : ""
-                    }`}
-                  >
-                    <button
-                      type="button"
-                      className={styles.navRowToggle}
-                      onClick={() => toggleGroup(item.id)}
-                      aria-expanded={expanded}
-                    >
-                      <span>{item.label}</span>
-                      <span
-                        className={styles.chevron}
-                        style={{ transform: expanded ? "rotate(90deg)" : "rotate(0deg)" }}
-                      >
-                        ▸
-                      </span>
-                    </button>
-
-                    {expanded && (
-                      <ul className={styles.subNavList}>
-                        {item.children.map((child) => (
-                          <li key={child.path} className={styles.subNavRow}>
-                            <Link
-                              href={child.path}
-                              onClick={closeSidebar}
-                              className={`${styles.subNavLink} ${
-                                isActive(child.path) ? styles.subNavLinkActive : ""
-                              }`}
-                              aria-current={isActive(child.path) ? "page" : undefined}
-                            >
-                              {child.label}
-                            </Link>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                  </li>
-                );
-              }
-
-              return (
-                <li
-                  key={item.path}
-                  ref={(el) => (rowRefs.current[item.path] = el)}
-                  className={`${styles.navRow} ${isActive(item.path) ? styles.navRowActive : ""}`}
+            {navConfig.map((item) => (
+              <li
+                key={item.path}
+                ref={(el) => (rowRefs.current[item.path] = el)}
+                className={`${styles.navRow} ${isActive(item.path) ? styles.navRowActive : ""}`}
+              >
+                <Link
+                  href={item.path}
+                  onClick={closeSidebar}
+                  className={styles.navRowLink}
+                  aria-current={isActive(item.path) ? "page" : undefined}
                 >
-                  <Link
-                    href={item.path}
-                    onClick={closeSidebar}
-                    className={styles.navRowLink}
-                    aria-current={isActive(item.path) ? "page" : undefined}
-                  >
-                    {item.label}
-                  </Link>
-                </li>
-              );
-            })}
+                  {item.label}
+                </Link>
+              </li>
+            ))}
           </ul>
         </div>
 

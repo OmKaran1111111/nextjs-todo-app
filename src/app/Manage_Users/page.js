@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { getAllUsers } from "@/lib/users";
 import { getAllRoles } from "@/lib/permissions";
-import { addUserAction, deleteUserAction, toggleBanAction } from "@/app/actions";
+import { addUserAction, updateUserAction, deleteUserAction, toggleBanAction } from "@/app/actions";
+import DynamicForm from "@/components/DynamicForm";
 import styles from "./page.module.css";
 
 export const dynamic = "force-dynamic";
@@ -40,62 +41,95 @@ function formatJoined(createdAt) {
   });
 }
 
-export default function Manage_Users() {
+export default async function Manage_Users({ searchParams }) {
   const users = getAllUsers();
   const roles = getAllRoles();
+
+  const params = await searchParams;
+  const editingUserId = params?.edit;
+  const editingUser = editingUserId ? users.find((u) => u.id === editingUserId) : null;
+  const isEditing = Boolean(editingUser);
+
+  const roleOptions = roles.map((role) => ({
+    value: role.name,
+    label: role.name.charAt(0).toUpperCase() + role.name.slice(1),
+  }));
 
   return (
     <main className={styles.container}>
       <div className={styles.inner}>
         <div className={styles.layout}>
-          <section className={styles.formCard}>
-            <h2 className={styles.cardTitle}>Add a user</h2>
-            <form action={addUserAction} className={styles.formGrid}>
-              <label className={styles.fieldLabel}>
-                Name
-                <input type="text" name="name" placeholder="User Name" className={styles.input} />
-              </label>
-              <label className={styles.fieldLabel}>
-                Email
-                <input
-                  type="email"
-                  name="email"
-                  placeholder="user@example.com"
-                  required
-                  className={styles.input}
+          <aside className={styles.formCard}>
+            <div className={styles.formCardHeader}>
+              <div>
+                <h2 className={styles.cardTitle}>{isEditing ? "Edit user" : "Add a user"}</h2>
+                {isEditing && (
+                  <p className={styles.sidePanelSubtitle}>{editingUser.name || editingUser.email}</p>
+                )}
+              </div>
+              {isEditing && (
+                <Link href="/Manage_Users" className={styles.closeBtn} aria-label="Cancel edit">
+                  ✕
+                </Link>
+              )}
+            </div>
+
+            <div key={isEditing ? editingUser.id : "add"} className={styles.formCardBody}>
+              {isEditing ? (
+                <DynamicForm
+                  variant="panel"
+                  action={updateUserAction}
+                  submitLabel="Save changes"
+                  cancelHref="/Manage_Users"
+                  fields={[
+                    { type: "hidden", name: "id", defaultValue: editingUser.id },
+                    {
+                      type: "text",
+                      name: "name",
+                      label: "Name",
+                      defaultValue: editingUser.name || "",
+                      placeholder: "User Name",
+                    },
+                    {
+                      type: "email",
+                      name: "email",
+                      label: "Email",
+                      defaultValue: editingUser.email,
+                      required: true,
+                    },
+                    {
+                      type: "select",
+                      name: "role",
+                      label: "Role",
+                      defaultValue: editingUser.role || "user",
+                      options: roleOptions,
+                    },
+                  ]}
                 />
-              </label>
-              <label className={styles.fieldLabel}>
-                Password
-                <input
-                  type="password"
-                  name="password"
-                  placeholder="password"
-                  required
-                  className={styles.input}
+              ) : (
+                <DynamicForm
+                  variant="panel"
+                  action={addUserAction}
+                  submitLabel="Add user"
+                  fields={[
+                    { type: "text", name: "name", label: "Name", placeholder: "User Name" },
+                    { type: "email", name: "email", label: "Email", placeholder: "user@example.com", required: true },
+                    { type: "password", name: "password", label: "Password", placeholder: "password", required: true },
+                    { type: "select", name: "role", label: "Role", defaultValue: "user", options: roleOptions },
+                  ]}
                 />
-              </label>
-              <label className={styles.fieldLabel}>
-                Role
-                <select name="role" defaultValue="user" className={styles.select}>
-                  {roles.map((role) => (
-                    <option key={role.name} value={role.name}>
-                      {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <button type="submit" className={styles.btnPrimary}>
-                Add user
-              </button>
-            </form>
-            <p className={styles.rosterCount} style={{ marginTop: "0.75rem" }}>
-              Need a different set of permissions?{" "}
-              <Link href="/Roles" style={{ color: "var(--primary)", fontWeight: 600 }}>
-                Manage roles
-              </Link>
-            </p>
-          </section>
+              )}
+            </div>
+
+            {!isEditing && (
+              <p className={styles.rosterCount} style={{ marginTop: "0.75rem" }}>
+                Need a different set of permissions?{" "}
+                <Link href="/Roles" style={{ color: "var(--primary)", fontWeight: 600 }}>
+                  Manage roles
+                </Link>
+              </p>
+            )}
+          </aside>
 
           <section className={styles.rosterSection}>
             <div className={styles.rosterHeaderRow}>
@@ -125,9 +159,10 @@ export default function Manage_Users() {
                       const isBanned = user.isBanned == 1 || user.isBanned === true;
                       const isAdmin = user.role === "admin";
                       const palette = AVATAR_PALETTE[hashString(user.id) % AVATAR_PALETTE.length];
+                      const isActiveRow = editingUser?.id === user.id;
 
                       return (
-                        <tr key={user.id} className={isBanned ? styles.rowBanned : ""}>
+                        <tr key={user.id} className={`${isBanned ? styles.rowBanned : ""} ${isActiveRow ? styles.rowActive : ""}`}>
                           <td className={styles.td}>
                             <Link
                               href={`/tasks?userId=${user.id}&name=${encodeURIComponent(user.name || user.email)}`}
@@ -168,8 +203,8 @@ export default function Manage_Users() {
                           <td className={`${styles.td} ${styles.textRight}`}>
                             <div className={styles.actionGroup}>
                               <Link
-                                href={`/Manage_Users/${user.id}/edit`}
-                                className={styles.actionBtnBan}
+                                href={`?edit=${user.id}`}
+                                className={styles.actionBtnEdit}
                               >
                                 Edit
                               </Link>
@@ -204,4 +239,3 @@ export default function Manage_Users() {
     </main>
   );
 }
- 

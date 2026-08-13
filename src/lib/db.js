@@ -160,36 +160,23 @@ function initDb() {
 
   db.pragma("foreign_keys = ON");
 
-  const hasAttemptsColumn = db
-    .prepare("PRAGMA table_info(verification_codes)")
-    .all()
-    .some((col) => col.name === "attempts");
-
-  if (!hasAttemptsColumn) {
-    db.exec("ALTER TABLE verification_codes ADD COLUMN attempts INTEGER DEFAULT 0");
-  }
-
-  const hasRoleColumn = db
-    .prepare("PRAGMA table_info(users)")
-    .all()
-    .some((col) => col.name === "role");
-
-  if (!hasRoleColumn) {
-    db.exec("ALTER TABLE users ADD COLUMN role TEXT DEFAULT 'user'");
-  }
-
-  const hasBannedColumn = db
-    .prepare("PRAGMA table_info(users)")
-    .all()
-    .some((col) => col.name === "isBanned");
-
-  if (!hasBannedColumn) {
-    db.exec("ALTER TABLE users ADD COLUMN isBanned INTEGER DEFAULT 0");
-  }
+  ensureColumn(db, "verification_codes", "attempts", "INTEGER DEFAULT 0");
+  ensureColumn(db, "users", "role", "TEXT DEFAULT 'user'");
+  ensureColumn(db, "users", "isBanned", "INTEGER DEFAULT 0");
 
   seedDefaultRoles(db);
 
   return db;
+}
+
+function ensureColumn(db, table, column, definition) {
+  const exists = db
+    .prepare(`PRAGMA table_info(${table})`)
+    .all()
+    .some((col) => col.name === column);
+  if (!exists) {
+    db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
+  }
 }
 
 const ALL_PERMISSION_KEYS = [
