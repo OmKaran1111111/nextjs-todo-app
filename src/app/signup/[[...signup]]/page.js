@@ -1,17 +1,39 @@
 "use client";
 
-import { useState } from "react";
+import { useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import styles from "./page.module.css";
 import LoginForm from "@/components/LoginForm";
 import DynamicForm from "@/components/DynamicForm";
+import { buildGlassDisplacementMap, FLAT_DISPLACEMENT_MAP } from "@/lib/liquidGlass";
 
 const Page = () => {
   const router = useRouter();
   const [step, setStep] = useState("register");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const cardRef = useRef(null);
+  const [displacementMap, setDisplacementMap] = useState(FLAT_DISPLACEMENT_MAP);
+
+  useLayoutEffect(() => {
+    const el = cardRef.current;
+    if (!el) return;
+
+    const regenerate = () => {
+      const { width, height } = el.getBoundingClientRect();
+      if (width > 0 && height > 0) {
+        setDisplacementMap(
+          buildGlassDisplacementMap({ width, height, radius: 28, edgeBand: 26, strength: 1 })
+        );
+      }
+    };
+
+    regenerate();
+    const observer = new ResizeObserver(regenerate);
+    observer.observe(el);
+    return () => observer.disconnect();
+  }, [step]);
 
   const handleSignUp = async ({ email: submittedEmail, password: submittedPassword }) => {
     const res = await fetch("/api/register", {
@@ -51,12 +73,22 @@ const Page = () => {
   if (step === "verify") {
     return (
       <div className={styles.container}>
+        <svg className={styles.glassFilterDefs} aria-hidden="true">
+          <filter id="liquid-glass-distortion-signup" x="-20%" y="-20%" width="140%" height="140%">
+            <feImage href={displacementMap} x="0" y="0" width="100%" height="100%" result="map" />
+            <feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G" scale="60" />
+          </filter>
+        </svg>
+
+        <video className={styles.bgVideo} autoPlay muted loop playsInline>
+          <source src="/videos/bg.mp4" type="video/mp4" />
+        </video>
         <div className={styles.blob1} />
         <div className={styles.blob2} />
 
-        <div className={styles.card}>
+        <div className={styles.card} ref={cardRef}>
           <h1 className={styles.headingRegister}>Verify your email</h1>
-          <p style={{ textAlign: "center", marginBottom: "1rem" }}>We sent a 6-digit code to {email}</p>
+          <p className={styles.infoText}>We sent a 6-digit code to {email}</p>
 
           <DynamicForm
             variant="auth"
@@ -72,10 +104,20 @@ const Page = () => {
 
   return (
     <div className={styles.container}>
+      <svg className={styles.glassFilterDefs} aria-hidden="true">
+        <filter id="liquid-glass-distortion-signup" x="-20%" y="-20%" width="140%" height="140%">
+          <feImage href={displacementMap} x="0" y="0" width="100%" height="100%" result="map" />
+          <feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G" scale="60" />
+        </filter>
+      </svg>
+
+      <video className={styles.bgVideo} autoPlay muted loop playsInline>
+        <source src="/videos/bg.mp4" type="video/mp4" />
+      </video>
       <div className={styles.blob1} />
       <div className={styles.blob2} />
 
-      <div className={styles.card}>
+      <div className={styles.card} ref={cardRef}>
         <h1 className={styles.headingRegister}>Register</h1>
 
         <LoginForm />

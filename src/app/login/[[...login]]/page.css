@@ -15,6 +15,28 @@
   box-sizing: border-box;
   background: var(--auth-backdrop);
 }
+@media (min-width: 650px) {
+  .auth-backdrop {
+    justify-content: flex-start;
+    padding-left: 96px;
+  };
+}
+.glass-filter-defs {
+  position: absolute;
+  width: 0;
+  height: 0;
+  overflow: hidden;
+}
+
+.auth-bg-video {
+  position: fixed;
+  top: 0; left: 0;
+  width: 100vw;
+  height: 100dvh;
+  object-fit: cover;
+  filter: brightness(0.95);
+  pointer-events: none;
+}
 
 .auth-blob-1 {
   pointer-events: none;
@@ -41,7 +63,6 @@
 }
 
 .auth-card {
-  backdrop-filter: blur(40px) saturate(1.5);
   position: relative;
   z-index: 10;
   width: 100%;
@@ -50,8 +71,35 @@
   padding: 40px 36px 32px 36px;
   border-radius: 28px;
   border: 1px solid var(--auth-card-border);
-  box-shadow: 0 20px 60px rgba(10, 20, 45, 0.35);
-  background: var(--auth-card-bg);
+    background: color-mix(in srgb, var(--auth-card-bg) 88%, transparent);
+  overflow: hidden;
+  filter: drop-shadow(0 20px 46px rgba(10, 20, 45, 0.35));
+    backdrop-filter: brightness(1.12) blur(2px) url(#liquid-glass-distortion);
+  -webkit-backdrop-filter: brightness(1.12) blur(2px);
+}
+
+@supports not (backdrop-filter: url(#liquid-glass-distortion)) {
+  .auth-card {
+    backdrop-filter: brightness(1.05) blur(48px) saturate(1.3);
+    -webkit-backdrop-filter: brightness(1.05) blur(48px) saturate(1.3);
+  }
+}
+
+.auth-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-radius: inherit;
+  box-shadow:
+    inset 2px 2px 0 -2px rgba(255, 255, 255, 0.7),
+    inset 0 0 3px 1px rgba(255, 255, 255, 0.7);
+}
+
+.auth-card > * {
+  position: relative;
+  z-index: 1;
 }
 
 .close-btn {
@@ -79,7 +127,8 @@
   text-align: center;
   font-size: 30px;
   font-weight: 700;
-  color: var(--auth-heading);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   letter-spacing: 0.025em;
 }
 
@@ -112,7 +161,7 @@
 }
 
 .input-wrap:focus-within {
-  border-color: var(--auth-text);
+  border-color: #000000;
 }
 
 .input-field {
@@ -121,12 +170,14 @@
   outline: none;
   border: none;
   font-size: 15px;
-  color: var(--auth-heading);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
 }
 
 .input-field::placeholder {
-  color: var(--auth-text);
-  opacity: 0.55;
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  opacity: 0.7;
 }
 
 .submit-btn {
@@ -180,7 +231,8 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  color: var(--auth-text);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   cursor: pointer;
   user-select: none;
 }
@@ -194,7 +246,8 @@
 
 .forgot-btn {
   font-weight: 600;
-  color: var(--auth-text);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   background: none;
   border: none;
   cursor: pointer;
@@ -209,11 +262,13 @@
   text-align: center;
   margin-top: 20px;
   font-size: 13.5px;
-  color: var(--auth-muted);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
 }
 
 .link-strong {
-  color: var(--auth-button-bg);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   font-weight: 600;
   cursor: pointer;
 }
@@ -227,7 +282,8 @@
   align-items: center;
   gap: 6px;
   font-size: 13.5px;
-  color: var(--auth-muted);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   background: none;
   border: none;
   cursor: pointer;
@@ -236,7 +292,8 @@
 }
 
 .back-btn:hover {
-  color: var(--auth-heading);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
 }
 
 .auth-subtitle {
@@ -247,13 +304,15 @@
 }
 
 .mail-icon {
-  color: var(--auth-text);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   flex-shrink: 0;
   margin-left: 10px;
 }
 
 .lock-icon {
-  color: var(--auth-text);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   flex-shrink: 0;
   margin-left: 10px;
 }
@@ -262,8 +321,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--auth-text);
-  opacity: 0.75;
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  opacity: 0.7;
   flex-shrink: 0;
   margin-left: 10px;
   background: none;
@@ -293,7 +353,8 @@
   font-size: 14.5px;
   font-weight: 600;
   cursor: pointer;
-  color: var(--auth-heading);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   background-color: transparent;
   transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;

@@ -1370,7 +1370,6 @@
   background: var(--color-surface-muted);
 }
 
-
 .overlay {
   position: fixed;
   inset: 0;
@@ -1669,6 +1668,45 @@
   color: var(--faint);
   overflow-wrap: anywhere;
 }
+.socialLoginForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  width: 100%;
+  margin: 4px 0 8px;
+}
+
+.socialBtn {
+  width: 100%;
+  padding: 12px 0;
+  border-radius: 16px;
+  border: 1px solid var(--auth-border);
+  font-size: 14.5px;
+  font-weight: 600;
+  cursor: pointer;
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  background-color: transparent;
+  backdrop-filter: blur(10px) saturate(1.3);
+  -webkit-backdrop-filter: blur(10px) saturate(1.3);
+  transition: all 150ms cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.socialBtn:hover {
+  background-color: var(--auth-icon-bg);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+}
+
+.socialIcon {
+  flex-shrink: 0;
+  display: inline-block;
+}
+
 .formAuth {
   display: flex;
   flex-direction: column;
@@ -1695,16 +1733,19 @@
   outline: none;
   border: none;
   font-size: 15px;
-  color: var(--auth-heading);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
 }
 
 .inputAuth::placeholder {
-  color: var(--auth-text);
-  opacity: 0.55;
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  opacity: 0.7;
 }
 
 .fieldIcon {
-  color: var(--auth-text);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   flex-shrink: 0;
   margin-left: 10px;
 }
@@ -1713,8 +1754,9 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  color: var(--auth-text);
-  opacity: 0.75;
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
+  opacity: 0.85;
   flex-shrink: 0;
   margin-left: 10px;
   background: none;
@@ -1733,7 +1775,8 @@
   padding: 14px 0;
   border-radius: 16px;
   background-color: var(--auth-button-bg);
-  color: var(--auth-button-text);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   font-size: 16px;
   font-weight: 600;
   letter-spacing: 0.025em;
@@ -1758,7 +1801,8 @@
 .errorAuth {
   background-color: var(--danger-soft);
   border: 1px solid color-mix(in srgb, var(--danger) 30%, transparent);
-  color: var(--danger);
+  color: #fff2bf;
+  text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   font-size: 13px;
   padding: 10px 14px;
   border-radius: 12px;
