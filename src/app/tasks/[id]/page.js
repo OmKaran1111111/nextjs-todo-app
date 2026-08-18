@@ -27,13 +27,13 @@ const TaskPage = () => {
 
   if (isLoading) {
     return (
-      <div className={styles.pageContainer}>
-        <div className={styles.contentWrapper}>
-          <div className={styles.innerContainer}>
+      <main className="page-shell page-shell--cozy page-shell--full-height">
+        <div className="page-shell-inner" style={{ maxWidth: "42rem" }}>
+          <div className={styles.innerSpacing}>
             <TaskDetailsSkeleton />
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
@@ -45,12 +45,15 @@ const TaskPage = () => {
   };
 
   return (
-    <div className={styles.pageContainer} onClick={() => router.push("/")}>
-      <div
-        className={styles.contentWrapper}
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className={styles.innerContainer}>
+    <main
+      className="page-shell page-shell--cozy page-shell--full-height"
+      onClick={() => router.push("/")}
+    >
+      <div className="page-shell-inner" style={{ maxWidth: "42rem" }}>
+        <div
+          className={styles.innerSpacing}
+          onClick={(e) => e.stopPropagation()}
+        >
           <TaskDetails
             task={task}
             onUpdatePriority={updateTaskPriority}
@@ -63,9 +66,9 @@ const TaskPage = () => {
             onDeleteSubtask={deleteSubtask}
           />
         </div>
+        <Toast message={error} onDismiss={clearError} />
       </div>
-      <Toast message={error} onDismiss={clearError} />
-    </div>
+    </main>
   );
 };
 

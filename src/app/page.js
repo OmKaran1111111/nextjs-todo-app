@@ -53,10 +53,16 @@ function TaskRow({
       </button>
 
       {task._status === "saving" && (
-        <span className={`${sharedStyles.statusDot} ${sharedStyles.statusSaving}`} title="Saving…" />
+        <span
+          className={`${sharedStyles.statusDot} ${sharedStyles.statusSaving}`}
+          title="Saving…"
+        />
       )}
       {task._status === "error" && (
-        <span className={`${sharedStyles.statusDot} ${sharedStyles.statusError}`} title="Couldn't save — reverted" />
+        <span
+          className={`${sharedStyles.statusDot} ${sharedStyles.statusError}`}
+          title="Couldn't save — reverted"
+        />
       )}
 
       <RemainingTime targetDate={task.deadline} />
@@ -115,24 +121,27 @@ const Todo_App = () => {
 
   if (isLoading) {
     return (
-      <div className={styles.appContainer}>
-        <div className={styles.innerContainer}>
-          <div className={styles.leftColumn}>
-            <h3 className={styles.heading}>Tasks</h3>
-            <TaskListSkeleton />
-          </div>
-          <div className={styles.rightColumn}>
-            <TaskDetailsSkeleton />
+      <main className="page-shell page-shell--cozy">
+        <div className="page-shell-inner" style={{ maxWidth: "72rem" }}>
+          <div className={styles.taskColumns}>
+            <div className={styles.leftColumn}>
+              <h3 className={styles.heading}>Tasks</h3>
+              <TaskListSkeleton />
+            </div>
+            <div className={styles.rightColumn}>
+              <TaskDetailsSkeleton />
+            </div>
           </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   const sortedTasks = sortByPriority(tasks).filter((task) =>
-    task.text.toLowerCase().includes(searchTerm.trim().toLowerCase())
+    task.text.toLowerCase().includes(searchTerm.trim().toLowerCase()),
   );
-  const defaultTask = sortedTasks.find((task) => !task.completed) || sortedTasks[0];
+  const defaultTask =
+    sortedTasks.find((task) => !task.completed) || sortedTasks[0];
   const selectedTask =
     sortedTasks.find((task) => task.id === selectedTaskId) || defaultTask;
 
@@ -145,49 +154,53 @@ const Todo_App = () => {
   };
 
   return (
-    <div className={styles.appContainer}>
-      <div className={styles.innerContainer}>
-        <div className={styles.leftColumn}>
-          <h3 className={styles.heading}>Tasks</h3>
+    <main className="page-shell page-shell--cozy">
+      <div className="page-shell-inner" style={{ maxWidth: "72rem" }}>
+        <div className={styles.taskColumns}>
+          <div className={styles.leftColumn}>
+            <h3 className={styles.heading}>Tasks</h3>
 
-          {sortedTasks.length === 0 ? (
-            <p className={styles.emptyText}>
-              {searchTerm.trim() ? "No matching tasks found." : "No tasks added yet!"}
-            </p>
-          ) : (
-            <ul className={styles.taskList}>
-              {sortedTasks.map((task) => (
-                <TaskRow
-                  key={task.id}
-                  task={task}
-                  isActive={
-                    isDesktop && !!selectedTask && selectedTask.id === task.id
-                  }
-                  onSelect={handleSelectTask}
-                  onUpdatePriority={updateTaskPriority}
-                  onToggleComplete={toggleComplete}
-                  onDelete={deleteTask}
-                />
-              ))}
-            </ul>
-          )}
-        </div>
+            {sortedTasks.length === 0 ? (
+              <p className={styles.emptyText}>
+                {searchTerm.trim()
+                  ? "No matching tasks found."
+                  : "No tasks added yet!"}
+              </p>
+            ) : (
+              <ul className={styles.taskList}>
+                {sortedTasks.map((task) => (
+                  <TaskRow
+                    key={task.id}
+                    task={task}
+                    isActive={
+                      isDesktop && !!selectedTask && selectedTask.id === task.id
+                    }
+                    onSelect={handleSelectTask}
+                    onUpdatePriority={updateTaskPriority}
+                    onToggleComplete={toggleComplete}
+                    onDelete={deleteTask}
+                  />
+                ))}
+              </ul>
+            )}
+          </div>
 
-        <div className={styles.rightColumn}>
-          <TaskDetails
-            task={selectedTask}
-            onUpdatePriority={updateTaskPriority}
-            onUpdateDeadline={updateTaskDeadline}
-            onToggleComplete={toggleComplete}
-            onDelete={deleteTask}
-            onAddSubtask={addSubtask}
-            onToggleSubtask={toggleSubtask}
-            onDeleteSubtask={deleteSubtask}
-          />
+          <div className={styles.rightColumn}>
+            <TaskDetails
+              task={selectedTask}
+              onUpdatePriority={updateTaskPriority}
+              onUpdateDeadline={updateTaskDeadline}
+              onToggleComplete={toggleComplete}
+              onDelete={deleteTask}
+              onAddSubtask={addSubtask}
+              onToggleSubtask={toggleSubtask}
+              onDeleteSubtask={deleteSubtask}
+            />
+          </div>
         </div>
+        <Toast message={error} onDismiss={clearError} />
       </div>
-      <Toast message={error} onDismiss={clearError} />
-    </div>
+    </main>
   );
 };
 

@@ -15,13 +15,14 @@ export default async function EditUser({ params }) {
   const roles = getAllRoles();
 
   return (
-    <main className={styles.container}>
-      <div className={styles.inner}>
-        <div className={styles.pageHeader}>
-          <p className={styles.eyebrow}>Manage users</p>
-          <h1 className={styles.pageTitle}>Edit user</h1>
-          <p className={styles.pageSubtitle}>
-            Changing a user&apos;s role changes the permissions they have immediately.
+    <main className="page-shell page-shell--roomy page-shell--full-height">
+      <div className="page-shell-inner">
+        <div className="page-header">
+          <p className="page-header-eyebrow">Manage users</p>
+          <h1 className="page-header-title">Edit user</h1>
+          <p className="page-header-subtitle">
+            Changing a user&apos;s role changes the permissions they have
+            immediately.
           </p>
         </div>
 
@@ -34,8 +35,20 @@ export default async function EditUser({ params }) {
             cancelHref="/Manage_Users"
             fields={[
               { type: "hidden", name: "id", defaultValue: user.id },
-              { type: "text", name: "name", label: "Name", defaultValue: user.name || "", placeholder: "User Name" },
-              { type: "email", name: "email", label: "Email", defaultValue: user.email, required: true },
+              {
+                type: "text",
+                name: "name",
+                label: "Name",
+                defaultValue: user.name || "",
+                placeholder: "User Name",
+              },
+              {
+                type: "email",
+                name: "email",
+                label: "Email",
+                defaultValue: user.email,
+                required: true,
+              },
               {
                 type: "select",
                 name: "role",

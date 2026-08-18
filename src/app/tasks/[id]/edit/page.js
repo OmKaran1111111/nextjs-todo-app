@@ -61,95 +61,105 @@ const EditTaskPage = () => {
 
   if (isLoading) {
     return (
-      <div className={styles.pageWrap}>
-        <div className={styles.card}>
-          <TaskDetailsSkeleton />
+      <main className="page-shell page-shell--roomy">
+        <div className="page-shell-inner page-shell-inner--center">
+          <div className={styles.card}>
+            <TaskDetailsSkeleton />
+          </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   if (!task) {
     return (
-      <div className={styles.pageWrap}>
-        <div className={styles.card}>
-          <h3 className={styles.title}>Task not found</h3>
-          <p className={styles.subtitle}>
-            This task may have already been deleted.
-          </p>
-          <button className={styles.cancelBtn} onClick={handleCancel}>
-            Back to Tasks
-          </button>
+      <main className="page-shell page-shell--roomy">
+        <div className="page-shell-inner page-shell-inner--center">
+          <div className={styles.card}>
+            <h3 className={styles.title}>Task not found</h3>
+            <p className={styles.subtitle}>
+              This task may have already been deleted.
+            </p>
+            <button className={styles.cancelBtn} onClick={handleCancel}>
+              Back to Tasks
+            </button>
+          </div>
         </div>
-      </div>
+      </main>
     );
   }
 
   return (
-    <div className={styles.pageWrap}>
-      <form className={styles.card} onSubmit={handleSave}>
-        <div className={styles.headerRow}>
-          <div>
-            <h3 className={styles.title}>Edit Task</h3>
-            <p className={styles.subtitle}>{task.text}</p>
-          </div>
-          <button
-            type="button"
-            className={styles.closeBtn}
-            onClick={handleCancel}
-            aria-label="Close"
-          >
-            ✕
-          </button>
-        </div>
-
-        <label className={styles.fieldLabel} htmlFor="priority">
-          Priority
-        </label>
-        <div className={styles.priorityGrid}>
-          {PRIORITY_OPTIONS.map((p) => (
+    <main className="page-shell page-shell--roomy">
+      <div className="page-shell-inner page-shell-inner--center">
+        <form className={styles.card} onSubmit={handleSave}>
+          <div className={styles.headerRow}>
+            <div>
+              <h3 className={styles.title}>Edit Task</h3>
+              <p className={styles.subtitle}>{task.text}</p>
+            </div>
             <button
               type="button"
-              key={p.id}
-              className={`${styles.priorityOption} ${
-                priority === p.id ? styles.priorityOptionActive : ""
-              }`}
-              onClick={() => setPriority(p.id)}
+              className={styles.closeBtn}
+              onClick={handleCancel}
+              aria-label="Close"
             >
-              <span>{p.emoji}</span>
-              <span>{p.label}</span>
+              ✕
             </button>
-          ))}
-        </div>
+          </div>
 
-        <label className={styles.fieldLabel} htmlFor="deadline">
-          Deadline
-        </label>
-        <input
-          id="deadline"
-          type="date"
-          className={styles.dateInput}
-          value={deadline || ""}
-          onChange={(e) => setDeadline(e.target.value)}
-        />
+          <label className={styles.fieldLabel} htmlFor="priority">
+            Priority
+          </label>
+          <div className={styles.priorityGrid}>
+            {PRIORITY_OPTIONS.map((p) => (
+              <button
+                type="button"
+                key={p.id}
+                className={`${styles.priorityOption} ${
+                  priority === p.id ? styles.priorityOptionActive : ""
+                }`}
+                onClick={() => setPriority(p.id)}
+              >
+                <span>{p.emoji}</span>
+                <span>{p.label}</span>
+              </button>
+            ))}
+          </div>
 
-        <div className={styles.actionsRow}>
-          <button
-            type="button"
-            className={styles.cancelBtn}
-            onClick={handleCancel}
-            disabled={isSaving}
-          >
-            Cancel
-          </button>
-          <button type="submit" className={styles.saveBtn} disabled={isSaving}>
-            {isSaving ? "Saving…" : "Save Changes"}
-          </button>
-        </div>
-      </form>
+          <label className={styles.fieldLabel} htmlFor="deadline">
+            Deadline
+          </label>
+          <input
+            id="deadline"
+            type="date"
+            className={styles.dateInput}
+            value={deadline || ""}
+            onChange={(e) => setDeadline(e.target.value)}
+          />
 
-      <Toast message={error} onDismiss={clearError} />
-    </div>
+          <div className={styles.actionsRow}>
+            <button
+              type="button"
+              className={styles.cancelBtn}
+              onClick={handleCancel}
+              disabled={isSaving}
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              className={styles.saveBtn}
+              disabled={isSaving}
+            >
+              {isSaving ? "Saving…" : "Save Changes"}
+            </button>
+          </div>
+        </form>
+
+        <Toast message={error} onDismiss={clearError} />
+      </div>
+    </main>
   );
 };
 

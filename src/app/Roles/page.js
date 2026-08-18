@@ -1,12 +1,19 @@
 import { getAllRoles, PERMISSION_GROUPS } from "@/lib/permissions";
-import { createRoleAction, updateRoleAction, deleteRoleAction } from "@/app/actions";
+import {
+  createRoleAction,
+  updateRoleAction,
+  deleteRoleAction,
+} from "@/app/actions";
 import DynamicForm from "@/components/DynamicForm";
 import styles from "./page.module.css";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 
-const TOTAL_PERMISSIONS = PERMISSION_GROUPS.reduce((sum, group) => sum + group.permissions.length, 0);
+const TOTAL_PERMISSIONS = PERMISSION_GROUPS.reduce(
+  (sum, group) => sum + group.permissions.length,
+  0,
+);
 
 const PERMISSION_FIELD_GROUPS = PERMISSION_GROUPS.map((group) => ({
   id: group.id,
@@ -21,20 +28,25 @@ function slugify(name) {
 export default async function Roles({ searchParams }) {
   const roles = getAllRoles();
   const totalUsers = roles.reduce((sum, role) => sum + role.userCount, 0);
-  
+
   const params = await searchParams;
-  
+
   const isAdding = params?.add === "true";
   const editingRoleSlug = params?.edit;
-  const editingRole = roles.find(role => slugify(role.name) === editingRoleSlug);
-  
+  const editingRole = roles.find(
+    (role) => slugify(role.name) === editingRoleSlug,
+  );
+
   const showSidePanel = isAdding || editingRole;
 
   return (
-    <main className={styles.container}>
-      <div className={`${styles.inner} ${showSidePanel ? styles.layoutSplit : ""}`}>
-
-        <section className={styles.rosterSection}>
+    <main className="page-shell page-shell--roomy page-shell--full-height">
+      <div
+        className={`page-shell-inner ${showSidePanel ? "page-shell-inner--split" : ""}`}
+      >
+        <section
+          className={`${styles.rosterSection} ${showSidePanel ? styles.compact : ""}`}
+        >
           <div className={styles.rosterHeaderRow}>
             <h2 className={styles.cardTitle}>All roles</h2>
             <Link href="?add=true" className={styles.btnPrimary}>
@@ -50,7 +62,9 @@ export default async function Roles({ searchParams }) {
                   <th className={styles.th}>Description</th>
                   <th className={styles.th}>Users</th>
                   <th className={styles.th}>Permissions</th>
-                  <th className={`${styles.th} ${styles.textRight}`}>Actions</th>
+                  <th className={`${styles.th} ${styles.textRight}`}>
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -59,10 +73,14 @@ export default async function Roles({ searchParams }) {
                     <td className={styles.td}>
                       <span className={styles.roleName}>
                         {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
-                        {role.isSystem && <span className={styles.systemBadge}>Built-in</span>}
+                        {role.isSystem && (
+                          <span className={styles.systemBadge}>Built-in</span>
+                        )}
                       </span>
                     </td>
-                    <td className={styles.td}>{role.description || "No description yet."}</td>
+                    <td className={styles.td}>
+                      {role.description || "No description yet."}
+                    </td>
                     <td className={styles.td}>{role.userCount}</td>
                     <td className={styles.td}>{role.permissions.length}</td>
                     <td className={`${styles.td} ${styles.textRight}`}>
@@ -75,12 +93,20 @@ export default async function Roles({ searchParams }) {
                         </Link>
                         {!role.isSystem && (
                           <form action={deleteRoleAction}>
-                            <input type="hidden" name="name" value={role.name} />
+                            <input
+                              type="hidden"
+                              name="name"
+                              value={role.name}
+                            />
                             <button
                               type="submit"
                               className={styles.actionBtnDelete}
                               disabled={role.userCount > 0}
-                              title={role.userCount > 0 ? "Reassign users before deleting" : undefined}
+                              title={
+                                role.userCount > 0
+                                  ? "Reassign users before deleting"
+                                  : undefined
+                              }
                             >
                               Delete
                             </button>
@@ -117,7 +143,15 @@ export default async function Roles({ searchParams }) {
               submitLabel={isAdding ? "Create Role" : "Save Changes"}
               cancelHref="?"
               fields={[
-                ...(editingRole ? [{ type: "hidden", name: "name", defaultValue: editingRole.name }] : []),
+                ...(editingRole
+                  ? [
+                      {
+                        type: "hidden",
+                        name: "name",
+                        defaultValue: editingRole.name,
+                      },
+                    ]
+                  : []),
                 ...(isAdding
                   ? [
                       {

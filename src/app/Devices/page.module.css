@@ -1,39 +1,3 @@
-.container {
-  padding: 90px 1.25rem 60px;
-  min-height: 100vh;
-}
-
-.inner {
-  max-width: 1180px;
-  margin: 0 auto;
-}
-
-.eyebrow {
-  font-size: 0.72rem;
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.08em;
-  color: var(--faint);
-  margin: 0 0 0.35rem;
-}
-
-.pageTitle {
-  font-family: var(--font-display);
-  font-style: italic;
-  font-weight: 600;
-  font-size: 2.1rem;
-  color: var(--heading);
-  margin: 0 0 0.4rem;
-  letter-spacing: 0.01em;
-}
-
-.pageSubtitle {
-  color: var(--muted);
-  font-size: 0.95rem;
-  margin: 0;
-  max-width: 46rem;
-}
-
 .emptyState {
   border-radius: 1.25rem;
   border: 1px dashed var(--border-strong);

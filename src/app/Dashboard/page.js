@@ -6,8 +6,6 @@ import InfoBoxes from "@/components/infoboxes";
 import PriorityBreakdown from "@/components/PriorityBreakdown";
 import UpcomingDeadlines from "@/components/Upcomingdeadlines";
 import { TaskListSkeleton } from "@/components/Skeleton";
-import TopBar from "@/components/topbar";
-import Footer from "@/components/footer";
 import useTasks from "@/hooks/useTasks";
 import styles from "./dashboard.module.css";
 
@@ -20,13 +18,13 @@ const Dashboard = () => {
 
   if (isLoading) {
     return (
-      <div>
-        <TopBar />
-        <div className={styles.contentWrapper}>
-          <TaskListSkeleton rows={4} />
+      <main className="page-shell page-shell--cozy">
+        <div className="page-shell-inner page-shell-inner--fluid">
+          <div className={styles.contentWrapper}>
+            <TaskListSkeleton rows={4} />
+          </div>
         </div>
-        <Footer />
-      </div>
+      </main>
     );
   }
 
@@ -40,7 +38,7 @@ const Dashboard = () => {
       task.completed &&
       task.completedAt &&
       task.deadline &&
-      new Date(task.completedAt) <= new Date(task.deadline)
+      new Date(task.completedAt) <= new Date(task.deadline),
   ).length;
 
   const completedAfterDeadline = tasks.filter(
@@ -48,15 +46,16 @@ const Dashboard = () => {
       task.completed &&
       task.completedAt &&
       task.deadline &&
-      new Date(task.completedAt) > new Date(task.deadline)
+      new Date(task.completedAt) > new Date(task.deadline),
   ).length;
 
   const remainingBeforeDeadline = tasks.filter(
-    (task) => !task.completed && task.deadline && new Date(task.deadline) >= now
+    (task) =>
+      !task.completed && task.deadline && new Date(task.deadline) >= now,
   ).length;
 
   const remainingAfterDeadline = tasks.filter(
-    (task) => !task.completed && task.deadline && new Date(task.deadline) < now
+    (task) => !task.completed && task.deadline && new Date(task.deadline) < now,
   ).length;
 
   const data = [
@@ -81,24 +80,22 @@ const Dashboard = () => {
   };
 
   return (
-    <div>
-      <TopBar />
-
-      <div className={styles.contentWrapper}>
-        <InfoBoxes
-          totalTasks={numberOfTasks}
-          completedTasks={noOfComp}
-          remainingTasks={numberOfTasks - noOfComp}
-          remainingOnTime={remainingBeforeDeadline}
-          remainingOverdue={remainingAfterDeadline}
-        />
-        <DonutChart data={data} colors={COLORS} labels={labels} />
-        <PriorityBreakdown tasks={tasks} />
-        <UpcomingDeadlines tasks={tasks} />
+    <main className="page-shell page-shell--cozy">
+      <div className="page-shell-inner page-shell-inner--fluid">
+        <div className={styles.contentWrapper}>
+          <InfoBoxes
+            totalTasks={numberOfTasks}
+            completedTasks={noOfComp}
+            remainingTasks={numberOfTasks - noOfComp}
+            remainingOnTime={remainingBeforeDeadline}
+            remainingOverdue={remainingAfterDeadline}
+          />
+          <DonutChart data={data} colors={COLORS} labels={labels} />
+          <PriorityBreakdown tasks={tasks} />
+          <UpcomingDeadlines tasks={tasks} />
+        </div>
       </div>
-
-      <Footer />
-    </div>
+    </main>
   );
 };
 

@@ -42,15 +42,35 @@
   --shadow-popover: 0 20px 45px rgba(15, 23, 42, 0.18);
 
   --page-backdrop:
-    radial-gradient(circle at 15% 10%, rgba(120, 170, 220, 0.35), transparent 45%),
-    radial-gradient(circle at 85% 0%, rgba(200, 220, 245, 0.5), transparent 50%),
+    radial-gradient(
+      circle at 15% 10%,
+      rgba(120, 170, 220, 0.35),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 85% 0%,
+      rgba(200, 220, 245, 0.5),
+      transparent 50%
+    ),
     linear-gradient(160deg, #dce8f7 0%, #eef3fb 45%, #f7fafd 100%);
   --auth-backdrop:
-    radial-gradient(circle at 15% 20%, rgba(120, 170, 220, 0.55), transparent 45%),
-    radial-gradient(circle at 85% 15%, rgba(60, 90, 140, 0.35), transparent 50%),
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(120, 170, 220, 0.55),
+      transparent 45%
+    ),
+    radial-gradient(
+      circle at 85% 15%,
+      rgba(60, 90, 140, 0.35),
+      transparent 50%
+    ),
     radial-gradient(circle at 30% 85%, rgba(20, 40, 70, 0.25), transparent 55%),
     linear-gradient(160deg, #9fbcdc 0%, #6f97c2 40%, #3f5f8a 100%);
-  --auth-card-bg: linear-gradient(to bottom right, rgba(255, 255, 255, 0.7), rgba(210, 225, 245, 0.45));
+  --auth-card-bg: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.7),
+    rgba(210, 225, 245, 0.45)
+  );
   --auth-card-border: rgba(255, 255, 255, 0.6);
   --auth-blob-1: rgba(255, 255, 255, 0.35);
   --auth-blob-2: rgba(20, 40, 70, 0.18);
@@ -134,15 +154,27 @@
   --shadow-popover: 0 20px 45px rgba(0, 0, 0, 0.5);
 
   --page-backdrop:
-    radial-gradient(circle at 20% 10%, rgba(60, 90, 140, 0.35), transparent 45%),
+    radial-gradient(
+      circle at 20% 10%,
+      rgba(60, 90, 140, 0.35),
+      transparent 45%
+    ),
     radial-gradient(circle at 85% 90%, rgba(30, 50, 80, 0.4), transparent 55%),
     linear-gradient(160deg, #0d1526 0%, #090d16 60%, #05070c 100%);
   --auth-backdrop:
-    radial-gradient(circle at 15% 20%, rgba(120, 170, 220, 0.4), transparent 45%),
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(120, 170, 220, 0.4),
+      transparent 45%
+    ),
     radial-gradient(circle at 85% 15%, rgba(60, 90, 140, 0.5), transparent 50%),
     radial-gradient(circle at 30% 85%, rgba(10, 20, 35, 0.8), transparent 55%),
     linear-gradient(160deg, #4c6a91 0%, #2c4568 40%, #0f1930 100%);
-  --auth-card-bg: linear-gradient(to bottom right, rgba(255, 255, 255, 0.12), rgba(20, 35, 61, 0.35));
+  --auth-card-bg: linear-gradient(
+    to bottom right,
+    rgba(255, 255, 255, 0.12),
+    rgba(20, 35, 61, 0.35)
+  );
   --auth-card-border: rgba(255, 255, 255, 0.16);
   --auth-blob-1: rgba(255, 255, 255, 0.12);
   --auth-blob-2: rgba(0, 0, 0, 0.4);
@@ -246,17 +278,19 @@ html.dark {
 }
 
 body {
-  background-image: url('/light.svg');
+  background-image: url("/light.svg");
   background-size: cover;
   background-attachment: fixed;
   background-position: center;
   color: var(--color-body);
   font-family: var(--font-sans), Arial, Helvetica, sans-serif;
-  transition: background-color 0.3s ease, color 0.3s ease;
+  transition:
+    background-color 0.3s ease,
+    color 0.3s ease;
 }
 
 .dark body {
-  background-image: url('/dark.svg');
+  background-image: url("/dark.svg");
   background-size: cover;
   background-attachment: fixed;
   background-position: center;
@@ -275,4 +309,88 @@ body {
     margin-left: 260px;
     width: calc(100% - 260px);
   }
+}
+
+.page-shell {
+  padding-left: 1.25rem;
+  padding-right: 1.25rem;
+}
+
+.page-shell--roomy {
+  padding-top: 90px;
+  padding-bottom: 60px;
+}
+
+.page-shell--cozy {
+  padding-top: 75px;
+  padding-bottom: 70px;
+  padding-left: 1rem;
+  padding-right: 1rem;
+}
+
+@media (min-width: 640px) {
+  .page-shell--cozy {
+    padding-left: 1.5rem;
+    padding-right: 1.5rem;
+  }
+}
+
+.page-shell--full-height {
+  min-height: 100vh;
+}
+
+.page-shell-inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  transition: max-width 0.3s ease;
+}
+
+.page-shell-inner--fluid {
+  max-width: none;
+  margin: 0;
+  width: 100%;
+}
+
+.page-shell-inner--center {
+  display: flex;
+  justify-content: center;
+}
+
+@media (min-width: 900px) {
+  .page-shell-inner--split {
+    display: flex;
+    align-items: flex-start;
+    gap: 1.75rem;
+    max-width: 1500px;
+  }
+}
+
+.page-header {
+  margin-bottom: 1.75rem;
+}
+
+.page-header-eyebrow {
+  font-size: 0.72rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--faint);
+  margin: 0 0 0.35rem;
+}
+
+.page-header-title {
+  font-family: var(--font-display);
+  font-style: italic;
+  font-weight: 600;
+  font-size: 2.1rem;
+  color: var(--heading);
+  margin: 0 0 0.4rem;
+  letter-spacing: 0.01em;
+}
+
+.page-header-subtitle {
+  color: var(--muted);
+  font-size: 0.95rem;
+  margin: 0;
+  max-width: 46rem;
 }

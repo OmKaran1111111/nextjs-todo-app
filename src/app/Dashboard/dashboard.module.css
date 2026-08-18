@@ -1,9 +1,7 @@
-
 .contentWrapper {
   display: flex;
   flex-direction: column;
   gap: 1rem;
-  padding: 75px 1rem 70px 1rem;
   width: 100%;
 }
 
@@ -51,4 +49,3 @@
     min-height: calc(100vh - 145px);
   }
 }
-

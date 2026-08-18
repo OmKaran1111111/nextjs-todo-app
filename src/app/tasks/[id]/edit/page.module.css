@@ -1,9 +1,3 @@
-.pageWrap {
-  padding: 90px 1.25rem 60px;
-  display: flex;
-  justify-content: center;
-}
-
 .card {
   width: 100%;
   max-width: 480px;

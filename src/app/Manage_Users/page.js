@@ -1,7 +1,12 @@
 import Link from "next/link";
 import { getAllUsers } from "@/lib/users";
 import { getAllRoles } from "@/lib/permissions";
-import { addUserAction, updateUserAction, deleteUserAction, toggleBanAction } from "@/app/actions";
+import {
+  addUserAction,
+  updateUserAction,
+  deleteUserAction,
+  toggleBanAction,
+} from "@/app/actions";
 import DynamicForm from "@/components/DynamicForm";
 import styles from "./page.module.css";
 
@@ -47,7 +52,9 @@ export default async function Manage_Users({ searchParams }) {
 
   const params = await searchParams;
   const editingUserId = params?.edit;
-  const editingUser = editingUserId ? users.find((u) => u.id === editingUserId) : null;
+  const editingUser = editingUserId
+    ? users.find((u) => u.id === editingUserId)
+    : null;
   const isEditing = Boolean(editingUser);
 
   const roleOptions = roles.map((role) => ({
@@ -56,25 +63,36 @@ export default async function Manage_Users({ searchParams }) {
   }));
 
   return (
-    <main className={styles.container}>
-      <div className={styles.inner}>
+    <main className="page-shell page-shell--roomy page-shell--full-height">
+      <div className="page-shell-inner">
         <div className={styles.layout}>
           <aside className={styles.formCard}>
             <div className={styles.formCardHeader}>
               <div>
-                <h2 className={styles.cardTitle}>{isEditing ? "Edit user" : "Add a user"}</h2>
+                <h2 className={styles.cardTitle}>
+                  {isEditing ? "Edit user" : "Add a user"}
+                </h2>
                 {isEditing && (
-                  <p className={styles.sidePanelSubtitle}>{editingUser.name || editingUser.email}</p>
+                  <p className={styles.sidePanelSubtitle}>
+                    {editingUser.name || editingUser.email}
+                  </p>
                 )}
               </div>
               {isEditing && (
-                <Link href="/Manage_Users" className={styles.closeBtn} aria-label="Cancel edit">
+                <Link
+                  href="/Manage_Users"
+                  className={styles.closeBtn}
+                  aria-label="Cancel edit"
+                >
                   ✕
                 </Link>
               )}
             </div>
 
-            <div key={isEditing ? editingUser.id : "add"} className={styles.formCardBody}>
+            <div
+              key={isEditing ? editingUser.id : "add"}
+              className={styles.formCardBody}
+            >
               {isEditing ? (
                 <DynamicForm
                   variant="panel"
@@ -82,7 +100,11 @@ export default async function Manage_Users({ searchParams }) {
                   submitLabel="Save changes"
                   cancelHref="/Manage_Users"
                   fields={[
-                    { type: "hidden", name: "id", defaultValue: editingUser.id },
+                    {
+                      type: "hidden",
+                      name: "id",
+                      defaultValue: editingUser.id,
+                    },
                     {
                       type: "text",
                       name: "name",
@@ -112,19 +134,48 @@ export default async function Manage_Users({ searchParams }) {
                   action={addUserAction}
                   submitLabel="Add user"
                   fields={[
-                    { type: "text", name: "name", label: "Name", placeholder: "User Name" },
-                    { type: "email", name: "email", label: "Email", placeholder: "user@example.com", required: true },
-                    { type: "password", name: "password", label: "Password", placeholder: "password", required: true },
-                    { type: "select", name: "role", label: "Role", defaultValue: "user", options: roleOptions },
+                    {
+                      type: "text",
+                      name: "name",
+                      label: "Name",
+                      placeholder: "User Name",
+                    },
+                    {
+                      type: "email",
+                      name: "email",
+                      label: "Email",
+                      placeholder: "user@example.com",
+                      required: true,
+                    },
+                    {
+                      type: "password",
+                      name: "password",
+                      label: "Password",
+                      placeholder: "password",
+                      required: true,
+                    },
+                    {
+                      type: "select",
+                      name: "role",
+                      label: "Role",
+                      defaultValue: "user",
+                      options: roleOptions,
+                    },
                   ]}
                 />
               )}
             </div>
 
             {!isEditing && (
-              <p className={styles.rosterCount} style={{ marginTop: "0.75rem" }}>
+              <p
+                className={styles.rosterCount}
+                style={{ marginTop: "0.75rem" }}
+              >
                 Need a different set of permissions?{" "}
-                <Link href="/Roles" style={{ color: "var(--primary)", fontWeight: 600 }}>
+                <Link
+                  href="/Roles"
+                  style={{ color: "var(--primary)", fontWeight: 600 }}
+                >
                   Manage roles
                 </Link>
               </p>
@@ -140,7 +191,9 @@ export default async function Manage_Users({ searchParams }) {
             {users.length === 0 ? (
               <div className={styles.emptyState}>
                 <p className={styles.emptyTitle}>No users yet</p>
-                <p className={styles.emptyText}>Accounts you add will show up here.</p>
+                <p className={styles.emptyText}>
+                  Accounts you add will show up here.
+                </p>
               </div>
             ) : (
               <div className={styles.tableWrapper}>
@@ -151,18 +204,27 @@ export default async function Manage_Users({ searchParams }) {
                       <th className={styles.th}>Role</th>
                       <th className={styles.th}>Status</th>
                       <th className={styles.th}>Joined</th>
-                      <th className={`${styles.th} ${styles.textRight}`}>Actions</th>
+                      <th className={`${styles.th} ${styles.textRight}`}>
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map((user) => {
-                      const isBanned = user.isBanned == 1 || user.isBanned === true;
+                      const isBanned =
+                        user.isBanned == 1 || user.isBanned === true;
                       const isAdmin = user.role === "admin";
-                      const palette = AVATAR_PALETTE[hashString(user.id) % AVATAR_PALETTE.length];
+                      const palette =
+                        AVATAR_PALETTE[
+                          hashString(user.id) % AVATAR_PALETTE.length
+                        ];
                       const isActiveRow = editingUser?.id === user.id;
 
                       return (
-                        <tr key={user.id} className={`${isBanned ? styles.rowBanned : ""} ${isActiveRow ? styles.rowActive : ""}`}>
+                        <tr
+                          key={user.id}
+                          className={`${isBanned ? styles.rowBanned : ""} ${isActiveRow ? styles.rowActive : ""}`}
+                        >
                           <td className={styles.td}>
                             <Link
                               href={`/tasks?userId=${user.id}&name=${encodeURIComponent(user.name || user.email)}`}
@@ -170,26 +232,42 @@ export default async function Manage_Users({ searchParams }) {
                             >
                               <span
                                 className={`${styles.avatar} ${isAdmin ? styles.avatarAdmin : ""}`}
-                                style={{ backgroundColor: palette.bg, color: palette.fg }}
+                                style={{
+                                  backgroundColor: palette.bg,
+                                  color: palette.fg,
+                                }}
                               >
                                 {initialsFor(user)}
                               </span>
                               <div className={styles.userMeta}>
-                                <span className={styles.userName}>{user.name || "—"}</span>
-                                <span className={styles.userEmail}>{user.email}</span>
+                                <span className={styles.userName}>
+                                  {user.name || "—"}
+                                </span>
+                                <span className={styles.userEmail}>
+                                  {user.email}
+                                </span>
                               </div>
                             </Link>
                           </td>
                           <td className={styles.td}>
-                            <span className={isAdmin ? styles.roleBadgeAdmin : styles.roleBadgeUser}>
+                            <span
+                              className={
+                                isAdmin
+                                  ? styles.roleBadgeAdmin
+                                  : styles.roleBadgeUser
+                              }
+                            >
                               {user.role
-                                ? user.role.charAt(0).toUpperCase() + user.role.slice(1)
+                                ? user.role.charAt(0).toUpperCase() +
+                                  user.role.slice(1)
                                 : "User"}
                             </span>
                           </td>
                           <td className={styles.td}>
                             {isBanned ? (
-                              <span className={styles.revokedStamp}>Access revoked</span>
+                              <span className={styles.revokedStamp}>
+                                Access revoked
+                              </span>
                             ) : (
                               <span className={styles.statusActive}>
                                 <span className={styles.statusDot} />
@@ -209,18 +287,33 @@ export default async function Manage_Users({ searchParams }) {
                                 Edit
                               </Link>
                               <form action={toggleBanAction}>
-                                <input type="hidden" name="id" value={user.id} />
+                                <input
+                                  type="hidden"
+                                  name="id"
+                                  value={user.id}
+                                />
                                 <button
                                   type="submit"
-                                  className={isBanned ? styles.actionBtnUnban : styles.actionBtnBan}
+                                  className={
+                                    isBanned
+                                      ? styles.actionBtnUnban
+                                      : styles.actionBtnBan
+                                  }
                                 >
                                   {isBanned ? "Unban" : "Ban"}
                                 </button>
                               </form>
 
                               <form action={deleteUserAction}>
-                                <input type="hidden" name="id" value={user.id} />
-                                <button type="submit" className={styles.actionBtnDelete}>
+                                <input
+                                  type="hidden"
+                                  name="id"
+                                  value={user.id}
+                                />
+                                <button
+                                  type="submit"
+                                  className={styles.actionBtnDelete}
+                                >
                                   Remove
                                 </button>
                               </form>

@@ -1,5 +1,9 @@
 import { auth } from "@/auth";
-import { getDevicesForUser, getAllDevicesWithOwners, getDeviceStatus } from "@/lib/devices";
+import {
+  getDevicesForUser,
+  getAllDevicesWithOwners,
+  getDeviceStatus,
+} from "@/lib/devices";
 import { revokeDeviceAction } from "@/app/actions";
 import styles from "./page.module.css";
 
@@ -25,13 +29,14 @@ export default async function Devices() {
     : getDevicesForUser(session.user.id);
 
   return (
-    <main className={styles.container}>
-      <div className={styles.inner}>
-
+    <main className="page-shell page-shell--roomy page-shell--full-height">
+      <div className="page-shell-inner">
         {devices.length === 0 ? (
           <div className={styles.emptyState}>
             <p className={styles.emptyTitle}>No devices yet</p>
-            <p className={styles.emptyText}>Signed-in devices will show up here.</p>
+            <p className={styles.emptyText}>
+              Signed-in devices will show up here.
+            </p>
           </div>
         ) : (
           <div className={styles.tableWrapper}>
@@ -44,7 +49,9 @@ export default async function Devices() {
                   <th className={styles.th}>First Seen</th>
                   <th className={styles.th}>Last Active</th>
                   <th className={styles.th}>Status</th>
-                  <th className={`${styles.th} ${styles.textRight}`}>Actions</th>
+                  <th className={`${styles.th} ${styles.textRight}`}>
+                    Actions
+                  </th>
                 </tr>
               </thead>
               <tbody>
@@ -52,17 +59,26 @@ export default async function Devices() {
                   const status = getDeviceStatus(device);
 
                   return (
-                    <tr key={device.id} className={device.revoked ? styles.rowRevoked : ""}>
+                    <tr
+                      key={device.id}
+                      className={device.revoked ? styles.rowRevoked : ""}
+                    >
                       {isAdmin && (
                         <td className={styles.td}>
                           <div className={styles.userMeta}>
-                            <span className={styles.userName}>{device.ownerName || "—"}</span>
-                            <span className={styles.userEmail}>{device.ownerEmail}</span>
+                            <span className={styles.userName}>
+                              {device.ownerName || "—"}
+                            </span>
+                            <span className={styles.userEmail}>
+                              {device.ownerEmail}
+                            </span>
                           </div>
                         </td>
                       )}
                       <td className={styles.td}>{device.deviceName}</td>
-                      <td className={styles.td}>{device.appVersion || device.browserVersion || "—"}</td>
+                      <td className={styles.td}>
+                        {device.appVersion || device.browserVersion || "—"}
+                      </td>
                       <td className={`${styles.td} ${styles.dateCell}`}>
                         {formatTimestamp(device.createdAt)}
                       </td>
@@ -70,7 +86,9 @@ export default async function Devices() {
                         {formatTimestamp(device.lastActiveAt)}
                       </td>
                       <td className={styles.td}>
-                        <span className={`${styles.statusBadge} ${styles[`tone_${status.tone}`]}`}>
+                        <span
+                          className={`${styles.statusBadge} ${styles[`tone_${status.tone}`]}`}
+                        >
                           <span className={styles.statusDot} />
                           {status.label}
                         </span>
@@ -81,7 +99,10 @@ export default async function Devices() {
                         ) : (
                           <form action={revokeDeviceAction}>
                             <input type="hidden" name="id" value={device.id} />
-                            <button type="submit" className={styles.actionBtnRevoke}>
+                            <button
+                              type="submit"
+                              className={styles.actionBtnRevoke}
+                            >
                               Revoke
                             </button>
                           </form>
