@@ -37,7 +37,7 @@ function FieldWrap({ field, isAuth, isTask, children }) {
   if (isTask) {
     return (
       <>
-        {field.label && <label className={field.labelClassName || "field-label"}>{field.label}</label>}
+        {field.label && <label className={field.labelClassName || "mt-5 mb-[0.6rem] block text-[0.8rem] font-semibold tracking-wide text-[var(--color-muted)] uppercase"}>{field.label}</label>}
         {children}
       </>
     );
@@ -84,7 +84,7 @@ export default function FormField({
             name={field.name}
             defaultValue={field.defaultValue}
             required={field.required}
-            className={field.className || (isTask ? "task-input" : isAuth ? styles.inputAuth : styles.selectPanel)}
+            className={field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? styles.inputAuth : styles.selectPanel)}
           >
             {field.options.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -99,14 +99,14 @@ export default function FormField({
       const selected = priorityValues[field.name] ?? field.defaultValue;
       return (
         <div>
-          {field.label && <label className={field.labelClassName || "field-label"}>{field.label}</label>}
-          <div className={field.gridClassName || "priority-grid"}>
+          {field.label && <label className={field.labelClassName || "mt-5 mb-[0.6rem] block text-[0.8rem] font-semibold tracking-wide text-[var(--color-muted)] uppercase"}>{field.label}</label>}
+          <div className={field.gridClassName || "grid grid-cols-2 gap-[0.6rem]"}>
             {field.options.map((opt) => (
               <button
                 type="button"
                 key={opt.value}
-                className={`${field.optionClassName || "priority-option"} ${
-                  selected === opt.value ? field.optionActiveClassName || "priority-option-active" : ""
+                className={`${field.optionClassName || "flex cursor-pointer items-center gap-2 rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-[0.6rem] text-[0.85rem] text-[var(--color-body)] transition-all duration-150 ease-out hover:border-[var(--color-primary)]"} ${
+                  selected === opt.value ? field.optionActiveClassName || "border-[var(--color-primary)] bg-[var(--color-primary)] text-[var(--color-primary-contrast)]" : ""
                 }`}
                 onClick={() => setPriorityValues((prev) => ({ ...prev, [field.name]: opt.value }))}
               >
@@ -123,12 +123,12 @@ export default function FormField({
     case "date":
       return (
         <div>
-          {field.label && <label className={field.labelClassName || "field-label"}>{field.label}</label>}
+          {field.label && <label className={field.labelClassName || "mt-5 mb-[0.6rem] block text-[0.8rem] font-semibold tracking-wide text-[var(--color-muted)] uppercase"}>{field.label}</label>}
           <input
             type="date"
             name={field.name}
             defaultValue={field.defaultValue || ""}
-            className={field.className || (isTask ? "date-input" : isAuth ? styles.inputAuth : styles.inputPanel)}
+            className={field.className || (isTask ? "w-full rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-[0.6rem] text-[0.9rem] text-[var(--color-body)]" : isAuth ? styles.inputAuth : styles.inputPanel)}
           />
         </div>
       );
@@ -177,7 +177,7 @@ export default function FormField({
             minLength={field.minLength}
             maxLength={field.maxLength}
             className={
-              field.className || (isTask ? "task-input" : isAuth ? styles.inputAuth : styles.inputPanel)
+              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? styles.inputAuth : styles.inputPanel)
             }
           />
           {isAuth && (
@@ -208,7 +208,7 @@ export default function FormField({
             minLength={field.minLength}
             maxLength={field.maxLength}
             className={
-              field.className || (isTask ? "task-input" : isAuth ? styles.inputAuth : styles.inputPanel)
+              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? styles.inputAuth : styles.inputPanel)
             }
           />
         </FieldWrap>

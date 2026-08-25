@@ -133,10 +133,10 @@ export default function DynamicForm({
           </div>
         ))}
 
-        <div className={isTask ? "actions-row" : cancelHref || onCancel ? styles.actionsRow : undefined}>
+        <div className={isTask ? "mt-7 flex justify-end gap-[0.6rem]" : cancelHref || onCancel ? styles.actionsRow : undefined}>
           {(cancelHref || onCancel) &&
             (cancelHref ? (
-              <Link href={cancelHref} className={cancelClassName || (isTask ? "cancel-btn" : styles.cancelBtnPanel)}>
+              <Link href={cancelHref} className={cancelClassName || (isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-border)] bg-transparent px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-body)] transition-colors hover:bg-[var(--color-surface-muted)] disabled:cursor-not-allowed disabled:opacity-60" : styles.cancelBtnPanel)}>
                 {cancelLabel}
               </Link>
             ) : (
@@ -144,7 +144,7 @@ export default function DynamicForm({
                 type="button"
                 onClick={onCancel}
                 disabled={loading}
-                className={cancelClassName || (isTask ? "cancel-btn" : styles.cancelBtnPanel)}
+                className={cancelClassName || (isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-border)] bg-transparent px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-body)] transition-colors hover:bg-[var(--color-surface-muted)] disabled:cursor-not-allowed disabled:opacity-60" : styles.cancelBtnPanel)}
               >
                 {cancelLabel}
               </button>
@@ -154,7 +154,7 @@ export default function DynamicForm({
             disabled={loading}
             ref={isAuth ? submitRef : undefined}
             className={
-              submitClassName || (isAuth ? styles.submitBtnAuth : isTask ? "save-btn" : styles.submitBtnPanel)
+              submitClassName || (isAuth ? styles.submitBtnAuth : isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-primary)] bg-[var(--color-primary)] px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-primary-contrast)] transition-colors hover:bg-[var(--color-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60" : styles.submitBtnPanel)
             }
             style={
               isAuth

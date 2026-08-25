@@ -3,7 +3,7 @@ import { getUserById } from "@/lib/users";
 import { getAllRoles } from "@/lib/permissions";
 import { updateUserAction } from "@/app/actions";
 import DynamicForm from "@/components/DynamicForm";
-import styles from "../../page.module.css";
+import { FormPanel } from "@/components/ui/Panel";
 
 export const dynamic = "force-dynamic";
 
@@ -26,8 +26,10 @@ export default async function EditUser({ params }) {
           </p>
         </div>
 
-        <section className={styles.formCard} style={{ maxWidth: 420 }}>
-          <h2 className={styles.cardTitle}>{user.name || user.email}</h2>
+        <FormPanel className="max-w-[420px] lg:static lg:max-h-none lg:w-full lg:overflow-visible">
+          <h2 className="m-0 text-[1.05rem] font-bold text-[var(--color-heading)]">
+            {user.name || user.email}
+          </h2>
           <DynamicForm
             variant="panel"
             action={updateUserAction}
@@ -61,7 +63,7 @@ export default async function EditUser({ params }) {
               },
             ]}
           />
-        </section>
+        </FormPanel>
       </div>
     </main>
   );

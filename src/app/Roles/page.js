@@ -5,15 +5,13 @@ import {
   deleteRoleAction,
 } from "@/app/actions";
 import DynamicForm from "@/components/DynamicForm";
-import styles from "./page.module.css";
+import { SidePanel, PanelHeader } from "@/components/ui/Panel";
+import { TableWrapper, Table, Th, Td } from "@/components/ui/Table";
+import { PillBadge } from "@/components/ui/Badge";
+import { ActionButton, PrimaryButton } from "@/components/ui/Button";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
-
-const TOTAL_PERMISSIONS = PERMISSION_GROUPS.reduce(
-  (sum, group) => sum + group.permissions.length,
-  0,
-);
 
 const PERMISSION_FIELD_GROUPS = PERMISSION_GROUPS.map((group) => ({
   id: group.id,
@@ -27,7 +25,6 @@ function slugify(name) {
 
 export default async function Roles({ searchParams }) {
   const roles = getAllRoles();
-  const totalUsers = roles.reduce((sum, role) => sum + role.userCount, 0);
 
   const params = await searchParams;
 
@@ -44,97 +41,83 @@ export default async function Roles({ searchParams }) {
       <div
         className={`page-shell-inner ${showSidePanel ? "page-shell-inner--split" : ""}`}
       >
-        <section
-          className={`${styles.rosterSection} ${showSidePanel ? styles.compact : ""}`}
-        >
-          <div className={styles.rosterHeaderRow}>
-            <h2 className={styles.cardTitle}>All roles</h2>
-            <Link href="?add=true" className={styles.btnPrimary}>
+        <section className={`min-w-0 flex-1 ${showSidePanel ? "[&_table]:min-w-[420px] [&_th]:px-[0.6rem] [&_th]:py-[0.45rem] [&_th]:text-[0.78rem] [&_td]:px-[0.6rem] [&_td]:py-[0.45rem] [&_td]:text-[0.78rem]" : ""}`}>
+          <div className="mb-4 flex items-center justify-between">
+            <h2 className="m-0 text-[1.05rem] font-bold text-[var(--color-heading)]">
+              All roles
+            </h2>
+            <PrimaryButton href="?add=true" className="mt-0">
               New role
-            </Link>
+            </PrimaryButton>
           </div>
 
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
+          <TableWrapper>
+            <Table>
               <thead>
                 <tr>
-                  <th className={styles.th}>Role</th>
-                  <th className={styles.th}>Description</th>
-                  <th className={styles.th}>Users</th>
-                  <th className={styles.th}>Permissions</th>
-                  <th className={`${styles.th} ${styles.textRight}`}>
-                    Actions
-                  </th>
+                  <Th>Role</Th>
+                  <Th>Description</Th>
+                  <Th>Users</Th>
+                  <Th>Permissions</Th>
+                  <Th align="right">Actions</Th>
                 </tr>
               </thead>
               <tbody>
                 {roles.map((role) => (
-                  <tr key={role.name}>
-                    <td className={styles.td}>
-                      <span className={styles.roleName}>
+                  <tr key={role.name} className="group hover:[&>td]:bg-[var(--color-surface-hover)]">
+                    <Td>
+                      <span className="flex items-center gap-2 text-base font-bold text-[var(--color-heading)]">
                         {role.name.charAt(0).toUpperCase() + role.name.slice(1)}
                         {role.isSystem && (
-                          <span className={styles.systemBadge}>Built-in</span>
+                          <PillBadge tone="muted" className="text-[0.65rem] tracking-wide uppercase">
+                            Built-in
+                          </PillBadge>
                         )}
                       </span>
-                    </td>
-                    <td className={styles.td}>
-                      {role.description || "No description yet."}
-                    </td>
-                    <td className={styles.td}>{role.userCount}</td>
-                    <td className={styles.td}>{role.permissions.length}</td>
-                    <td className={`${styles.td} ${styles.textRight}`}>
-                      <div className={styles.actionGroup}>
-                        <Link
-                          href={`?edit=${slugify(role.name)}`}
-                          className={styles.actionBtnEdit}
-                        >
+                    </Td>
+                    <Td>{role.description || "No description yet."}</Td>
+                    <Td>{role.userCount}</Td>
+                    <Td>{role.permissions.length}</Td>
+                    <Td align="right">
+                      <div className="flex flex-wrap justify-end gap-[0.4rem]">
+                        <ActionButton href={`?edit=${slugify(role.name)}`} tone="neutral">
                           Edit
-                        </Link>
+                        </ActionButton>
                         {!role.isSystem && (
                           <form action={deleteRoleAction}>
-                            <input
-                              type="hidden"
-                              name="name"
-                              value={role.name}
-                            />
-                            <button
+                            <input type="hidden" name="name" value={role.name} />
+                            <ActionButton
                               type="submit"
-                              className={styles.actionBtnDelete}
+                              tone="danger"
                               disabled={role.userCount > 0}
                               title={
                                 role.userCount > 0
                                   ? "Reassign users before deleting"
                                   : undefined
                               }
+                              className="disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-[var(--color-border)] disabled:hover:bg-[var(--color-surface-muted)] disabled:hover:text-[var(--color-body)]"
                             >
                               Delete
-                            </button>
+                            </ActionButton>
                           </form>
                         )}
                       </div>
-                    </td>
+                    </Td>
                   </tr>
                 ))}
               </tbody>
-            </table>
-          </div>
+            </Table>
+          </TableWrapper>
         </section>
 
         {showSidePanel && (
-          <aside className={styles.sidePanel}>
-            <div className={styles.sidePanelHeader}>
-              <div>
-                <h4 className={styles.sidePanelTitle}>
-                  {isAdding ? "Create a Role" : "Edit Role"}
-                </h4>
-                {editingRole && (
-                  <p className={styles.sidePanelSubtitle}>{editingRole.name}</p>
-                )}
-              </div>
-              <Link href="?" className={styles.closeBtn} aria-label="Close">
-                ✕
-              </Link>
+          <SidePanel>
+            <div className="mb-4 border-b border-[var(--color-border-soft)] pb-[0.85rem]">
+              <PanelHeader
+                title={isAdding ? "Create a Role" : "Edit Role"}
+                subtitle={editingRole ? editingRole.name : null}
+                onCloseHref="?"
+              />
             </div>
 
             <DynamicForm
@@ -144,13 +127,7 @@ export default async function Roles({ searchParams }) {
               cancelHref="?"
               fields={[
                 ...(editingRole
-                  ? [
-                      {
-                        type: "hidden",
-                        name: "name",
-                        defaultValue: editingRole.name,
-                      },
-                    ]
+                  ? [{ type: "hidden", name: "name", defaultValue: editingRole.name }]
                   : []),
                 ...(isAdding
                   ? [
@@ -181,7 +158,7 @@ export default async function Roles({ searchParams }) {
                 },
               ]}
             />
-          </aside>
+          </SidePanel>
         )}
       </div>
     </main>

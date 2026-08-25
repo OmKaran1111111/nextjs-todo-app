@@ -5,7 +5,6 @@ import { useParams, useRouter } from "next/navigation";
 import TaskDetails from "@/components/TaskDetails";
 import { TaskDetailsSkeleton } from "@/components/Skeleton";
 import Toast from "@/components/Toast";
-import styles from "./page.module.css";
 import useTasks from "@/hooks/useTasks";
 
 const TaskPage = () => {
@@ -28,8 +27,8 @@ const TaskPage = () => {
   if (isLoading) {
     return (
       <main className="page-shell page-shell--cozy page-shell--full-height">
-        <div className="page-shell-inner" style={{ maxWidth: "42rem" }}>
-          <div className={styles.innerSpacing}>
+        <div className="page-shell-inner max-w-[42rem]">
+          <div className="pt-6">
             <TaskDetailsSkeleton />
           </div>
         </div>
@@ -49,11 +48,8 @@ const TaskPage = () => {
       className="page-shell page-shell--cozy page-shell--full-height"
       onClick={() => router.push("/")}
     >
-      <div className="page-shell-inner" style={{ maxWidth: "42rem" }}>
-        <div
-          className={styles.innerSpacing}
-          onClick={(e) => e.stopPropagation()}
-        >
+      <div className="page-shell-inner max-w-[42rem]">
+        <div className="pt-6" onClick={(e) => e.stopPropagation()}>
           <TaskDetails
             task={task}
             onUpdatePriority={updateTaskPriority}

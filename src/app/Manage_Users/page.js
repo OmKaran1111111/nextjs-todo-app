@@ -8,7 +8,12 @@ import {
   toggleBanAction,
 } from "@/app/actions";
 import DynamicForm from "@/components/DynamicForm";
-import styles from "./page.module.css";
+import { SplitLayout, FormPanel, PanelHeader } from "@/components/ui/Panel";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { TableWrapper, Table, Th, Td, rowClasses } from "@/components/ui/Table";
+import { Avatar } from "@/components/ui/Avatar";
+import { PillBadge, DotBadge, RevokedStamp } from "@/components/ui/Badge";
+import { ActionButton } from "@/components/ui/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -65,34 +70,15 @@ export default async function Manage_Users({ searchParams }) {
   return (
     <main className="page-shell page-shell--roomy page-shell--full-height">
       <div className="page-shell-inner">
-        <div className={styles.layout}>
-          <aside className={styles.formCard}>
-            <div className={styles.formCardHeader}>
-              <div>
-                <h2 className={styles.cardTitle}>
-                  {isEditing ? "Edit user" : "Add a user"}
-                </h2>
-                {isEditing && (
-                  <p className={styles.sidePanelSubtitle}>
-                    {editingUser.name || editingUser.email}
-                  </p>
-                )}
-              </div>
-              {isEditing && (
-                <Link
-                  href="/Manage_Users"
-                  className={styles.closeBtn}
-                  aria-label="Cancel edit"
-                >
-                  ✕
-                </Link>
-              )}
-            </div>
+        <SplitLayout>
+          <FormPanel>
+            <PanelHeader
+              title={isEditing ? "Edit user" : "Add a user"}
+              subtitle={isEditing ? editingUser.name || editingUser.email : null}
+              onCloseHref={isEditing ? "/Manage_Users" : null}
+            />
 
-            <div
-              key={isEditing ? editingUser.id : "add"}
-              className={styles.formCardBody}
-            >
+            <div key={isEditing ? editingUser.id : "add"} className="animate-[fadeIn_0.2s_ease-out]">
               {isEditing ? (
                 <DynamicForm
                   variant="panel"
@@ -100,11 +86,7 @@ export default async function Manage_Users({ searchParams }) {
                   submitLabel="Save changes"
                   cancelHref="/Manage_Users"
                   fields={[
-                    {
-                      type: "hidden",
-                      name: "id",
-                      defaultValue: editingUser.id,
-                    },
+                    { type: "hidden", name: "id", defaultValue: editingUser.id },
                     {
                       type: "text",
                       name: "name",
@@ -134,12 +116,7 @@ export default async function Manage_Users({ searchParams }) {
                   action={addUserAction}
                   submitLabel="Add user"
                   fields={[
-                    {
-                      type: "text",
-                      name: "name",
-                      label: "Name",
-                      placeholder: "User Name",
-                    },
+                    { type: "text", name: "name", label: "Name", placeholder: "User Name" },
                     {
                       type: "email",
                       name: "email",
@@ -167,167 +144,115 @@ export default async function Manage_Users({ searchParams }) {
             </div>
 
             {!isEditing && (
-              <p
-                className={styles.rosterCount}
-                style={{ marginTop: "0.75rem" }}
-              >
+              <p className="mt-3 text-[0.8rem] text-[var(--color-faint)]">
                 Need a different set of permissions?{" "}
-                <Link
-                  href="/Roles"
-                  style={{ color: "var(--primary)", fontWeight: 600 }}
-                >
+                <Link href="/Roles" className="font-semibold text-[var(--color-primary)]">
                   Manage roles
                 </Link>
               </p>
             )}
-          </aside>
+          </FormPanel>
 
-          <section className={styles.rosterSection}>
-            <div className={styles.rosterHeaderRow}>
-              <h2 className={styles.cardTitle}>All users</h2>
-              <span className={styles.rosterCount}>{users.length} total</span>
+          <section className="min-w-0 flex-1">
+            <div className="mb-4 flex items-baseline justify-between">
+              <h2 className="m-0 text-[1.05rem] font-bold text-[var(--color-heading)]">
+                All users
+              </h2>
+              <span className="text-[0.8rem] text-[var(--color-faint)]">
+                {users.length} total
+              </span>
             </div>
 
             {users.length === 0 ? (
-              <div className={styles.emptyState}>
-                <p className={styles.emptyTitle}>No users yet</p>
-                <p className={styles.emptyText}>
-                  Accounts you add will show up here.
-                </p>
-              </div>
+              <EmptyState title="No users yet" text="Accounts you add will show up here." />
             ) : (
-              <div className={styles.tableWrapper}>
-                <table className={styles.table}>
+              <TableWrapper>
+                <Table>
                   <thead>
                     <tr>
-                      <th className={styles.th}>User</th>
-                      <th className={styles.th}>Role</th>
-                      <th className={styles.th}>Status</th>
-                      <th className={styles.th}>Joined</th>
-                      <th className={`${styles.th} ${styles.textRight}`}>
-                        Actions
-                      </th>
+                      <Th>User</Th>
+                      <Th>Role</Th>
+                      <Th>Status</Th>
+                      <Th>Joined</Th>
+                      <Th align="right">Actions</Th>
                     </tr>
                   </thead>
                   <tbody>
                     {users.map((user) => {
-                      const isBanned =
-                        user.isBanned == 1 || user.isBanned === true;
+                      const isBanned = user.isBanned == 1 || user.isBanned === true;
                       const isAdmin = user.role === "admin";
-                      const palette =
-                        AVATAR_PALETTE[
-                          hashString(user.id) % AVATAR_PALETTE.length
-                        ];
+                      const palette = AVATAR_PALETTE[hashString(user.id) % AVATAR_PALETTE.length];
                       const isActiveRow = editingUser?.id === user.id;
 
                       return (
                         <tr
                           key={user.id}
-                          className={`${isBanned ? styles.rowBanned : ""} ${isActiveRow ? styles.rowActive : ""}`}
+                          className={rowClasses({ dimmed: isBanned, highlighted: isActiveRow })}
                         >
-                          <td className={styles.td}>
+                          <Td>
                             <Link
                               href={`/tasks?userId=${user.id}&name=${encodeURIComponent(user.name || user.email)}`}
-                              className={styles.userCell}
+                              className="flex cursor-pointer items-center gap-[0.65rem] no-underline"
                             >
-                              <span
-                                className={`${styles.avatar} ${isAdmin ? styles.avatarAdmin : ""}`}
-                                style={{
-                                  backgroundColor: palette.bg,
-                                  color: palette.fg,
-                                }}
-                              >
-                                {initialsFor(user)}
-                              </span>
-                              <div className={styles.userMeta}>
-                                <span className={styles.userName}>
+                              <Avatar
+                                initials={initialsFor(user)}
+                                bg={palette.bg}
+                                fg={palette.fg}
+                                ringed={isAdmin}
+                              />
+                              <div className="flex min-w-0 flex-col gap-[0.1rem]">
+                                <span className="max-w-[220px] overflow-hidden text-[0.86rem] font-semibold text-ellipsis whitespace-nowrap text-[var(--color-heading)]">
                                   {user.name || "—"}
                                 </span>
-                                <span className={styles.userEmail}>
+                                <span className="max-w-[220px] overflow-hidden text-[0.76rem] text-ellipsis whitespace-nowrap text-[var(--color-faint)]">
                                   {user.email}
                                 </span>
                               </div>
                             </Link>
-                          </td>
-                          <td className={styles.td}>
-                            <span
-                              className={
-                                isAdmin
-                                  ? styles.roleBadgeAdmin
-                                  : styles.roleBadgeUser
-                              }
-                            >
-                              {user.role
-                                ? user.role.charAt(0).toUpperCase() +
-                                  user.role.slice(1)
-                                : "User"}
-                            </span>
-                          </td>
-                          <td className={styles.td}>
+                          </Td>
+                          <Td>
+                            <PillBadge tone={isAdmin ? "accent" : "muted"}>
+                              {user.role ? user.role.charAt(0).toUpperCase() + user.role.slice(1) : "User"}
+                            </PillBadge>
+                          </Td>
+                          <Td>
                             {isBanned ? (
-                              <span className={styles.revokedStamp}>
-                                Access revoked
-                              </span>
+                              <RevokedStamp>Access revoked</RevokedStamp>
                             ) : (
-                              <span className={styles.statusActive}>
-                                <span className={styles.statusDot} />
-                                Active
-                              </span>
+                              <DotBadge tone="success">Active</DotBadge>
                             )}
-                          </td>
-                          <td className={`${styles.td} ${styles.joinedCell}`}>
+                          </Td>
+                          <Td className="whitespace-nowrap !text-[var(--color-muted)]">
                             {formatJoined(user.createdAt)}
-                          </td>
-                          <td className={`${styles.td} ${styles.textRight}`}>
-                            <div className={styles.actionGroup}>
-                              <Link
-                                href={`?edit=${user.id}`}
-                                className={styles.actionBtnEdit}
-                              >
+                          </Td>
+                          <Td align="right">
+                            <div className="flex flex-wrap justify-end gap-[0.4rem]">
+                              <ActionButton href={`?edit=${user.id}`} tone="neutral">
                                 Edit
-                              </Link>
+                              </ActionButton>
                               <form action={toggleBanAction}>
-                                <input
-                                  type="hidden"
-                                  name="id"
-                                  value={user.id}
-                                />
-                                <button
-                                  type="submit"
-                                  className={
-                                    isBanned
-                                      ? styles.actionBtnUnban
-                                      : styles.actionBtnBan
-                                  }
-                                >
+                                <input type="hidden" name="id" value={user.id} />
+                                <ActionButton type="submit" tone={isBanned ? "success" : "warning"}>
                                   {isBanned ? "Unban" : "Ban"}
-                                </button>
+                                </ActionButton>
                               </form>
-
                               <form action={deleteUserAction}>
-                                <input
-                                  type="hidden"
-                                  name="id"
-                                  value={user.id}
-                                />
-                                <button
-                                  type="submit"
-                                  className={styles.actionBtnDelete}
-                                >
+                                <input type="hidden" name="id" value={user.id} />
+                                <ActionButton type="submit" tone="danger">
                                   Remove
-                                </button>
+                                </ActionButton>
                               </form>
                             </div>
-                          </td>
+                          </Td>
                         </tr>
                       );
                     })}
                   </tbody>
-                </table>
-              </div>
+                </Table>
+              </TableWrapper>
             )}
           </section>
-        </div>
+        </SplitLayout>
       </div>
     </main>
   );

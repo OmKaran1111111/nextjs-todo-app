@@ -17,7 +17,9 @@ import { TaskListSkeleton } from "@/components/Skeleton";
 import useTasks from "@/hooks/useTasks";
 import { useSearch } from "@/components/SearchContext";
 import DynamicForm from "@/components/DynamicForm";
-import "./page.css";
+import { ConfirmModal } from "@/components/ui/ConfirmModal";
+import { PillBadge } from "@/components/ui/Badge";
+import { PrimaryButton, ActionButton } from "@/components/ui/Button";
 
 const SORT_OPTIONS = [
   { key: "priority-asc", label: "Priority (Highest first)", id: "priority", desc: false },
@@ -50,6 +52,24 @@ const COLUMN_LABELS = {
   actions: "Actions",
 };
 
+// Cell text/layout — kept as class strings so the mobile "stacked card" rules
+// (border/background/before:content) live right next to the desktop rules.
+const cellBase =
+  "flex items-center justify-between gap-3 border-b border-[var(--color-border-soft)] px-[0.85rem] py-[0.55rem] align-middle text-[0.82rem] text-[var(--color-body)] before:flex-shrink-0 before:text-left before:text-[0.7rem] before:font-semibold before:tracking-wide before:text-[var(--color-faint)] before:uppercase before:content-[attr(data-label)] sm:table-cell sm:before:content-none sm:[&:not(:last-child)]:border-b sm:group-last:border-b-0";
+
+const badgeTone = {
+  danger: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
+  warning: "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
+  info: "bg-[var(--color-info-soft)] text-[var(--color-info)]",
+  muted: "bg-[var(--color-surface-muted)] text-[var(--color-faint)]",
+};
+
+const actionHover = {
+  view: "hover:border-[var(--color-info)] hover:text-[var(--color-info)]",
+  edit: "hover:border-[var(--color-warning)] hover:text-[var(--color-warning)]",
+  delete: "hover:border-[var(--color-danger)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]",
+};
+
 const TaskList = () => {
   const searchParams = useSearchParams();
   const viewUserId = searchParams.get("userId");
@@ -78,7 +98,7 @@ const TaskList = () => {
   const { data: authSession } = useSession();
   const isAdmin = authSession?.user?.role === "admin";
 
-  const [sidePanelMode, setSidePanelMode] = useState(null); 
+  const [sidePanelMode, setSidePanelMode] = useState(null);
   const [activeTaskId, setActiveTaskId] = useState(null);
 
   const activeTask = useMemo(
@@ -190,7 +210,7 @@ const TaskList = () => {
         accessorKey: "id",
         header: "Task ID",
         cell: ({ getValue }) => (
-          <span className="task-id-cell" title={getValue()}>
+          <span className="font-mono text-[0.82rem] tracking-wide text-[var(--color-muted)]" title={getValue()}>
             #{String(getValue()).slice(0, 8).toUpperCase()}
           </span>
         ),
@@ -201,12 +221,18 @@ const TaskList = () => {
         cell: ({ getValue, row }) => {
           const subtasks = row.original.subtasks || [];
           return (
-            <div className="task-name-cell">
-              <span className={row.original.completed ? "task-name-completed" : ""}>
+            <div className="flex flex-col items-end gap-1 text-right sm:items-start sm:text-left">
+              <span
+                className={
+                  row.original.completed
+                    ? "font-semibold text-[var(--color-faint)] line-through"
+                    : "font-semibold text-[var(--color-heading)]"
+                }
+              >
                 {getValue()}
               </span>
               {subtasks.length > 0 && (
-                <span className="subtask-count-chip">
+                <span className="text-[0.75rem] text-[var(--color-faint)]">
                   {subtasks.filter((s) => s.completed).length}/{subtasks.length} subtasks
                 </span>
               )}
@@ -220,11 +246,7 @@ const TaskList = () => {
         sortingFn: (a, b) => (a.original.priority || 4) - (b.original.priority || 4),
         cell: ({ getValue }) => {
           const meta = PRIORITY_META[getValue() || 4] || PRIORITY_META[4];
-          return (
-            <span className={`priority-badge priority-badge-${meta.tone}`}>
-              {meta.emoji} {meta.label}
-            </span>
-          );
+          return <PillBadge className={badgeTone[meta.tone]}>{meta.emoji} {meta.label}</PillBadge>;
         },
       },
       {
@@ -234,12 +256,12 @@ const TaskList = () => {
           new Date(a.original.deadline || 0) - new Date(b.original.deadline || 0),
         cell: ({ getValue }) =>
           getValue() ? (
-            <div className="deadline-cell">
-              <span className="deadline-date">📅 {getValue()}</span>
+            <div className="flex flex-col items-end gap-[0.2rem] sm:items-start">
+              <span className="text-[0.78rem] text-[var(--color-body)]">📅 {getValue()}</span>
               <RemainingTime targetDate={getValue()} />
             </div>
           ) : (
-            <span className="no-deadline">No deadline</span>
+            <span className="text-[0.78rem] text-[var(--color-faint)]">No deadline</span>
           ),
       },
       {
@@ -247,36 +269,36 @@ const TaskList = () => {
         header: "Actions",
         enableSorting: false,
         cell: ({ row }) => (
-          <div className="action-buttons">
+          <div className="flex flex-wrap justify-end gap-[0.35rem] sm:justify-start">
             <button
               type="button"
-              className="action-btn action-btn-view"
+              className={`inline-flex cursor-pointer items-center gap-1 rounded-[0.45rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2 py-[0.28rem] text-[0.72rem] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.view}`}
               onClick={() => handleView(row.original)}
               title="View task"
             >
               <span aria-hidden="true">👁</span>
-              <span className="action-btn-label">View</span>
+              <span className="hidden xl:inline">View</span>
             </button>
             {isAdmin && (
               <button
                 type="button"
-                className="action-btn action-btn-edit"
+                className={`inline-flex cursor-pointer items-center gap-1 rounded-[0.45rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2 py-[0.28rem] text-[0.72rem] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.edit}`}
                 onClick={() => handleEdit(row.original)}
                 title="Edit task"
               >
                 <span aria-hidden="true">✎</span>
-                <span className="action-btn-label">Edit</span>
+                <span className="hidden xl:inline">Edit</span>
               </button>
             )}
             {isAdmin && (
               <button
                 type="button"
-                className="action-btn action-btn-delete"
+                className={`inline-flex cursor-pointer items-center gap-1 rounded-[0.45rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2 py-[0.28rem] text-[0.72rem] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.delete}`}
                 onClick={() => setDeleteTarget(row.original)}
                 title="Delete task"
               >
                 <span aria-hidden="true">🗑</span>
-                <span className="action-btn-label">Delete</span>
+                <span className="hidden xl:inline">Delete</span>
               </button>
             )}
           </div>
@@ -309,12 +331,10 @@ const TaskList = () => {
 
   if (isLoading) {
     return (
-      <div className="tasks-page-wrap">
-        <div className="tasks-panel">
-          <div className="tasks-header-row">
-            <div>
-              <h3 className="section-title">Tasks</h3>
-            </div>
+      <div className="min-h-screen px-5 pt-[90px] pb-[60px]">
+        <div className="mx-auto max-w-[1100px]">
+          <div className="mb-[0.85rem] flex flex-wrap items-center justify-between gap-3">
+            <h3 className="mb-[0.2rem] text-[1.15rem] font-bold text-[var(--color-heading)]">Tasks</h3>
           </div>
           <TaskListSkeleton />
         </div>
@@ -323,35 +343,42 @@ const TaskList = () => {
   }
 
   const rows = table.getRowModel().rows;
+  const splitOpen = Boolean(sidePanelMode);
 
   return (
-    <div className="desktop-container">
-      <div className={`desktop-content ${sidePanelMode ? "layout-split" : ""}`}>
-        
-        <div className="table-area">
-          <div className="tasks-panel">
-            <div className="tasks-header-row">
+    <div className="min-h-screen px-5 pt-[90px] pb-[60px]">
+      <div
+        className={`mx-auto max-w-[1100px] transition-[max-width] duration-300 ease-in-out md:items-start md:gap-7 ${
+          splitOpen ? "md:flex md:max-w-[1500px]" : ""
+        }`}
+      >
+        <div className="min-w-0 flex-1">
+          <div className="w-full">
+            <div className="mb-[0.85rem] flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="section-title">
+                <h3 className="mb-[0.2rem] text-[1.15rem] font-bold text-[var(--color-heading)]">
                   {viewUserId ? `Tasks — ${viewUserName || "user"}` : "Tasks"}
                 </h3>
-                <span className="tasklist-count">
+                <span className="text-[0.8rem] text-[var(--color-faint)]">
                   {filteredTasks.length} {searchQuery ? "filtered" : "total"}
                 </span>
                 {viewUserId && (
-                  <Link href="/Manage_Users" className="back-to-users-link">
+                  <Link
+                    href="/Manage_Users"
+                    className="mt-[0.3rem] block text-[0.8rem] text-[var(--color-primary)] no-underline hover:underline"
+                  >
                     ← Back to Manage Users
                   </Link>
                 )}
               </div>
-              <div className="header-actions">
-                <div className="sort-menu-wrapper">
-                  <label htmlFor="task-sort-select" className="sort-menu-label">
+              <div className="flex items-center gap-3">
+                <div className="flex items-center gap-[0.4rem]">
+                  <label htmlFor="task-sort-select" className="text-[0.8rem] font-semibold text-[var(--color-faint)]">
                     Sort
                   </label>
                   <select
                     id="task-sort-select"
-                    className="sort-menu-select"
+                    className="h-10 cursor-pointer rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface)] px-[0.6rem] text-[0.85rem] text-[var(--color-body)] focus:border-[var(--color-primary)] focus:outline-none"
                     value={
                       SORT_OPTIONS.find(
                         (o) => o.id === sorting[0]?.id && o.desc === sorting[0]?.desc
@@ -369,51 +396,63 @@ const TaskList = () => {
                     ))}
                   </select>
                 </div>
-                <button
-                  type="button"
-                  className="export-header-btn"
-                  onClick={handleExportAll}
-                >
+                <ActionButton tone="neutral" type="button" onClick={handleExportAll} className="!py-2 !text-[0.88rem]">
                   ⬇ Export
-                </button>
-                <button
+                </ActionButton>
+                <PrimaryButton
                   type="button"
-                  className="add-task-header-btn"
+                  className="!mt-0 !py-2"
                   onClick={() => {
                     setActiveTaskId(null);
                     setSidePanelMode("add");
                   }}
                 >
                   + Add Task
-                </button>
+                </PrimaryButton>
               </div>
             </div>
 
-            <div className="task-table-wrapper">
-              <table className="task-table">
-                <thead>
+            <div
+              className={`w-full max-h-[60vh] overflow-y-auto rounded-[0.85rem] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] backdrop-blur-2xl backdrop-saturate-200 max-sm:overflow-visible max-sm:border-none max-sm:bg-transparent max-sm:shadow-none max-sm:backdrop-blur-none sm:overflow-x-auto ${
+                splitOpen ? "[&_table]:min-w-[420px] [&_th]:px-[0.6rem] [&_th]:py-[0.45rem] [&_th]:text-[0.78rem] [&_td]:px-[0.6rem] [&_td]:py-[0.45rem] [&_td]:text-[0.78rem]" : "[&_table]:min-w-[540px]"
+              }`}
+            >
+              <table className="w-full border-collapse max-sm:block max-sm:w-full">
+                <thead className="max-sm:hidden">
                   {table.getHeaderGroups().map((headerGroup) => (
                     <tr key={headerGroup.id}>
                       {headerGroup.headers.map((header) => (
-                        <th key={header.id}>
+                        <th
+                          key={header.id}
+                          className="sticky top-0 border-b border-[var(--color-border-strong)] bg-[var(--color-surface)] px-[0.85rem] py-[0.55rem] text-left text-[0.72rem] font-semibold tracking-wide text-[var(--color-faint)] uppercase whitespace-nowrap"
+                        >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </th>
                       ))}
                     </tr>
                   ))}
                 </thead>
-                <tbody>
+                <tbody className="max-sm:block max-sm:w-full">
                   {rows.length === 0 ? (
                     <tr>
-                      <td colSpan={columns.length} className="empty-row">
+                      <td colSpan={columns.length} className="px-4 py-7 text-center text-[var(--color-faint)]">
                         {searchQuery ? "No matching tasks found." : "No tasks added yet!"}
                       </td>
                     </tr>
                   ) : (
                     rows.map((row) => (
-                      <tr key={row.id} className={row.original.completed ? "row-completed" : ""}>
+                      <tr
+                        key={row.id}
+                        className={`group max-sm:mb-3 max-sm:block max-sm:w-full max-sm:rounded-[0.85rem] max-sm:border max-sm:border-[var(--color-border)] max-sm:bg-[var(--color-surface)] max-sm:px-[0.85rem] max-sm:py-[0.35rem] max-sm:shadow-[var(--shadow-card)] max-sm:last:mb-0 sm:hover:bg-[var(--color-surface-hover)] ${
+                          row.original.completed ? "opacity-50" : ""
+                        }`}
+                      >
                         {row.getVisibleCells().map((cell) => (
-                          <td key={cell.id} data-label={COLUMN_LABELS[cell.column.id] || ""}>
+                          <td
+                            key={cell.id}
+                            data-label={COLUMN_LABELS[cell.column.id] || ""}
+                            className={cellBase}
+                          >
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </td>
                         ))}
@@ -427,11 +466,19 @@ const TaskList = () => {
         </div>
 
         {sidePanelMode && (
-          <div className="sticky-details" ref={panelRef}>
-            <div className="side-panel-header">
-              <button className="close-btn" onClick={() => setSidePanelMode(null)}>✕</button>
+          <div
+            ref={panelRef}
+            className="w-full [animation:fadeIn_0.25s_ease-out] md:sticky md:top-[100px] md:max-h-[calc(100vh-130px)] md:w-[420px] md:flex-shrink-0 md:overflow-y-auto"
+          >
+            <div className="mb-2 flex justify-end">
+              <button
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-[var(--color-surface-muted)] text-base text-[var(--color-heading)] transition-all duration-200 hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]"
+                onClick={() => setSidePanelMode(null)}
+              >
+                ✕
+              </button>
             </div>
-            
+
             {sidePanelMode === "view" && activeTask && (
               <TaskDetails
                 task={activeTask}
@@ -446,13 +493,14 @@ const TaskList = () => {
             )}
 
             {sidePanelMode === "add" && (
-              <div className="add-task-form">
-                <h4 className="side-panel-title">Create a New Task</h4>
+              <div className="my-[0.625rem] flex w-full flex-col gap-3">
+                <h4 className="m-0 mb-1 text-xl font-bold text-[var(--color-heading)]">
+                  Create a New Task
+                </h4>
                 <DynamicForm
                   variant="task"
                   onSubmit={handleAddTaskSubmit}
                   submitLabel="Add Task"
-                  submitClassName="add-task-btn"
                   fields={[
                     { type: "text", name: "text", placeholder: "Enter a new task...", required: true },
                     {
@@ -469,9 +517,9 @@ const TaskList = () => {
             )}
 
             {sidePanelMode === "edit" && activeTask && (
-              <div className="edit-form-container">
-                <h4 className="side-panel-title">Edit Task</h4>
-                <p className="side-panel-subtitle">{activeTask.text}</p>
+              <div className="rounded-[1.25rem] border border-[var(--color-border-strong)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card-lg)]">
+                <h4 className="m-0 mb-1 text-xl font-bold text-[var(--color-heading)]">Edit Task</h4>
+                <p className="m-0 text-sm break-words text-[var(--color-faint)]">{activeTask.text}</p>
                 <DynamicForm
                   key={activeTask.id}
                   variant="task"
@@ -497,32 +545,14 @@ const TaskList = () => {
       </div>
 
       {deleteTarget && (
-        <div className="delete-modal-overlay" onClick={() => !isDeleting && setDeleteTarget(null)}>
-          <div className="delete-modal-card" onClick={(e) => e.stopPropagation()}>
-            <h4 className="delete-modal-title">Delete this task?</h4>
-            <p className="delete-modal-body">
-              “{deleteTarget.text || "This task"}” will be permanently deleted. This can&apos;t be undone.
-            </p>
-            <div className="delete-modal-actions">
-              <button
-                type="button"
-                className="delete-modal-cancel"
-                onClick={() => setDeleteTarget(null)}
-                disabled={isDeleting}
-              >
-                Cancel
-              </button>
-              <button
-                type="button"
-                className="delete-modal-confirm"
-                onClick={handleConfirmDelete}
-                disabled={isDeleting}
-              >
-                {isDeleting ? "Deleting…" : "Delete"}
-              </button>
-            </div>
-          </div>
-        </div>
+        <ConfirmModal
+          title="Delete this task?"
+          body={`"${deleteTarget.text || "This task"}" will be permanently deleted. This can't be undone.`}
+          confirmLabel="Delete"
+          isBusy={isDeleting}
+          onConfirm={handleConfirmDelete}
+          onCancel={() => setDeleteTarget(null)}
+        />
       )}
 
       <Toast message={error} onDismiss={clearError} />

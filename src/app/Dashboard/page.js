@@ -7,7 +7,6 @@ import PriorityBreakdown from "@/components/PriorityBreakdown";
 import UpcomingDeadlines from "@/components/Upcomingdeadlines";
 import { TaskListSkeleton } from "@/components/Skeleton";
 import useTasks from "@/hooks/useTasks";
-import styles from "./dashboard.module.css";
 
 const DonutChart = dynamic(() => import("@/components/donutchart"), {
   ssr: false,
@@ -20,7 +19,7 @@ const Dashboard = () => {
     return (
       <main className="page-shell page-shell--cozy">
         <div className="page-shell-inner page-shell-inner--fluid">
-          <div className={styles.contentWrapper}>
+          <div className="flex w-full flex-col gap-4 md:grid md:min-h-[calc(100vh-145px)] md:grid-cols-2 md:grid-rows-2 md:gap-8">
             <TaskListSkeleton rows={4} />
           </div>
         </div>
@@ -82,7 +81,7 @@ const Dashboard = () => {
   return (
     <main className="page-shell page-shell--cozy">
       <div className="page-shell-inner page-shell-inner--fluid">
-        <div className={styles.contentWrapper}>
+        <div className="flex w-full flex-col gap-4 md:grid md:min-h-[calc(100vh-145px)] md:grid-cols-2 md:grid-rows-2 md:gap-8">
           <InfoBoxes
             totalTasks={numberOfTasks}
             completedTasks={noOfComp}

@@ -5,7 +5,10 @@ import {
   getDeviceStatus,
 } from "@/lib/devices";
 import { revokeDeviceAction } from "@/app/actions";
-import styles from "./page.module.css";
+import { EmptyState } from "@/components/ui/EmptyState";
+import { TableWrapper, Table, Th, Td, rowClasses } from "@/components/ui/Table";
+import { DotBadge, RevokedStamp } from "@/components/ui/Badge";
+import { ActionButton } from "@/components/ui/Button";
 
 export const dynamic = "force-dynamic";
 
@@ -32,26 +35,22 @@ export default async function Devices() {
     <main className="page-shell page-shell--roomy page-shell--full-height">
       <div className="page-shell-inner">
         {devices.length === 0 ? (
-          <div className={styles.emptyState}>
-            <p className={styles.emptyTitle}>No devices yet</p>
-            <p className={styles.emptyText}>
-              Signed-in devices will show up here.
-            </p>
-          </div>
+          <EmptyState
+            title="No devices yet"
+            text="Signed-in devices will show up here."
+          />
         ) : (
-          <div className={styles.tableWrapper}>
-            <table className={styles.table}>
+          <TableWrapper>
+            <Table>
               <thead>
                 <tr>
-                  {isAdmin && <th className={styles.th}>User</th>}
-                  <th className={styles.th}>Device &amp; Browser</th>
-                  <th className={styles.th}>Version</th>
-                  <th className={styles.th}>First Seen</th>
-                  <th className={styles.th}>Last Active</th>
-                  <th className={styles.th}>Status</th>
-                  <th className={`${styles.th} ${styles.textRight}`}>
-                    Actions
-                  </th>
+                  {isAdmin && <Th>User</Th>}
+                  <Th>Device &amp; Browser</Th>
+                  <Th>Version</Th>
+                  <Th>First Seen</Th>
+                  <Th>Last Active</Th>
+                  <Th>Status</Th>
+                  <Th align="right">Actions</Th>
                 </tr>
               </thead>
               <tbody>
@@ -61,59 +60,49 @@ export default async function Devices() {
                   return (
                     <tr
                       key={device.id}
-                      className={device.revoked ? styles.rowRevoked : ""}
+                      className={rowClasses({ dimmed: device.revoked })}
                     >
                       {isAdmin && (
-                        <td className={styles.td}>
-                          <div className={styles.userMeta}>
-                            <span className={styles.userName}>
+                        <Td>
+                          <div className="flex min-w-0 flex-col gap-[0.1rem]">
+                            <span className="max-w-[220px] overflow-hidden text-[0.86rem] font-semibold text-ellipsis whitespace-nowrap text-[var(--color-heading)]">
                               {device.ownerName || "—"}
                             </span>
-                            <span className={styles.userEmail}>
+                            <span className="max-w-[220px] overflow-hidden text-[0.76rem] text-ellipsis whitespace-nowrap text-[var(--color-faint)]">
                               {device.ownerEmail}
                             </span>
                           </div>
-                        </td>
+                        </Td>
                       )}
-                      <td className={styles.td}>{device.deviceName}</td>
-                      <td className={styles.td}>
-                        {device.appVersion || device.browserVersion || "—"}
-                      </td>
-                      <td className={`${styles.td} ${styles.dateCell}`}>
+                      <Td>{device.deviceName}</Td>
+                      <Td>{device.appVersion || device.browserVersion || "—"}</Td>
+                      <Td className="whitespace-nowrap !text-[var(--color-muted)]">
                         {formatTimestamp(device.createdAt)}
-                      </td>
-                      <td className={`${styles.td} ${styles.dateCell}`}>
+                      </Td>
+                      <Td className="whitespace-nowrap !text-[var(--color-muted)]">
                         {formatTimestamp(device.lastActiveAt)}
-                      </td>
-                      <td className={styles.td}>
-                        <span
-                          className={`${styles.statusBadge} ${styles[`tone_${status.tone}`]}`}
-                        >
-                          <span className={styles.statusDot} />
-                          {status.label}
-                        </span>
-                      </td>
-                      <td className={`${styles.td} ${styles.textRight}`}>
+                      </Td>
+                      <Td>
+                        <DotBadge tone={status.tone}>{status.label}</DotBadge>
+                      </Td>
+                      <Td align="right">
                         {device.revoked ? (
-                          <span className={styles.revokedStamp}>Revoked</span>
+                          <RevokedStamp />
                         ) : (
                           <form action={revokeDeviceAction}>
                             <input type="hidden" name="id" value={device.id} />
-                            <button
-                              type="submit"
-                              className={styles.actionBtnRevoke}
-                            >
+                            <ActionButton tone="danger" type="submit">
                               Revoke
-                            </button>
+                            </ActionButton>
                           </form>
                         )}
-                      </td>
+                      </Td>
                     </tr>
                   );
                 })}
               </tbody>
-            </table>
-          </div>
+            </Table>
+          </TableWrapper>
         )}
       </div>
     </main>

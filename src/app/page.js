@@ -8,10 +8,10 @@ import TaskDetails from "@/components/TaskDetails";
 import { TaskListSkeleton, TaskDetailsSkeleton } from "@/components/Skeleton";
 import Toast from "@/components/Toast";
 import useIsDesktop from "@/hooks/useIsDesktop";
-import styles from "./page.module.css";
 import useTasks from "@/hooks/useTasks";
 import sharedStyles from "@/components/components.module.css";
 import { useSearch } from "@/components/SearchContext";
+
 const sortByPriority = (tasks) =>
   [...tasks].sort((a, b) => {
     const completedDiff =
@@ -32,21 +32,29 @@ function TaskRow({
 
   return (
     <li
-      className={`${styles.taskRow} ${isActive ? styles.taskRowActive : ""} ${
-        task.completed ? styles.taskRowCompleted : styles.taskRowHover
+      className={`relative flex items-center gap-2 rounded-2xl border px-[0.875rem] py-3 backdrop-blur-2xl backdrop-saturate-200 transition-[transform,background-color,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] sm:gap-3 ${
+        isActive
+          ? "border-[var(--color-border-strong)] bg-[var(--color-surface-hover)]"
+          : "border-[var(--color-border)] bg-[var(--color-surface)]"
+      } ${
+        task.completed
+          ? "!border-[var(--color-border-soft)] !bg-[var(--color-surface-soft)] opacity-40"
+          : "hover:-translate-y-0.5 hover:bg-[var(--color-surface-hover)]"
       }`}
     >
       <input
         type="checkbox"
-        className={styles.checkbox}
+        className="checked:after:content-['✓'] h-5 w-5 flex-shrink-0 cursor-pointer appearance-none rounded-full border-2 border-[var(--color-border-strong)] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] checked:border-[var(--color-primary)] checked:bg-[var(--color-primary)] checked:after:relative checked:after:block checked:after:-translate-y-px checked:after:text-center checked:after:text-[13px] checked:after:text-[var(--color-primary-contrast)]"
         checked={task.completed || false}
         onChange={() => onToggleComplete(task.id)}
       />
 
       <button
         onClick={() => onSelect(task)}
-        className={`${styles.taskTitleBtn} ${
-          task.completed ? styles.taskTitleBtnCompleted : ""
+        className={`min-w-0 flex-1 cursor-pointer overflow-hidden border-none bg-transparent p-0 text-left font-bold text-ellipsis whitespace-nowrap ${
+          task.completed
+            ? "text-[var(--color-faint)] line-through"
+            : "text-[var(--color-heading)]"
         }`}
       >
         {task.text}
@@ -74,23 +82,17 @@ function TaskRow({
 
       {confirmingDelete ? (
         <span className={sharedStyles.confirmGroup}>
-          <button
-            onClick={() => onDelete(task.id)}
-            className={sharedStyles.confirmYes}
-          >
+          <button onClick={() => onDelete(task.id)} className={sharedStyles.confirmYes}>
             Yes
           </button>
-          <button
-            onClick={() => setConfirmingDelete(false)}
-            className={sharedStyles.confirmNo}
-          >
+          <button onClick={() => setConfirmingDelete(false)} className={sharedStyles.confirmNo}>
             Cancel
           </button>
         </span>
       ) : (
         <button
           onClick={() => setConfirmingDelete(true)}
-          className={styles.deleteBtn}
+          className="flex-shrink-0 cursor-pointer border-none bg-transparent p-1 text-base text-[var(--color-muted)] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--color-danger)]"
         >
           ✕
         </button>
@@ -122,13 +124,15 @@ const Todo_App = () => {
   if (isLoading) {
     return (
       <main className="page-shell page-shell--cozy">
-        <div className="page-shell-inner" style={{ maxWidth: "72rem" }}>
-          <div className={styles.taskColumns}>
-            <div className={styles.leftColumn}>
-              <h3 className={styles.heading}>Tasks</h3>
+        <div className="page-shell-inner max-w-[72rem]">
+          <div className="md:flex md:items-start md:gap-6">
+            <div className="md:w-[380px] md:flex-shrink-0">
+              <h3 className="mb-3 px-1 text-xl leading-7 font-bold text-[var(--color-heading)]">
+                Tasks
+              </h3>
               <TaskListSkeleton />
             </div>
-            <div className={styles.rightColumn}>
+            <div className="hidden md:sticky md:top-[100px] md:block md:flex-1">
               <TaskDetailsSkeleton />
             </div>
           </div>
@@ -155,19 +159,19 @@ const Todo_App = () => {
 
   return (
     <main className="page-shell page-shell--cozy">
-      <div className="page-shell-inner" style={{ maxWidth: "72rem" }}>
-        <div className={styles.taskColumns}>
-          <div className={styles.leftColumn}>
-            <h3 className={styles.heading}>Tasks</h3>
+      <div className="page-shell-inner max-w-[72rem]">
+        <div className="md:flex md:items-start md:gap-6">
+          <div className="md:w-[380px] md:flex-shrink-0">
+            <h3 className="mb-3 px-1 text-xl leading-7 font-bold text-[var(--color-heading)]">
+              Tasks
+            </h3>
 
             {sortedTasks.length === 0 ? (
-              <p className={styles.emptyText}>
-                {searchTerm.trim()
-                  ? "No matching tasks found."
-                  : "No tasks added yet!"}
+              <p className="py-[0.625rem] text-center text-[0.95rem] text-[var(--color-heading)]">
+                {searchTerm.trim() ? "No matching tasks found." : "No tasks added yet!"}
               </p>
             ) : (
-              <ul className={styles.taskList}>
+              <ul className="m-0 flex list-none flex-col gap-2 p-0">
                 {sortedTasks.map((task) => (
                   <TaskRow
                     key={task.id}
@@ -185,7 +189,7 @@ const Todo_App = () => {
             )}
           </div>
 
-          <div className={styles.rightColumn}>
+          <div className="hidden md:sticky md:top-[100px] md:block md:flex-1">
             <TaskDetails
               task={selectedTask}
               onUpdatePriority={updateTaskPriority}
