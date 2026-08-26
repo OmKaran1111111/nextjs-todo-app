@@ -3,14 +3,20 @@
 import { useState, useEffect } from "react";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
-import styles from "./components.module.css";
 
 const PRIORITY_INFO = {
-  1: { label: "Priority 1 · Urgent", colorClass: styles.colorDanger },
-  2: { label: "Priority 2 · High", colorClass: styles.colorWarning },
-  3: { label: "Priority 3 · Medium", colorClass: styles.colorInfo },
-  4: { label: "Priority 4 · None", colorClass: styles.colorFaint },
+  1: { label: "Priority 1 · Urgent", colorClass: "text-danger" },
+  2: { label: "Priority 2 · High", colorClass: "text-warning" },
+  3: { label: "Priority 3 · Medium", colorClass: "text-info" },
+  4: { label: "Priority 4 · None", colorClass: "text-faint" },
 };
+
+const confirmGroupClass = "inline-flex items-center gap-2 shrink-0";
+const confirmTextClass = "text-xs text-muted whitespace-nowrap";
+const confirmYesClass =
+  "bg-danger text-white border-0 rounded-md py-1 px-2.5 text-xs cursor-pointer hover:opacity-90";
+const confirmNoClass =
+  "bg-transparent border border-border-strong text-body rounded-md py-1 px-2.5 text-xs cursor-pointer hover:bg-surface-muted";
 
 const TaskDetails = ({
   task,
@@ -34,7 +40,7 @@ const TaskDetails = ({
 
   if (!task) {
     return (
-      <div className={styles.noTask}>
+      <div className="flex h-full min-h-[260px] items-center justify-center rounded-3xl border border-border bg-surface-soft backdrop-blur-[40px] [backdrop-filter:blur(40px)_saturate(150%)] p-8 text-center text-muted">
         No tasks yet — add one to see its details here.
       </div>
     );
@@ -43,39 +49,45 @@ const TaskDetails = ({
   const priorityInfo = PRIORITY_INFO[task.priority || 4];
 
   return (
-    <div className={styles.taskDetailsContainer}>
+    <div className="flex h-full flex-col rounded-3xl border border-border bg-surface-soft backdrop-blur-[40px] [backdrop-filter:blur(40px)_saturate(150%)] p-5 sm:p-6 shadow-card-lg">
       {onBack && (
-        <button onClick={onBack} className={styles.backButton}>
+        <button
+          onClick={onBack}
+          className="mb-4 flex w-max items-center gap-1 rounded-full bg-surface-muted border-0 py-1.5 px-3 text-sm text-heading transition-all duration-150 cursor-pointer hover:bg-surface-hover"
+        >
           ← Back
         </button>
       )}
 
-      <div className={styles.taskDetailsHeader}>
+      <div className="flex items-start justify-between gap-3">
         <h2
-          className={`${styles.taskDetailsTitle} ${
-            task.completed ? styles.titleCompleted : styles.titleActive
+          className={`text-2xl font-bold break-words m-0 ${
+            task.completed ? "text-faint line-through" : "text-heading"
           }`}
         >
           {task.text}
         </h2>
         {task._status === "saving" && (
-          <span className={`${styles.statusDot} ${styles.statusSaving}`} title="Saving…" />
+          <span
+            className="inline-block w-2 h-2 rounded-full ml-1.5 shrink-0 bg-info animate-pulse"
+            title="Saving…"
+          />
         )}
         {task._status === "error" && (
-          <span className={`${styles.statusDot} ${styles.statusError}`} title="Couldn't save — reverted" />
+          <span
+            className="inline-block w-2 h-2 rounded-full ml-1.5 shrink-0 bg-danger"
+            title="Couldn't save — reverted"
+          />
         )}
         {confirmingDelete ? (
-          <span className={styles.confirmGroup}>
-            <span className={styles.confirmText}>Delete task?</span>
-            <button
-              onClick={() => onDelete(task.id)}
-              className={styles.confirmYes}
-            >
+          <span className={confirmGroupClass}>
+            <span className={confirmTextClass}>Delete task?</span>
+            <button onClick={() => onDelete(task.id)} className={confirmYesClass}>
               Yes
             </button>
             <button
               onClick={() => setConfirmingDelete(false)}
-              className={styles.confirmNo}
+              className={confirmNoClass}
             >
               Cancel
             </button>
@@ -84,92 +96,93 @@ const TaskDetails = ({
           <button
             onClick={() => setConfirmingDelete(true)}
             title="Delete task"
-            className={styles.deleteButton}
+            className="shrink-0 rounded-full bg-transparent border-0 py-1.5 px-1.5 text-lg text-muted transition-all duration-150 cursor-pointer hover:bg-danger-soft hover:text-danger"
           >
             ✕
           </button>
         )}
       </div>
 
-      <label className={styles.completeLabel}>
+      <label className="mt-4 flex w-max items-center gap-2 cursor-pointer select-none">
         <input
           type="checkbox"
           checked={task.completed || false}
           onChange={() => onToggleComplete(task.id)}
-          className={styles.checkbox}
+          className="h-5 w-5 appearance-none rounded-full border-2 border-border-strong cursor-pointer transition-all duration-150 relative checked:bg-primary checked:border-primary [&:checked::after]:content-['✓'] [&:checked::after]:relative [&:checked::after]:block [&:checked::after]:text-center [&:checked::after]:-translate-y-px [&:checked::after]:text-[13px] [&:checked::after]:text-primary-contrast"
         />
-        <span className={styles.checkboxText}>
+        <span className="text-sm text-body">
           {task.completed ? "Completed" : "Mark as complete"}
         </span>
       </label>
 
-      <div className={styles.priorityRow}>
-        <span className={styles.labelText}>Priority</span>
+      <div className="mt-5 flex flex-wrap items-center gap-3">
+        <span className="text-sm text-muted">Priority</span>
         <PriorityDropdown
           currentPriority={task.priority || 4}
           onSelect={(newPriority) => onUpdatePriority(task.id, newPriority)}
         />
-        <span className={`${styles.priorityVal} ${priorityInfo.colorClass}`}>
+        <span className={`text-sm font-semibold ${priorityInfo.colorClass}`}>
           {priorityInfo.label}
         </span>
       </div>
 
-      <div className={styles.deadlineRow}>
-        <span className={styles.labelText}>Deadline</span>
-        <span className={styles.dateIconWrapper}>
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <span className="text-sm text-muted">Deadline</span>
+        <span className="relative inline-block cursor-pointer text-xl">
           📅
           <input
             type="date"
-            className={styles.hiddenDatePicker}
+            className="absolute top-0 left-0 h-full w-full cursor-pointer opacity-0"
             value={task.deadline || ""}
             onClick={(e) => e.target.showPicker()}
             onChange={(e) => onUpdateDeadline(task.id, e.target.value)}
           />
         </span>
-        <span className={styles.dateText}>
+        <span className="text-sm text-danger">
           {task.deadline || "No deadline set"}
         </span>
         <RemainingTime targetDate={task.deadline} />
       </div>
 
-      <div className={styles.subtaskWrapper}>
-        <span className={styles.subtaskLabel}>Subtasks</span>
+      <div className="mt-6 flex min-h-0 flex-1 flex-col">
+        <span className="mb-2 text-sm text-muted">Subtasks</span>
 
-        <ul className={styles.subtaskList}>
+        <ul className="mb-3 flex flex-col gap-1.5 overflow-y-auto list-none p-0">
           {(task.subtasks || []).length === 0 ? (
-            <li className={styles.subtaskEmpty}>No subtasks yet</li>
+            <li className="text-sm text-faint">No subtasks yet</li>
           ) : (
             (task.subtasks || []).map((subtask) => (
-              <li key={subtask.id} className={styles.subtaskItem}>
+              <li
+                key={subtask.id}
+                className="flex items-center gap-2 rounded-xl border border-border-soft bg-surface-muted py-2 px-3"
+              >
                 <input
                   type="checkbox"
                   checked={subtask.completed || false}
                   onChange={() => onToggleSubtask(task.id, subtask.id)}
-                  className={styles.subtaskCheckbox}
+                  className="h-4 w-4 shrink-0 appearance-none rounded-full border-2 border-border-strong cursor-pointer transition-all duration-150 relative checked:bg-primary checked:border-primary [&:checked::after]:content-['✓'] [&:checked::after]:relative [&:checked::after]:block [&:checked::after]:text-center [&:checked::after]:-translate-y-0.5 [&:checked::after]:text-[11px] [&:checked::after]:text-primary-contrast"
                 />
                 <span
-                  className={`${styles.subtaskText} ${
-                    subtask.completed
-                      ? styles.subtaskTextCompleted
-                      : styles.subtaskTextActive
+                  className={`min-w-0 flex-1 overflow-hidden text-ellipsis whitespace-nowrap text-sm ${
+                    subtask.completed ? "text-faint line-through" : "text-heading"
                   }`}
                 >
                   {subtask.text}
                 </span>
                 {confirmingSubtaskId === subtask.id ? (
-                  <span className={styles.confirmGroup}>
+                  <span className={confirmGroupClass}>
                     <button
                       onClick={() => {
                         onDeleteSubtask(task.id, subtask.id);
                         setConfirmingSubtaskId(null);
                       }}
-                      className={styles.confirmYes}
+                      className={confirmYesClass}
                     >
                       Yes
                     </button>
                     <button
                       onClick={() => setConfirmingSubtaskId(null)}
-                      className={styles.confirmNo}
+                      className={confirmNoClass}
                     >
                       Cancel
                     </button>
@@ -177,7 +190,7 @@ const TaskDetails = ({
                 ) : (
                   <button
                     onClick={() => setConfirmingSubtaskId(subtask.id)}
-                    className={styles.subtaskDeleteButton}
+                    className="shrink-0 bg-transparent border-0 text-muted text-sm cursor-pointer p-1 transition-all duration-150 hover:text-danger"
                   >
                     ✕
                   </button>
@@ -194,16 +207,19 @@ const TaskDetails = ({
             onAddSubtask(task.id, subtaskInput.trim());
             setSubtaskInput("");
           }}
-          className={styles.subtaskForm}
+          className="flex gap-2"
         >
           <input
             type="text"
             value={subtaskInput}
             onChange={(e) => setSubtaskInput(e.target.value)}
             placeholder="Add a subtask..."
-            className={styles.subtaskInput}
+            className="flex-1 rounded-xl border border-border bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] py-2 px-3 text-sm text-heading outline-none transition-all duration-200 focus:bg-bg-elevated focus:border-primary focus:shadow-[0_0_0_4px_var(--color-info-soft)]"
           />
-          <button type="submit" className={styles.subtaskSubmitButton}>
+          <button
+            type="submit"
+            className="shrink-0 rounded-xl border-0 bg-primary py-2 px-4 text-sm font-medium text-primary-contrast cursor-pointer transition-colors transition-transform duration-200 hover:bg-primary-hover active:scale-[0.97]"
+          >
             Add
           </button>
         </form>

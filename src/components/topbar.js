@@ -6,7 +6,6 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ThemeToggle from "@/components/ThemeToggle";
-import styles from "./components.module.css";
 import Logout from "./Logout";
 import useIsDesktop from "@/hooks/useIsDesktop";
 import { useSearch } from "@/components/SearchContext";
@@ -104,33 +103,35 @@ const TopBar = () => {
 
   return (
     <div>
-      <header className={styles.topbarHeader}>
-        <Link href="/" className={styles.wordmark}>
+      <header className="fixed top-0 left-0 right-0 z-[9998] h-16 flex items-center justify-center pointer-events-none">
+        <Link
+          href="/"
+          className="pointer-events-auto italic font-semibold text-2xl tracking-[0.01em] text-heading no-underline [font-family:var(--font-display)]"
+        >
           Todo App
         </Link>
       </header>
 
       {isDesktop ? (
-
         <div
-          className={styles.sidebarHoverZone}
+          className="fixed top-0 left-0 h-screen w-6 z-[9999]"
           onMouseEnter={handleMouseEnter}
           onMouseLeave={handleMouseLeave}
           aria-hidden="true"
         />
       ) : (
         <button
-          className={styles.sidebarToggle}
+          className="fixed z-[9999] top-3.5 left-4 w-10 h-10 inline-flex items-center justify-center bg-transparent border-0 rounded-[10px] cursor-pointer text-heading transition-colors transition-transform duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:bg-surface-muted hover:-translate-y-px"
           onClick={toggleSidebar}
           aria-label={isOpen ? "Close menu" : "Open menu"}
         >
-          <span className={styles.toggleGlyph}>{isOpen ? "✕" : "☰"}</span>
+          <span className="text-xl leading-none">{isOpen ? "✕" : "☰"}</span>
         </button>
       )}
 
-      <div className={styles.rightControls}>
+      <div className="fixed z-[9999] flex items-center gap-2 top-3.5 right-4">
         <ThemeToggle />
-        <div className={styles.searchExpandWrapper}>
+        <div className="flex items-center">
           {isSearchOpen && (
             <input
               ref={searchInputRef}
@@ -142,13 +143,13 @@ const TopBar = () => {
                 if (!searchTerm.trim()) setIsSearchOpen(false);
               }}
               placeholder="Search this page..."
-              className={styles.searchExpandInput}
+              className="h-10 w-[200px] -mr-px py-0 px-3 border border-border rounded-l-[10px] rounded-r-none bg-surface text-heading text-sm outline-none focus:border-accent transition-[width,opacity,padding] duration-200"
               aria-label="Search this page"
             />
           )}
           <button
             type="button"
-            className={styles.searchButton}
+            className="inline-flex h-10 w-10 items-center justify-center rounded-[10px] bg-transparent border-0 text-accent text-[1.1rem] cursor-pointer no-underline transition-colors transition-transform duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:bg-surface-muted hover:-translate-y-px"
             aria-label={isSearchOpen ? "Close search" : "Search this page"}
             onClick={handleSearchIconClick}
           >
@@ -158,15 +159,17 @@ const TopBar = () => {
       </div>
 
       <div
-        className={`${styles.sidebar} ${
-          isOpen || isPinned ? styles.sidebarOpen : styles.sidebarClosed
+        className={`fixed top-0 left-0 h-full w-[260px] z-[10000] pt-20 pb-6 flex flex-col bg-surface-strong backdrop-blur-2xl [backdrop-filter:blur(24px)_saturate(180%)] border-r border-border-soft text-heading transition-transform duration-[450ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${
+          isOpen || isPinned ? "translate-x-0" : "-translate-x-full"
         }`}
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >
         {isDesktop ? (
           <button
-            className={`${styles.sidebarInnerToggle} ${isPinned ? styles.pinned : ""}`}
+            className={`absolute z-[9999] top-3.5 left-4 w-10 h-10 inline-flex items-center justify-center bg-transparent border-0 rounded-[10px] cursor-pointer text-heading transition-colors transition-transform duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:bg-surface-muted hover:-translate-y-px ${
+              isPinned ? "bg-surface-muted" : ""
+            }`}
             onClick={togglePin}
             title={isPinned ? "Unpin Sidebar" : "Pin Sidebar"}
             aria-label={isPinned ? "Unpin Sidebar" : "Pin Sidebar"}
@@ -183,28 +186,36 @@ const TopBar = () => {
             />
           </button>
         ) : (
-          <button className={styles.sidebarInnerToggle} onClick={toggleSidebar} aria-label="Close menu">
+          <button
+            className="fixed z-[9999] top-3.5 left-4 w-10 h-10 inline-flex items-center justify-center bg-transparent border-0 rounded-[10px] cursor-pointer text-heading transition-colors transition-transform duration-300 [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:bg-surface-muted hover:-translate-y-px"
+            onClick={toggleSidebar}
+            aria-label="Close menu"
+          >
             {isOpen ? "✕" : "☰"}
           </button>
         )}
 
-        <div className={styles.navRail}>
+        <div className="relative flex-1 px-3">
           <span
-            className={styles.navIndicator}
+            className="absolute left-3 top-0 w-[3px] h-11 rounded-sm bg-accent transition-transform duration-[400ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]"
             style={{ transform: `translateY(${indicatorTop}px)` }}
           />
 
-          <ul className={styles.navList}>
+          <ul className="list-none m-0 p-0 flex flex-col">
             {navConfig.map((item) => (
               <li
                 key={item.path}
                 ref={(el) => (rowRefs.current[item.path] = el)}
-                className={`${styles.navRow} ${isActive(item.path) ? styles.navRowActive : ""}`}
+                className="relative"
               >
                 <Link
                   href={item.path}
                   onClick={closeSidebar}
-                  className={styles.navRowLink}
+                  className={`flex items-center justify-between w-full h-11 pl-5 font-sans text-[0.95rem] no-underline bg-transparent border-0 cursor-pointer text-left transition-colors duration-[250ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:text-heading ${
+                    isActive(item.path)
+                      ? "text-heading font-semibold"
+                      : "text-muted font-medium"
+                  }`}
                   aria-current={isActive(item.path) ? "page" : undefined}
                 >
                   {item.label}
@@ -214,13 +225,16 @@ const TopBar = () => {
           </ul>
         </div>
 
-        <div className={styles.navFooter}>
+        <div className="pt-3 px-5 border-t border-border-soft">
           <Logout />
         </div>
       </div>
 
       {isOpen && !isDesktop && (
-        <div className={styles.overlay} onClick={toggleSidebar}></div>
+        <div
+          className="fixed inset-0 z-[9996] bg-black/30 backdrop-blur-[2px]"
+          onClick={toggleSidebar}
+        ></div>
       )}
     </div>
   );

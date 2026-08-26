@@ -2,7 +2,6 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import styles from "./components.module.css";
 import { useSearch } from "./SearchContext";
 
 const Footer = () => {
@@ -11,8 +10,12 @@ const Footer = () => {
 
   const isActive = (path) => pathname === path;
 
+  const baseLinkClass =
+    "block py-2 px-5 rounded-full text-base cursor-pointer self-center transition-colors duration-150 bg-transparent text-accent no-underline";
+  const activeLinkClass = "bg-accent text-accent-contrast font-bold";
+
   const linkClass = (path) =>
-    `${styles.link} ${isActive(path) ? styles.linkActive : ""}`;
+    `${baseLinkClass} ${isActive(path) ? activeLinkClass : ""}`;
 
   const hiddenRoutes = ["/login", "/sign-in", "/signup", "/sign-up"];
   if (hiddenRoutes.includes(pathname)) {
@@ -27,10 +30,10 @@ const Footer = () => {
   };
 
   return (
-    <footer className={`${styles.footer} app-footer`}>
-      <div className={styles.spacer} />
+    <footer className="app-footer fixed bottom-0 left-0 w-full z-[9998] min-h-[70px] flex items-center justify-between bg-transparent py-6 px-5">
+      <div className="flex-1" />
 
-      <div className={styles.centerLink}>
+      <div className="fixed z-[101] bottom-[15px] left-1/2 -translate-x-1/2">
         <Link
           href="/tasks"
           className={linkClass("/tasks")}
@@ -40,10 +43,10 @@ const Footer = () => {
         </Link>
       </div>
 
-      <div className={styles.rightLink}>
+      <div className="fixed z-[101] bottom-[15px] right-[15px] text-[30px]">
         <Link
           href="/tasks?add=1"
-          className={styles.link}
+          className={baseLinkClass}
           aria-label="Add task"
           onClick={handleAddClick}
         >

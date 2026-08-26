@@ -42,12 +42,12 @@ export default function RootLayout({ children }) {
     >
       <head></head>
       <body className="min-h-full flex flex-col text-body" style={{ fontFamily: "var(--font-sans)" }}>
-        <video className="site-bg-video bg-video-light" autoPlay muted loop playsInline>
+        {/*<video className="site-bg-video bg-video-light" autoPlay muted loop playsInline>
           <source src="/videos/light-bg.mp4" type="video/mp4" />
         </video>
         <video className="site-bg-video bg-video-dark" autoPlay muted loop playsInline>
           <source src="/videos/dark-bg.mp4" type="video/mp4" />
-        </video>
+        </video>*/}
         <SessionProvider>
           <SearchProvider>
             <TopBar />

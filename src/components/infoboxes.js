@@ -1,5 +1,3 @@
-import styles from "./components.module.css";
-
 const InfoBoxes = ({
   totalTasks,
   completedTasks,
@@ -8,48 +6,48 @@ const InfoBoxes = ({
   remainingOverdue,
 }) => {
   return (
-    <div className={styles.infoContainer}>
-      <div className={styles.infoBox}>
-        <span className={styles.textTotal}>
+    <div className="w-full max-w-[300px] grid grid-cols-2 grid-rows-2 gap-3 self-center mx-auto md:mx-0">
+      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface backdrop-blur-[8px] [backdrop-filter:blur(8px)_saturate(200%)] border border-border shadow-card p-4 min-h-[90px]">
+        <span className="text-2xl font-bold text-heading">
           {totalTasks}
         </span>
-        <span className={styles.textLabel}>
+        <span className="text-xs text-muted text-center leading-tight">
           Total Tasks
         </span>
       </div>
 
-      <div className={styles.infoBox}>
-        <span className={styles.textCompleted}>
+      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface backdrop-blur-[8px] [backdrop-filter:blur(8px)_saturate(200%)] border border-border shadow-card p-4 min-h-[90px]">
+        <span className="text-2xl font-bold text-success">
           {completedTasks}
         </span>
-        <span className={styles.textLabel}>
+        <span className="text-xs text-muted text-center leading-tight">
           Completed
         </span>
       </div>
 
-      <div className={styles.infoBox}>
-        <span className={styles.textRemaining}>
+      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface backdrop-blur-[8px] [backdrop-filter:blur(8px)_saturate(200%)] border border-border shadow-card p-4 min-h-[90px]">
+        <span className="text-2xl font-bold text-info">
           {remainingTasks}
         </span>
-        <span className={styles.textLabel}>
+        <span className="text-xs text-muted text-center leading-tight">
           Remaining
         </span>
       </div>
 
-      <div className={styles.subGrid}>
-        <div className={styles.subBoxSuccess}>
-          <span className={styles.textSubSuccess}>
+      <div className="grid grid-cols-2 gap-2">
+        <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-success-soft border border-[color-mix(in_srgb,var(--color-success)_40%,transparent)] p-2 min-h-[90px]">
+          <span className="text-lg font-bold text-success">
             {remainingOnTime}
           </span>
-          <span className={styles.textSubLabel}>
+          <span className="text-[10px] text-heading text-center leading-tight">
             Not Overdue
           </span>
         </div>
-        <div className={styles.subBoxDanger}>
-          <span className={styles.textSubDanger}>
+        <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-danger-soft border border-[color-mix(in_srgb,var(--color-danger)_40%,transparent)] p-2 min-h-[90px]">
+          <span className="text-lg font-bold text-danger">
             {remainingOverdue}
           </span>
-          <span className={styles.textSubLabel}>
+          <span className="text-[10px] text-heading text-center leading-tight">
             Overdue
           </span>
         </div>

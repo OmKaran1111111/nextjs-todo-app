@@ -1,7 +1,6 @@
 "use client";
 
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer } from "recharts";
-import styles from "./components.module.css";
 
 const DonutChart = ({ data, colors, labels }) => {
   const total = data.reduce((sum, entry) => sum + entry.value, 0);
@@ -42,7 +41,7 @@ const DonutChart = ({ data, colors, labels }) => {
     if (!active || !payload || !payload.length) return null;
     const entry = payload[0].payload;
     return (
-      <div className={styles.tooltip}>
+      <div className="rounded-md bg-surface-strong backdrop-blur-md py-2 px-3 text-[13px] text-heading shadow-popover border border-border">
         {labels[entry.name]}: {entry.value} ({getPercent(entry.value)}%)
       </div>
     );
@@ -52,12 +51,12 @@ const DonutChart = ({ data, colors, labels }) => {
   const chartColors = total === 0 ? ["var(--color-faint)"] : colors;
 
   return (
-    <div className={styles.chartContainer}>
-      <ul className={styles.legendList}>
+    <div className="w-full max-w-[600px] flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 self-center mx-auto md:mr-0">
+      <ul className="flex flex-row md:flex-col flex-wrap gap-3 md:gap-2.5 justify-center order-2 md:order-1 list-none p-0 m-0">
         {data.map((entry, index) => (
-          <li key={entry.name} className={styles.legendItem}>
+          <li key={entry.name} className="flex items-center gap-2 text-[13px] text-heading">
             <span
-              className={styles.legendDot}
+              className="w-3 h-3 rounded-sm shrink-0"
               style={{ backgroundColor: colors[index % colors.length] }}
             />
             {labels[entry.name]} ({entry.value})
@@ -65,7 +64,7 @@ const DonutChart = ({ data, colors, labels }) => {
         ))}
       </ul>
 
-      <div className={styles.chartWrapper}>
+      <div className="w-full max-w-[260px] order-1 md:order-2">
         <ResponsiveContainer width="100%" height={260} minWidth={220}>
           <PieChart>
             <Pie

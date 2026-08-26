@@ -1,16 +1,32 @@
 "use client";
 
-import styles from "./components.module.css";
+const inputPanelClass =
+  "py-[0.6rem] px-[0.75rem] rounded-[0.65rem] border border-border bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] text-[0.9rem] text-heading font-normal outline outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:bg-bg-elevated focus:border-primary focus:shadow-[0_0_0_4px_var(--color-info-soft)]";
+const selectPanelClass = `${inputPanelClass} cursor-pointer`;
+const fieldLabelPanelClass =
+  "flex flex-col gap-[0.35rem] text-[0.78rem] font-semibold text-muted";
 
 const IconMail = () => (
-  <svg className={styles.fieldIcon} width="18" height="18" viewBox="0 0 24 24" fill="none">
+  <svg
+    className="text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] shrink-0 ml-2.5"
+    width="18"
+    height="18"
+    viewBox="0 0 24 24"
+    fill="none"
+  >
     <path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.6" />
     <path d="m3 6 9 7 9-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
   </svg>
 );
 
 const IconLock = () => (
-  <svg className={styles.fieldIcon} width="17" height="17" viewBox="0 0 24 24" fill="none">
+  <svg
+    className="text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] shrink-0 ml-2.5"
+    width="17"
+    height="17"
+    viewBox="0 0 24 24"
+    fill="none"
+  >
     <rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
     <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
   </svg>
@@ -45,7 +61,7 @@ function FieldWrap({ field, isAuth, isTask, children }) {
 
   if (!isAuth) {
     return (
-      <label className={styles.fieldLabelPanel}>
+      <label className={fieldLabelPanelClass}>
         {field.label}
         {children}
       </label>
@@ -54,7 +70,7 @@ function FieldWrap({ field, isAuth, isTask, children }) {
 
   const Icon = field.icon ? FIELD_ICONS[field.icon] : null;
   return (
-    <div className={styles.inputWrapAuth}>
+    <div className="flex items-center justify-between gap-2 border-b-[1.5px] border-[color:var(--auth-border)] pb-2 transition-colors duration-150 focus-within:border-[color:var(--auth-text)]">
       {children}
       {Icon && <Icon />}
     </div>
@@ -84,7 +100,7 @@ export default function FormField({
             name={field.name}
             defaultValue={field.defaultValue}
             required={field.required}
-            className={field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? styles.inputAuth : styles.selectPanel)}
+            className={field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? "authInput" : selectPanelClass)}
           >
             {field.options.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -128,32 +144,32 @@ export default function FormField({
             type="date"
             name={field.name}
             defaultValue={field.defaultValue || ""}
-            className={field.className || (isTask ? "w-full rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-[0.6rem] text-[0.9rem] text-[var(--color-body)]" : isAuth ? styles.inputAuth : styles.inputPanel)}
+            className={field.className || (isTask ? "w-full rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-[0.6rem] text-[0.9rem] text-[var(--color-body)]" : isAuth ? "authInput" : inputPanelClass)}
           />
         </div>
       );
 
     case "checkbox-group":
       return (
-        <div className={styles.fieldLabelPanel}>
+        <div className={fieldLabelPanelClass}>
           {field.label}
-          <div className={styles.permGroupList}>
+          <div className="flex flex-col gap-3 mt-[0.35rem]">
             {field.groups.map((group) => (
-              <fieldset key={group.id} className={styles.permGroup}>
-                <legend className={styles.permGroupLabel}>{group.label}</legend>
+              <fieldset key={group.id} className="border border-border rounded-xl pt-[0.65rem] px-[0.75rem] pb-2">
+                <legend className="text-[0.72rem] font-bold uppercase tracking-[0.06em] text-faint px-[0.2rem]">{group.label}</legend>
                 {group.options.map((opt) => (
-                  <label key={opt.key} className={styles.permCheckRow}>
+                  <label key={opt.key} className="flex items-start gap-2 py-[0.35rem] px-[0.2rem] cursor-pointer">
                     <input
                       type="checkbox"
                       name={field.name}
                       value={opt.key}
                       defaultChecked={field.checkedKeys?.includes(opt.key)}
-                      className={styles.permCheckbox}
+                      className="mt-[0.2rem] cursor-pointer"
                     />
-                    <span className={styles.permCheckText}>
-                      <span className={styles.permCheckLabel}>{opt.label}</span>
+                    <span className="flex flex-col gap-[0.1rem]">
+                      <span className="text-[0.82rem] font-semibold text-heading">{opt.label}</span>
                       {opt.description && (
-                        <span className={styles.permCheckDesc}>{opt.description}</span>
+                        <span className="text-[0.72rem] text-muted font-normal">{opt.description}</span>
                       )}
                     </span>
                   </label>
@@ -177,13 +193,13 @@ export default function FormField({
             minLength={field.minLength}
             maxLength={field.maxLength}
             className={
-              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? styles.inputAuth : styles.inputPanel)
+              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? "authInput" : inputPanelClass)
             }
           />
           {isAuth && (
             <button
               type="button"
-              className={styles.passwordToggleBtn}
+              className="flex items-center justify-center text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] opacity-85 shrink-0 ml-2.5 bg-none border-none p-0 cursor-pointer transition-opacity duration-150 hover:opacity-100"
               onClick={() => togglePasswordVisibility(field.name)}
               aria-label={isVisible ? "Hide password" : "Show password"}
             >
@@ -208,7 +224,7 @@ export default function FormField({
             minLength={field.minLength}
             maxLength={field.maxLength}
             className={
-              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? styles.inputAuth : styles.inputPanel)
+              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? "authInput" : inputPanelClass)
             }
           />
         </FieldWrap>

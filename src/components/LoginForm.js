@@ -2,7 +2,6 @@
 
 import { useLayoutEffect, useId, useRef, useState } from "react";
 import { doSocialLogin } from "@/app/actions";
-import styles from "./components.module.css";
 import { buildGlassDisplacementMap, FLAT_DISPLACEMENT_MAP } from "@/lib/liquidGlass";
 
 function useGlassFilter() {
@@ -35,7 +34,7 @@ const LoginForm = () => {
   const github = useGlassFilter();
 
   return (
-    <form action={doSocialLogin} className={styles.socialLoginForm}>
+    <form action={doSocialLogin} className="flex flex-col gap-3 w-full my-1 mb-2">
       <svg style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }} aria-hidden="true">
         <filter id={google.filterId} x="-20%" y="-20%" width="140%" height="140%">
           <feImage href={google.map} x="0" y="0" width="100%" height="100%" result="map" />
@@ -49,7 +48,7 @@ const LoginForm = () => {
 
       <button
         ref={google.ref}
-        className={styles.socialBtn}
+        className="w-full py-3 px-0 rounded-2xl border border-[color:var(--auth-border)] text-[14.5px] font-semibold cursor-pointer text-[#fff2bf] bg-transparent transition-all duration-150 flex items-center justify-center gap-2.5 hover:bg-white/[0.08]"
         type="submit"
         name="action"
         value="google"
@@ -63,7 +62,7 @@ const LoginForm = () => {
         <img
           src="/google.svg"
           alt=""
-          className={styles.socialIcon}
+          className="shrink-0 inline-block"
           width={18}
           height={18}
         />
@@ -72,7 +71,7 @@ const LoginForm = () => {
 
       <button
         ref={github.ref}
-        className={styles.socialBtn}
+        className="w-full py-3 px-0 rounded-2xl border border-[color:var(--auth-border)] text-[14.5px] font-semibold cursor-pointer text-[#fff2bf] bg-transparent transition-all duration-150 flex items-center justify-center gap-2.5 hover:bg-white/[0.08]"
         type="submit"
         name="action"
         value="github"
@@ -86,7 +85,7 @@ const LoginForm = () => {
         <img
           src="/github.svg"
           alt=""
-          className={styles.socialIcon}
+          className="shrink-0 inline-block"
           width={18}
           height={18}
         />

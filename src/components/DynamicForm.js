@@ -2,7 +2,6 @@
 
 import { useLayoutEffect, useId, useRef, useState } from "react";
 import Link from "next/link";
-import styles from "./components.module.css";
 import FormField from "./FormField";
 import { buildGlassDisplacementMap, FLAT_DISPLACEMENT_MAP } from "@/lib/liquidGlass";
 
@@ -101,8 +100,22 @@ export default function DynamicForm({
 
   return (
     <div className={className}>
-      {error && <div className={isAuth ? styles.errorAuth : styles.errorPanel}>{error}</div>}
-      {info && <div className={styles.infoBanner}>{info}</div>}
+      {error && (
+        <div
+          className={
+            isAuth
+              ? "bg-danger-soft border border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)] text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] text-[13px] py-2.5 px-3.5 rounded-xl mb-4 text-center"
+              : "bg-danger-soft border border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)] text-danger text-[0.82rem] py-[0.6rem] px-[0.85rem] rounded-[0.65rem] mb-[0.85rem]"
+          }
+        >
+          {error}
+        </div>
+      )}
+      {info && (
+        <div className="bg-info-soft border border-[color-mix(in_srgb,var(--color-primary)_30%,transparent)] text-heading text-[13px] py-2.5 px-3.5 rounded-xl mb-4 text-center">
+          {info}
+        </div>
+      )}
 
       {isAuth && (
         <svg style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }} aria-hidden="true">
@@ -116,7 +129,7 @@ export default function DynamicForm({
       <form
         action={onSubmit ? undefined : action}
         onSubmit={handleSubmit}
-        className={formClassName || (isAuth ? styles.formAuth : isTask ? undefined : styles.formPanel)}
+        className={formClassName || (isAuth ? "flex flex-col gap-[22px]" : isTask ? undefined : "flex flex-col gap-[0.9rem]")}
       >
         {fields.map((field) => (
           <div key={field.name || field.label}>
@@ -133,10 +146,10 @@ export default function DynamicForm({
           </div>
         ))}
 
-        <div className={isTask ? "mt-7 flex justify-end gap-[0.6rem]" : cancelHref || onCancel ? styles.actionsRow : undefined}>
+        <div className={isTask ? "mt-7 flex justify-end gap-[0.6rem]" : cancelHref || onCancel ? "flex items-center gap-[0.6rem] mt-1" : undefined}>
           {(cancelHref || onCancel) &&
             (cancelHref ? (
-              <Link href={cancelHref} className={cancelClassName || (isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-border)] bg-transparent px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-body)] transition-colors hover:bg-[var(--color-surface-muted)] disabled:cursor-not-allowed disabled:opacity-60" : styles.cancelBtnPanel)}>
+              <Link href={cancelHref} className={cancelClassName || (isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-border)] bg-transparent px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-body)] transition-colors hover:bg-[var(--color-surface-muted)] disabled:cursor-not-allowed disabled:opacity-60" : "py-[0.6rem] px-4 rounded-[0.7rem] border border-border bg-transparent text-muted text-[0.85rem] font-semibold cursor-pointer no-underline text-center transition-colors duration-150 ease-out hover:bg-bg-elevated")}>
                 {cancelLabel}
               </Link>
             ) : (
@@ -144,7 +157,7 @@ export default function DynamicForm({
                 type="button"
                 onClick={onCancel}
                 disabled={loading}
-                className={cancelClassName || (isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-border)] bg-transparent px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-body)] transition-colors hover:bg-[var(--color-surface-muted)] disabled:cursor-not-allowed disabled:opacity-60" : styles.cancelBtnPanel)}
+                className={cancelClassName || (isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-border)] bg-transparent px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-body)] transition-colors hover:bg-[var(--color-surface-muted)] disabled:cursor-not-allowed disabled:opacity-60" : "py-[0.6rem] px-4 rounded-[0.7rem] border border-border bg-transparent text-muted text-[0.85rem] font-semibold cursor-pointer no-underline text-center transition-colors duration-150 ease-out hover:bg-bg-elevated")}
               >
                 {cancelLabel}
               </button>
@@ -154,7 +167,7 @@ export default function DynamicForm({
             disabled={loading}
             ref={isAuth ? submitRef : undefined}
             className={
-              submitClassName || (isAuth ? styles.submitBtnAuth : isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-primary)] bg-[var(--color-primary)] px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-primary-contrast)] transition-colors hover:bg-[var(--color-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60" : styles.submitBtnPanel)
+              submitClassName || (isAuth ? "w-full py-3.5 px-0 rounded-2xl border border-[color:var(--auth-border)] text-base font-semibold text-[#fff2bf] cursor-pointer !bg-transparent appearance-none shadow-none transition-all duration-150 flex items-center justify-center gap-2.5 hover:!bg-transparent hover:text-[#fff2bf] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed" : isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-primary)] bg-[var(--color-primary)] px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-primary-contrast)] transition-colors hover:bg-[var(--color-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60" : "py-[0.65rem] px-4 rounded-[0.7rem] border-none bg-primary text-primary-contrast text-[0.9rem] font-semibold cursor-pointer transition-colors transition-transform duration-150 ease-out hover:bg-primary-hover active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed")
             }
             style={
               isAuth

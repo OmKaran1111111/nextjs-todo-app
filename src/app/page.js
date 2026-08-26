@@ -9,7 +9,6 @@ import { TaskListSkeleton, TaskDetailsSkeleton } from "@/components/Skeleton";
 import Toast from "@/components/Toast";
 import useIsDesktop from "@/hooks/useIsDesktop";
 import useTasks from "@/hooks/useTasks";
-import sharedStyles from "@/components/components.module.css";
 import { useSearch } from "@/components/SearchContext";
 
 const sortByPriority = (tasks) =>
@@ -62,13 +61,13 @@ function TaskRow({
 
       {task._status === "saving" && (
         <span
-          className={`${sharedStyles.statusDot} ${sharedStyles.statusSaving}`}
+          className="inline-block w-2 h-2 rounded-full ml-1.5 shrink-0 bg-info animate-pulse"
           title="Saving…"
         />
       )}
       {task._status === "error" && (
         <span
-          className={`${sharedStyles.statusDot} ${sharedStyles.statusError}`}
+          className="inline-block w-2 h-2 rounded-full ml-1.5 shrink-0 bg-danger"
           title="Couldn't save — reverted"
         />
       )}
@@ -81,11 +80,17 @@ function TaskRow({
       />
 
       {confirmingDelete ? (
-        <span className={sharedStyles.confirmGroup}>
-          <button onClick={() => onDelete(task.id)} className={sharedStyles.confirmYes}>
+        <span className="inline-flex items-center gap-2 shrink-0">
+          <button
+            onClick={() => onDelete(task.id)}
+            className="bg-danger text-white border-0 rounded-md py-1 px-2.5 text-xs cursor-pointer hover:opacity-90"
+          >
             Yes
           </button>
-          <button onClick={() => setConfirmingDelete(false)} className={sharedStyles.confirmNo}>
+          <button
+            onClick={() => setConfirmingDelete(false)}
+            className="bg-transparent border border-border-strong text-body rounded-md py-1 px-2.5 text-xs cursor-pointer hover:bg-surface-muted"
+          >
             Cancel
           </button>
         </span>
