@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { Icon } from "@/components/ui/Icon";
 
 const applyTheme = (theme) => {
   const root = document.documentElement;
@@ -38,9 +39,9 @@ const ThemeToggle = ({ className = "" }) => {
       onClick={toggleTheme}
       aria-label={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
       title={theme === "dark" ? "Switch to light mode" : "Switch to dark mode"}
-      className={`inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-surface text-lg text-heading shadow-card backdrop-blur-md transition-all duration-200 hover:bg-surface-hover hover:-translate-y-0.5 ${className}`}
+      className={`inline-flex h-9 w-9 shrink-0 cursor-pointer items-center justify-center rounded-full border border-border bg-surface text-heading shadow-card transition-all duration-200 hover:bg-surface-hover hover:-translate-y-0.5 ${className}`}
     >
-      {theme === "dark" ? "🌙" : "☀️"}
+      <Icon name={theme === "dark" ? "moon" : "sun"} size={16} />
     </button>
   );
 };

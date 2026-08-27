@@ -2,6 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { generatePairingCodeAction } from "@/app/actions";
+import { Icon } from "@/components/ui/Icon";
 
 function formatExpiry(expiresAt) {
   const minutes = Math.max(0, Math.round((new Date(expiresAt) - Date.now()) / 60000));
@@ -26,7 +27,7 @@ const DevicePairingModal = ({ onClose }) => {
 
   return (
     <div
-      className="fixed inset-0 z-[1000] bg-[rgba(15,23,42,0.45)] backdrop-blur-[2px] flex items-center justify-center p-5"
+      className="fixed inset-0 z-[1000] bg-[rgba(15,23,42,0.45)] flex items-center justify-center p-5"
       onClick={onClose}
     >
       <div
@@ -38,7 +39,7 @@ const DevicePairingModal = ({ onClose }) => {
           onClick={onClose}
           aria-label="Close"
         >
-          ✕
+          <Icon name="close" />
         </button>
 
         <h2 className="text-xl font-bold text-heading m-0 mb-2">Connect a new device</h2>

@@ -1,7 +1,3 @@
-// Small pill-style action buttons used in table rows (Edit / Ban / Delete /
-// Revoke...) plus a primary filled button for forms. All styling lives here
-// so a page never needs its own CSS module for a button variant.
-
 const ACTION_HOVER = {
   neutral: "hover:border-[var(--color-primary)] hover:text-[var(--color-primary)] hover:bg-[var(--color-info-soft)]",
   warning: "hover:border-[var(--color-warning)] hover:text-[var(--color-warning)] hover:bg-[var(--color-warning-soft)]",

@@ -1,53 +1,17 @@
 "use client";
 
+import { Icon } from "@/components/ui/Icon";
+
 const inputPanelClass =
   "py-[0.6rem] px-[0.75rem] rounded-[0.65rem] border border-border bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] text-[0.9rem] text-heading font-normal outline outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:bg-bg-elevated focus:border-primary focus:shadow-[0_0_0_4px_var(--color-info-soft)]";
 const selectPanelClass = `${inputPanelClass} cursor-pointer`;
 const fieldLabelPanelClass =
   "flex flex-col gap-[0.35rem] text-[0.78rem] font-semibold text-muted";
 
-const IconMail = () => (
-  <svg
-    className="text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] shrink-0 ml-2.5"
-    width="18"
-    height="18"
-    viewBox="0 0 24 24"
-    fill="none"
-  >
-    <path d="M3 5h18a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H3a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="currentColor" strokeWidth="1.6" />
-    <path d="m3 6 9 7 9-7" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
+const authInputClass =
+  "w-full bg-transparent border-none outline-none text-[0.95rem] text-heading placeholder:text-faint";
 
-const IconLock = () => (
-  <svg
-    className="text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] shrink-0 ml-2.5"
-    width="17"
-    height="17"
-    viewBox="0 0 24 24"
-    fill="none"
-  >
-    <rect x="4" y="10" width="16" height="10" rx="2" stroke="currentColor" strokeWidth="1.6" />
-    <path d="M8 10V7a4 4 0 0 1 8 0v3" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-  </svg>
-);
-
-const IconEye = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-    <path d="M1 12s4-7 11-7 11 7 11 7-4 7-11 7-11-7-11-7Z" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    <circle cx="12" cy="12" r="3" stroke="currentColor" strokeWidth="1.6" />
-  </svg>
-);
-
-const IconEyeOff = () => (
-  <svg width="17" height="17" viewBox="0 0 24 24" fill="none">
-    <path d="M3 3l18 18" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-    <path d="M10.6 5.2A11 11 0 0 1 12 5c7 0 11 7 11 7a13.6 13.6 0 0 1-3.2 3.9M6.5 6.6C3.9 8.3 2 11 2 11s4 7 11 7a10.4 10.4 0 0 0 4.2-.9" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-    <path d="M9.9 10a3 3 0 0 0 4.1 4.1" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const FIELD_ICONS = { mail: IconMail, lock: IconLock };
+const FIELD_ICON_NAMES = { mail: "mail", lock: "lock" };
 
 function FieldWrap({ field, isAuth, isTask, children }) {
   if (isTask) {
@@ -68,11 +32,11 @@ function FieldWrap({ field, isAuth, isTask, children }) {
     );
   }
 
-  const Icon = field.icon ? FIELD_ICONS[field.icon] : null;
+  const iconName = field.icon ? FIELD_ICON_NAMES[field.icon] : null;
   return (
-    <div className="flex items-center justify-between gap-2 border-b-[1.5px] border-[color:var(--auth-border)] pb-2 transition-colors duration-150 focus-within:border-[color:var(--auth-text)]">
+    <div className="flex items-center justify-between gap-2 border-b border-border pb-2 transition-colors duration-150 focus-within:border-primary">
       {children}
-      {Icon && <Icon />}
+      {iconName && <Icon name={iconName} size={17} className="shrink-0 ml-2.5 text-faint" />}
     </div>
   );
 }
@@ -100,7 +64,7 @@ export default function FormField({
             name={field.name}
             defaultValue={field.defaultValue}
             required={field.required}
-            className={field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? "authInput" : selectPanelClass)}
+            className={field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? authInputClass : selectPanelClass)}
           >
             {field.options.map((opt) => (
               <option key={opt.value} value={opt.value}>
@@ -126,7 +90,7 @@ export default function FormField({
                 }`}
                 onClick={() => setPriorityValues((prev) => ({ ...prev, [field.name]: opt.value }))}
               >
-                {opt.emoji && <span>{opt.emoji}</span>}
+                {opt.dotTone && <span className={`h-2 w-2 rounded-full ${opt.dotTone}`} />}
                 <span>{opt.label}</span>
               </button>
             ))}
@@ -144,7 +108,7 @@ export default function FormField({
             type="date"
             name={field.name}
             defaultValue={field.defaultValue || ""}
-            className={field.className || (isTask ? "w-full rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-[0.6rem] text-[0.9rem] text-[var(--color-body)]" : isAuth ? "authInput" : inputPanelClass)}
+            className={field.className || (isTask ? "w-full rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-[0.6rem] text-[0.9rem] text-[var(--color-body)]" : isAuth ? authInputClass : inputPanelClass)}
           />
         </div>
       );
@@ -193,17 +157,17 @@ export default function FormField({
             minLength={field.minLength}
             maxLength={field.maxLength}
             className={
-              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? "authInput" : inputPanelClass)
+              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? authInputClass : inputPanelClass)
             }
           />
           {isAuth && (
             <button
               type="button"
-              className="flex items-center justify-center text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] opacity-85 shrink-0 ml-2.5 bg-none border-none p-0 cursor-pointer transition-opacity duration-150 hover:opacity-100"
+              className="flex items-center justify-center text-faint shrink-0 ml-2.5 bg-none border-none p-0 cursor-pointer transition-colors duration-150 hover:text-heading"
               onClick={() => togglePasswordVisibility(field.name)}
               aria-label={isVisible ? "Hide password" : "Show password"}
             >
-              {isVisible ? <IconEyeOff /> : <IconEye />}
+              <Icon name={isVisible ? "eyeOff" : "eye"} size={17} />
             </button>
           )}
         </FieldWrap>
@@ -224,7 +188,7 @@ export default function FormField({
             minLength={field.minLength}
             maxLength={field.maxLength}
             className={
-              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? "authInput" : inputPanelClass)
+              field.className || (isTask ? "flex-1 rounded-xl border border-[var(--color-border)] bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] px-4 py-3 text-base leading-6 text-[var(--color-heading)] outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:border-[var(--color-primary)] focus:bg-[var(--color-bg-elevated)] focus:shadow-[0_0_0_4px_var(--color-info-soft)]" : isAuth ? authInputClass : inputPanelClass)
             }
           />
         </FieldWrap>

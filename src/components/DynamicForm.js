@@ -1,9 +1,8 @@
 "use client";
 
-import { useLayoutEffect, useId, useRef, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import FormField from "./FormField";
-import { buildGlassDisplacementMap, FLAT_DISPLACEMENT_MAP } from "@/lib/liquidGlass";
 
 export default function DynamicForm({
   variant = "panel",
@@ -40,28 +39,6 @@ export default function DynamicForm({
 
   const isAuth = variant === "auth";
   const isTask = variant === "task";
-
-  const submitRef = useRef(null);
-  const [submitMap, setSubmitMap] = useState(FLAT_DISPLACEMENT_MAP);
-  const submitFilterId = `liquid-glass-submit-${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
-
-  useLayoutEffect(() => {
-    if (!isAuth) return;
-    const el = submitRef.current;
-    if (!el) return;
-
-    const regenerate = () => {
-      const { width, height } = el.getBoundingClientRect();
-      if (width > 0 && height > 0) {
-        setSubmitMap(buildGlassDisplacementMap({ width, height, radius: 16, edgeBand: 10, strength: 1 }));
-      }
-    };
-
-    regenerate();
-    const observer = new ResizeObserver(regenerate);
-    observer.observe(el);
-    return () => observer.disconnect();
-  }, [isAuth]);
 
   const togglePasswordVisibility = (name) => {
     setVisiblePasswords((prev) => {
@@ -104,7 +81,7 @@ export default function DynamicForm({
         <div
           className={
             isAuth
-              ? "bg-danger-soft border border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)] text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] text-[13px] py-2.5 px-3.5 rounded-xl mb-4 text-center"
+              ? "bg-danger-soft border border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)] text-danger text-[13px] py-2.5 px-3.5 rounded-xl mb-4 text-center"
               : "bg-danger-soft border border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)] text-danger text-[0.82rem] py-[0.6rem] px-[0.85rem] rounded-[0.65rem] mb-[0.85rem]"
           }
         >
@@ -117,19 +94,10 @@ export default function DynamicForm({
         </div>
       )}
 
-      {isAuth && (
-        <svg style={{ position: "absolute", width: 0, height: 0, overflow: "hidden" }} aria-hidden="true">
-          <filter id={submitFilterId} x="-20%" y="-20%" width="140%" height="140%">
-            <feImage href={submitMap} x="0" y="0" width="100%" height="100%" result="map" />
-            <feDisplacementMap in="SourceGraphic" in2="map" xChannelSelector="R" yChannelSelector="G" scale="30" />
-          </filter>
-        </svg>
-      )}
-
       <form
         action={onSubmit ? undefined : action}
         onSubmit={handleSubmit}
-        className={formClassName || (isAuth ? "flex flex-col gap-[22px]" : isTask ? undefined : "flex flex-col gap-[0.9rem]")}
+        className={formClassName || (isAuth ? "flex flex-col gap-5" : isTask ? undefined : "flex flex-col gap-[0.9rem]")}
       >
         {fields.map((field) => (
           <div key={field.name || field.label}>
@@ -165,20 +133,8 @@ export default function DynamicForm({
           <button
             type="submit"
             disabled={loading}
-            ref={isAuth ? submitRef : undefined}
             className={
-              submitClassName || (isAuth ? "w-full py-3.5 px-0 rounded-2xl border border-[color:var(--auth-border)] text-base font-semibold text-[#fff2bf] cursor-pointer !bg-transparent appearance-none shadow-none transition-all duration-150 flex items-center justify-center gap-2.5 hover:!bg-transparent hover:text-[#fff2bf] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed" : isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-primary)] bg-[var(--color-primary)] px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-primary-contrast)] transition-colors hover:bg-[var(--color-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60" : "py-[0.65rem] px-4 rounded-[0.7rem] border-none bg-primary text-primary-contrast text-[0.9rem] font-semibold cursor-pointer transition-colors transition-transform duration-150 ease-out hover:bg-primary-hover active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed")
-            }
-            style={
-              isAuth
-                ? {
-                    position: "relative",
-                    backgroundColor:
-                      "color-mix(in srgb, var(--auth-button-bg) 70%, white 25%)",
-                    backdropFilter: `brightness(1.12) blur(4px) url(#${submitFilterId})`,
-                    WebkitBackdropFilter: "brightness(1.12) blur(2px)",
-                  }
-                : undefined
+              submitClassName || (isAuth ? "w-full py-3 px-0 rounded-xl border-none text-[0.95rem] font-semibold text-[var(--color-auth-button-text)] bg-[var(--color-auth-button-bg)] cursor-pointer transition-colors duration-150 hover:bg-[var(--color-auth-button-hover)] active:scale-[0.99] disabled:opacity-60 disabled:cursor-not-allowed" : isTask ? "cursor-pointer rounded-[0.6rem] border border-[var(--color-primary)] bg-[var(--color-primary)] px-[1.1rem] py-[0.55rem] text-[0.88rem] font-semibold text-[var(--color-primary-contrast)] transition-colors hover:bg-[var(--color-primary-hover)] disabled:cursor-not-allowed disabled:opacity-60" : "py-[0.65rem] px-4 rounded-[0.7rem] border-none bg-primary text-primary-contrast text-[0.9rem] font-semibold cursor-pointer transition-colors transition-transform duration-150 ease-out hover:bg-primary-hover active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed")
             }
           >
             {loading ? submitLoadingLabel || submitLabel : submitLabel}

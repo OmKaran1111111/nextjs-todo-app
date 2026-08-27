@@ -6,13 +6,10 @@ import Toast from "@/components/Toast";
 import { TaskDetailsSkeleton } from "@/components/Skeleton";
 import useTasks from "@/hooks/useTasks";
 import { Card } from "@/components/ui/Card";
+import { Icon } from "@/components/ui/Icon";
+import { PRIORITIES, TONE_DOT } from "@/lib/priority";
 
-const PRIORITY_OPTIONS = [
-  { id: 1, label: "Priority 1", emoji: "🔴" },
-  { id: 2, label: "Priority 2", emoji: "🟠" },
-  { id: 3, label: "Priority 3", emoji: "🔵" },
-  { id: 4, label: "Priority 4 (None)", emoji: "⚪" },
-];
+const PRIORITY_OPTIONS = PRIORITIES;
 
 const editHeadingClasses = "m-0 mb-1 text-xl font-bold text-[var(--color-heading)]";
 const editSubtitleClasses = "m-0 text-sm break-words text-[var(--color-faint)]";
@@ -107,11 +104,11 @@ const EditTaskPage = () => {
               </div>
               <button
                 type="button"
-                className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-[var(--color-surface-muted)] text-base text-[var(--color-heading)] transition-all duration-200 hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]"
+                className="flex h-8 w-8 flex-shrink-0 cursor-pointer items-center justify-center rounded-full border-none bg-[var(--color-surface-muted)] text-[var(--color-heading)] transition-all duration-200 hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]"
                 onClick={handleCancel}
                 aria-label="Close"
               >
-                ✕
+                <Icon name="close" size={16} />
               </button>
             </div>
 
@@ -130,7 +127,7 @@ const EditTaskPage = () => {
                   }`}
                   onClick={() => setPriority(p.id)}
                 >
-                  <span>{p.emoji}</span>
+                  <span className={`h-2 w-2 rounded-full ${TONE_DOT[p.tone]}`} />
                   <span>{p.label}</span>
                 </button>
               ))}

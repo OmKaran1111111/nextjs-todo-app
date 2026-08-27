@@ -2,6 +2,8 @@
 
 import { useState, useEffect, useRef } from "react";
 import { createPortal } from "react-dom";
+import { PRIORITIES, TONE_DOT, getPriority } from "@/lib/priority";
+import { Icon } from "@/components/ui/Icon";
 
 const PriorityDropdown = ({ currentPriority, onSelect }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -9,15 +11,7 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
   const triggerRef = useRef(null);
   const menuRef = useRef(null);
 
-  const priorities = [
-    { id: 1, label: "Priority 1", emoji: "🔴" },
-    { id: 2, label: "Priority 2", emoji: "🟠" },
-    { id: 3, label: "Priority 3", emoji: "🔵" },
-    { id: 4, label: "Priority 4 (None)", emoji: "⚪" },
-  ];
-
-  const currentOption =
-    priorities.find((p) => p.id === currentPriority) || priorities[3];
+  const currentOption = getPriority(currentPriority);
 
   const updatePosition = () => {
     if (!triggerRef.current) return;
@@ -90,11 +84,11 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
       <button
         ref={triggerRef}
         type="button"
-        className="inline-flex items-center justify-center p-2 text-xl bg-transparent rounded-full border-none outline-none transition-transform transition-colors duration-150 cursor-pointer hover:scale-110 hover:bg-surface-hover"
+        className="inline-flex items-center justify-center h-8 w-8 bg-transparent rounded-full border-none outline-none transition-colors duration-150 cursor-pointer hover:bg-surface-hover"
         onClick={openMenu}
         title={`Current: ${currentOption.label}`}
       >
-        {currentOption.emoji}
+        <span className={`h-2.5 w-2.5 rounded-full ${TONE_DOT[currentOption.tone]}`} />
       </button>
 
       {isOpen &&
@@ -102,7 +96,7 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
           <div
             ref={menuRef}
             style={menuStyle}
-            className="overflow-hidden rounded-lg border border-border bg-surface-strong backdrop-blur-2xl py-1 shadow-popover"
+            className="overflow-hidden rounded-lg border border-border bg-bg-elevated py-1 shadow-popover"
             onClick={(e) => e.stopPropagation()}
           >
             <div className="flex justify-between items-center py-1 px-3 border-b border-border-soft mb-1">
@@ -113,10 +107,10 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
                 onClick={() => setIsOpen(false)}
                 aria-label="Close priority dropdown"
               >
-                ✕
+                <Icon name="close" size={14} />
               </button>
             </div>
-            {priorities.map((p) => (
+            {PRIORITIES.map((p) => (
               <button
                 key={p.id}
                 type="button"
@@ -130,10 +124,12 @@ const PriorityDropdown = ({ currentPriority, onSelect }) => {
                   setIsOpen(false);
                 }}
               >
-                <span className="text-lg">{p.emoji}</span>
+                <span className={`h-2.5 w-2.5 shrink-0 rounded-full ${TONE_DOT[p.tone]}`} />
                 <span>{p.label}</span>
                 {currentPriority === p.id && (
-                  <span className="ml-auto text-danger font-bold">✓</span>
+                  <span className="ml-auto text-primary">
+                    <Icon name="check" size={14} />
+                  </span>
                 )}
               </button>
             ))}

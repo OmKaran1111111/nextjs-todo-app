@@ -20,6 +20,8 @@ import DynamicForm from "@/components/DynamicForm";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { PillBadge } from "@/components/ui/Badge";
 import { PrimaryButton, ActionButton } from "@/components/ui/Button";
+import { Icon } from "@/components/ui/Icon";
+import { PRIORITIES, TONE_BADGE, TONE_DOT, getPriority } from "@/lib/priority";
 
 const SORT_OPTIONS = [
   { key: "priority-asc", label: "Priority (Highest first)", id: "priority", desc: false },
@@ -30,19 +32,7 @@ const SORT_OPTIONS = [
   { key: "text-desc", label: "Task Name (Z → A)", id: "text", desc: true },
 ];
 
-const PRIORITY_META = {
-  1: { label: "Priority 1", emoji: "🔴", tone: "danger" },
-  2: { label: "Priority 2", emoji: "🟠", tone: "warning" },
-  3: { label: "Priority 3", emoji: "🔵", tone: "info" },
-  4: { label: "No Priority", emoji: "⚪", tone: "muted" },
-};
-
-const PRIORITY_OPTIONS = [
-  { id: 1, label: "Priority 1", emoji: "🔴" },
-  { id: 2, label: "Priority 2", emoji: "🟠" },
-  { id: 3, label: "Priority 3", emoji: "🔵" },
-  { id: 4, label: "Priority 4 (None)", emoji: "⚪" },
-];
+const PRIORITY_OPTIONS = PRIORITIES.map((p) => ({ value: p.id, label: p.label, dotTone: TONE_DOT[p.tone] }));
 
 const COLUMN_LABELS = {
   id: "Task ID",
@@ -56,13 +46,6 @@ const COLUMN_LABELS = {
 // (border/background/before:content) live right next to the desktop rules.
 const cellBase =
   "flex items-center justify-between gap-3 border-b border-[var(--color-border-soft)] px-[0.85rem] py-[0.55rem] align-middle text-[0.82rem] text-[var(--color-body)] before:flex-shrink-0 before:text-left before:text-[0.7rem] before:font-semibold before:tracking-wide before:text-[var(--color-faint)] before:uppercase before:content-[attr(data-label)] sm:table-cell sm:before:content-none sm:[&:not(:last-child)]:border-b sm:group-last:border-b-0";
-
-const badgeTone = {
-  danger: "bg-[var(--color-danger-soft)] text-[var(--color-danger)]",
-  warning: "bg-[var(--color-warning-soft)] text-[var(--color-warning)]",
-  info: "bg-[var(--color-info-soft)] text-[var(--color-info)]",
-  muted: "bg-[var(--color-surface-muted)] text-[var(--color-faint)]",
-};
 
 const actionHover = {
   view: "hover:border-[var(--color-info)] hover:text-[var(--color-info)]",
@@ -146,7 +129,7 @@ const TaskList = () => {
     const rows = list.map((t) => [
       t.id,
       t.text,
-      (PRIORITY_META[t.priority || 4] || PRIORITY_META[4]).label,
+      (getPriority(t.priority || 4)).label,
       t.deadline || "",
       t.completed ? "Yes" : "No",
       (t.subtasks || []).length,
@@ -245,8 +228,13 @@ const TaskList = () => {
         header: "Priority",
         sortingFn: (a, b) => (a.original.priority || 4) - (b.original.priority || 4),
         cell: ({ getValue }) => {
-          const meta = PRIORITY_META[getValue() || 4] || PRIORITY_META[4];
-          return <PillBadge className={badgeTone[meta.tone]}>{meta.emoji} {meta.label}</PillBadge>;
+          const meta = getPriority(getValue() || 4);
+          return (
+            <PillBadge className={TONE_BADGE[meta.tone]}>
+              <span className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${TONE_DOT[meta.tone]}`} />
+              {meta.label}
+            </PillBadge>
+          );
         },
       },
       {
@@ -257,7 +245,9 @@ const TaskList = () => {
         cell: ({ getValue }) =>
           getValue() ? (
             <div className="flex flex-col items-end gap-[0.2rem] sm:items-start">
-              <span className="text-[0.78rem] text-[var(--color-body)]">📅 {getValue()}</span>
+              <span className="flex items-center gap-1 text-[0.78rem] text-[var(--color-body)]">
+                <Icon name="calendar" size={13} className="text-[var(--color-faint)]" /> {getValue()}
+              </span>
               <RemainingTime targetDate={getValue()} />
             </div>
           ) : (
@@ -276,7 +266,7 @@ const TaskList = () => {
               onClick={() => handleView(row.original)}
               title="View task"
             >
-              <span aria-hidden="true">👁</span>
+              <Icon name="eye" size={14} />
               <span className="hidden xl:inline">View</span>
             </button>
             {isAdmin && (
@@ -286,7 +276,7 @@ const TaskList = () => {
                 onClick={() => handleEdit(row.original)}
                 title="Edit task"
               >
-                <span aria-hidden="true">✎</span>
+                <Icon name="pencil" size={14} />
                 <span className="hidden xl:inline">Edit</span>
               </button>
             )}
@@ -297,7 +287,7 @@ const TaskList = () => {
                 onClick={() => setDeleteTarget(row.original)}
                 title="Delete task"
               >
-                <span aria-hidden="true">🗑</span>
+                <Icon name="trash" size={14} />
                 <span className="hidden xl:inline">Delete</span>
               </button>
             )}
@@ -397,7 +387,7 @@ const TaskList = () => {
                   </select>
                 </div>
                 <ActionButton tone="neutral" type="button" onClick={handleExportAll} className="!py-2 !text-[0.88rem]">
-                  ⬇ Export
+                  <Icon name="download" size={14} className="mr-1 inline-block align-[-2px]" /> Export
                 </ActionButton>
                 <PrimaryButton
                   type="button"
@@ -407,13 +397,13 @@ const TaskList = () => {
                     setSidePanelMode("add");
                   }}
                 >
-                  + Add Task
+                  <Icon name="plus" size={14} className="mr-1 inline-block align-[-2px]" /> Add Task
                 </PrimaryButton>
               </div>
             </div>
 
             <div
-              className={`w-full max-h-[60vh] overflow-y-auto rounded-[0.85rem] border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] backdrop-blur-2xl backdrop-saturate-200 max-sm:overflow-visible max-sm:border-none max-sm:bg-transparent max-sm:shadow-none max-sm:backdrop-blur-none sm:overflow-x-auto ${
+              className={`w-full max-h-[60vh] overflow-y-auto rounded-[0.85rem] border border-[var(--color-border)] bg-[var(--color-bg-elevated)] shadow-[var(--shadow-card)] max-sm:overflow-visible max-sm:border-none max-sm:bg-transparent max-sm:shadow-none sm:overflow-x-auto ${
                 splitOpen ? "[&_table]:min-w-[420px] [&_th]:px-[0.6rem] [&_th]:py-[0.45rem] [&_th]:text-[0.78rem] [&_td]:px-[0.6rem] [&_td]:py-[0.45rem] [&_td]:text-[0.78rem]" : "[&_table]:min-w-[540px]"
               }`}
             >
@@ -424,7 +414,7 @@ const TaskList = () => {
                       {headerGroup.headers.map((header) => (
                         <th
                           key={header.id}
-                          className="sticky top-0 border-b border-[var(--color-border-strong)] bg-[var(--color-surface)] px-[0.85rem] py-[0.55rem] text-left text-[0.72rem] font-semibold tracking-wide text-[var(--color-faint)] uppercase whitespace-nowrap"
+                          className="sticky top-0 border-b border-[var(--color-border-strong)] bg-[var(--color-bg-elevated)] px-[0.85rem] py-[0.55rem] text-left text-[0.72rem] font-semibold tracking-wide text-[var(--color-faint)] uppercase whitespace-nowrap"
                         >
                           {flexRender(header.column.columnDef.header, header.getContext())}
                         </th>
@@ -443,7 +433,7 @@ const TaskList = () => {
                     rows.map((row) => (
                       <tr
                         key={row.id}
-                        className={`group max-sm:mb-3 max-sm:block max-sm:w-full max-sm:rounded-[0.85rem] max-sm:border max-sm:border-[var(--color-border)] max-sm:bg-[var(--color-surface)] max-sm:px-[0.85rem] max-sm:py-[0.35rem] max-sm:shadow-[var(--shadow-card)] max-sm:last:mb-0 sm:hover:bg-[var(--color-surface-hover)] ${
+                        className={`group max-sm:mb-3 max-sm:block max-sm:w-full max-sm:rounded-[0.85rem] max-sm:border max-sm:border-[var(--color-border)] max-sm:bg-[var(--color-bg-elevated)] max-sm:px-[0.85rem] max-sm:py-[0.35rem] max-sm:shadow-[var(--shadow-card)] max-sm:last:mb-0 sm:hover:bg-[var(--color-surface-hover)] ${
                           row.original.completed ? "opacity-50" : ""
                         }`}
                       >
@@ -472,10 +462,10 @@ const TaskList = () => {
           >
             <div className="mb-2 flex justify-end">
               <button
-                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-[var(--color-surface-muted)] text-base text-[var(--color-heading)] transition-all duration-200 hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]"
+                className="flex h-8 w-8 cursor-pointer items-center justify-center rounded-full border-none bg-[var(--color-surface-muted)] text-[var(--color-heading)] transition-all duration-200 hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]"
                 onClick={() => setSidePanelMode(null)}
               >
-                ✕
+                <Icon name="close" size={16} />
               </button>
             </div>
 
@@ -508,7 +498,7 @@ const TaskList = () => {
                       name: "priority",
                       label: "Priority",
                       defaultValue: 4,
-                      options: PRIORITY_OPTIONS.map((p) => ({ value: p.id, label: p.label, emoji: p.emoji })),
+                      options: PRIORITY_OPTIONS,
                     },
                     { type: "date", name: "deadline", label: "Deadline" },
                   ]}
@@ -533,7 +523,7 @@ const TaskList = () => {
                       name: "priority",
                       label: "Priority",
                       defaultValue: activeTask.priority || 4,
-                      options: PRIORITY_OPTIONS.map((p) => ({ value: p.id, label: p.label, emoji: p.emoji })),
+                      options: PRIORITY_OPTIONS,
                     },
                     { type: "date", name: "deadline", label: "Deadline", defaultValue: activeTask.deadline || "" },
                   ]}

@@ -1,21 +1,7 @@
-// Reusable table primitives so pages never need their own CSS module just to
-// render a bordered, scrollable data table. Compose these directly in JSX:
-//
-//   <TableWrapper>
-//     <Table>
-//       <thead>
-//         <tr><Th>Name</Th><Th align="right">Actions</Th></tr>
-//       </thead>
-//       <tbody>
-//         <tr><Td>...</Td><Td align="right">...</Td></tr>
-//       </tbody>
-//     </Table>
-//   </TableWrapper>
-
 export function TableWrapper({ children, className = "" }) {
   return (
     <div
-      className={`w-full overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] shadow-[var(--shadow-card)] backdrop-blur-2xl backdrop-saturate-200 ${className}`}
+      className={`w-full overflow-x-auto rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] shadow-[var(--shadow-card)] ${className}`}
     >
       {children}
     </div>
@@ -33,7 +19,7 @@ export function Table({ children, className = "" }) {
 export function Th({ children, align = "left", className = "" }) {
   return (
     <th
-      className={`sticky top-0 whitespace-nowrap border-b border-[var(--color-border-strong)] bg-[var(--color-surface)] px-4 py-3 text-[0.7rem] font-bold tracking-wide text-[var(--color-faint)] uppercase ${
+      className={`sticky top-0 whitespace-nowrap border-b border-[var(--color-border-strong)] bg-[var(--color-bg-elevated)] px-4 py-3 text-[0.7rem] font-bold tracking-wide text-[var(--color-faint)] uppercase ${
         align === "right" ? "text-right" : "text-left"
       } ${className}`}
     >
@@ -54,8 +40,7 @@ export function Td({ children, align = "left", className = "" }) {
   );
 }
 
-// Apply to a <tr> to get hover + dimmed/highlighted row states without a
-// page-level CSS module.
+
 export function rowClasses({ dimmed = false, highlighted = false } = {}) {
   return [
     "group",

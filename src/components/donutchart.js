@@ -41,7 +41,7 @@ const DonutChart = ({ data, colors, labels }) => {
     if (!active || !payload || !payload.length) return null;
     const entry = payload[0].payload;
     return (
-      <div className="rounded-md bg-surface-strong backdrop-blur-md py-2 px-3 text-[13px] text-heading shadow-popover border border-border">
+      <div className="rounded-md bg-bg-elevated py-2 px-3 text-[13px] text-heading shadow-popover border border-border">
         {labels[entry.name]}: {entry.value} ({getPercent(entry.value)}%)
       </div>
     );

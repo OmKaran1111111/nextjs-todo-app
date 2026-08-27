@@ -2,13 +2,13 @@
 
 import { useState, useEffect, useRef } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useSession } from "next-auth/react";
 import ThemeToggle from "@/components/ThemeToggle";
 import Logout from "./Logout";
 import useIsDesktop from "@/hooks/useIsDesktop";
 import { useSearch } from "@/components/SearchContext";
+import { Icon } from "@/components/ui/Icon";
 
 const TopBar = () => {
   const { data: session } = useSession();
@@ -106,9 +106,9 @@ const TopBar = () => {
       <header className="fixed top-0 left-0 right-0 z-[9998] h-16 flex items-center justify-center pointer-events-none">
         <Link
           href="/"
-          className="pointer-events-auto italic font-semibold text-2xl tracking-[0.01em] text-heading no-underline [font-family:var(--font-display)]"
+          className="pointer-events-auto font-bold text-xl tracking-tight text-heading no-underline [font-family:var(--font-display)]"
         >
-          Todo App
+          Todo
         </Link>
       </header>
 
@@ -125,7 +125,7 @@ const TopBar = () => {
           onClick={toggleSidebar}
           aria-label={isOpen ? "Close menu" : "Open menu"}
         >
-          <span className="text-xl leading-none">{isOpen ? "✕" : "☰"}</span>
+          <Icon name={isOpen ? "close" : "menu"} size={20} />
         </button>
       )}
 
@@ -153,13 +153,13 @@ const TopBar = () => {
             aria-label={isSearchOpen ? "Close search" : "Search this page"}
             onClick={handleSearchIconClick}
           >
-            {isSearchOpen && searchTerm.trim() ? "✕" : "🔍"}
+            <Icon name={isSearchOpen && searchTerm.trim() ? "close" : "search"} size={18} />
           </button>
         </div>
       </div>
 
       <div
-        className={`fixed top-0 left-0 h-full w-[260px] z-[10000] pt-20 pb-6 flex flex-col bg-surface-strong backdrop-blur-2xl [backdrop-filter:blur(24px)_saturate(180%)] border-r border-border-soft text-heading transition-transform duration-[450ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${
+        className={`fixed top-0 left-0 h-full w-[260px] z-[10000] pt-20 pb-6 flex flex-col bg-bg-elevated border-r border-border-soft text-heading shadow-card-lg transition-transform duration-[450ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] ${
           isOpen || isPinned ? "translate-x-0" : "-translate-x-full"
         }`}
         onMouseEnter={handleMouseEnter}
@@ -174,13 +174,11 @@ const TopBar = () => {
             title={isPinned ? "Unpin Sidebar" : "Pin Sidebar"}
             aria-label={isPinned ? "Unpin Sidebar" : "Pin Sidebar"}
           >
-            <Image
-              src="./pushpin.svg"
-              alt=""
-              width={18}
-              height={18}
+            <Icon
+              name="pin"
+              size={18}
               style={{
-                transform: isPinned ? "rotate(-45deg)" : "none",
+                transform: isPinned ? "rotate(45deg)" : "none",
                 transition: "transform 0.35s cubic-bezier(0.16, 1, 0.3, 1)",
               }}
             />
@@ -191,7 +189,7 @@ const TopBar = () => {
             onClick={toggleSidebar}
             aria-label="Close menu"
           >
-            {isOpen ? "✕" : "☰"}
+            <Icon name={isOpen ? "close" : "menu"} size={20} />
           </button>
         )}
 
@@ -232,7 +230,7 @@ const TopBar = () => {
 
       {isOpen && !isDesktop && (
         <div
-          className="fixed inset-0 z-[9996] bg-black/30 backdrop-blur-[2px]"
+          className="fixed inset-0 z-[9996] bg-black/30"
           onClick={toggleSidebar}
         ></div>
       )}

@@ -7,7 +7,7 @@ const InfoBoxes = ({
 }) => {
   return (
     <div className="w-full max-w-[300px] grid grid-cols-2 grid-rows-2 gap-3 self-center mx-auto md:mx-0">
-      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface backdrop-blur-[8px] [backdrop-filter:blur(8px)_saturate(200%)] border border-border shadow-card p-4 min-h-[90px]">
+      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-bg-elevated border border-border shadow-card p-4 min-h-[90px]">
         <span className="text-2xl font-bold text-heading">
           {totalTasks}
         </span>
@@ -16,7 +16,7 @@ const InfoBoxes = ({
         </span>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface backdrop-blur-[8px] [backdrop-filter:blur(8px)_saturate(200%)] border border-border shadow-card p-4 min-h-[90px]">
+      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-bg-elevated border border-border shadow-card p-4 min-h-[90px]">
         <span className="text-2xl font-bold text-success">
           {completedTasks}
         </span>
@@ -25,7 +25,7 @@ const InfoBoxes = ({
         </span>
       </div>
 
-      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-surface backdrop-blur-[8px] [backdrop-filter:blur(8px)_saturate(200%)] border border-border shadow-card p-4 min-h-[90px]">
+      <div className="flex flex-col items-center justify-center gap-1 rounded-xl bg-bg-elevated border border-border shadow-card p-4 min-h-[90px]">
         <span className="text-2xl font-bold text-info">
           {remainingTasks}
         </span>

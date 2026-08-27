@@ -1,8 +1,3 @@
-// Small colored pill used for status/role labels across Devices, Manage_Users,
-// Roles, etc. Two shapes:
-//   <DotBadge tone="success">Active</DotBadge>          -> text + colored dot
-//   <PillBadge tone="accent">Admin</PillBadge>           -> solid filled pill
-
 const TONE_TEXT = {
   success: "text-[var(--color-success)]",
   warning: "text-[var(--color-warning)]",

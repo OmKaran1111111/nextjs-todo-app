@@ -10,6 +10,7 @@ import Toast from "@/components/Toast";
 import useIsDesktop from "@/hooks/useIsDesktop";
 import useTasks from "@/hooks/useTasks";
 import { useSearch } from "@/components/SearchContext";
+import { Icon } from "@/components/ui/Icon";
 
 const sortByPriority = (tasks) =>
   [...tasks].sort((a, b) => {
@@ -31,7 +32,7 @@ function TaskRow({
 
   return (
     <li
-      className={`relative flex items-center gap-2 rounded-2xl border px-[0.875rem] py-3 backdrop-blur-2xl backdrop-saturate-200 transition-[transform,background-color,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] sm:gap-3 ${
+      className={`relative flex items-center gap-2 rounded-2xl border px-[0.875rem] py-3 transition-[transform,background-color,box-shadow] duration-300 ease-[cubic-bezier(0.34,1.56,0.64,1)] sm:gap-3 ${
         isActive
           ? "border-[var(--color-border-strong)] bg-[var(--color-surface-hover)]"
           : "border-[var(--color-border)] bg-[var(--color-surface)]"
@@ -97,9 +98,9 @@ function TaskRow({
       ) : (
         <button
           onClick={() => setConfirmingDelete(true)}
-          className="flex-shrink-0 cursor-pointer border-none bg-transparent p-1 text-base text-[var(--color-muted)] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--color-danger)]"
+          className="flex-shrink-0 cursor-pointer border-none bg-transparent p-1 text-[var(--color-muted)] transition-all duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] hover:text-[var(--color-danger)]"
         >
-          ✕
+          <Icon name="close" size={14} />
         </button>
       )}
     </li>

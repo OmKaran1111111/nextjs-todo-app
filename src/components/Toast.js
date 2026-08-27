@@ -1,5 +1,7 @@
 "use client";
 
+import { Icon } from "@/components/ui/Icon";
+
 const Toast = ({ message, onDismiss }) => {
   if (!message) return null;
 
@@ -14,10 +16,10 @@ const Toast = ({ message, onDismiss }) => {
           e.stopPropagation();
           onDismiss();
         }}
-        className="bg-transparent border-0 text-white cursor-pointer text-sm leading-none opacity-85 hover:opacity-100"
+        className="bg-transparent border-0 text-white cursor-pointer leading-none opacity-85 hover:opacity-100"
         aria-label="Dismiss"
       >
-        ✕
+        <Icon name="close" size={14} />
       </button>
     </div>
   );

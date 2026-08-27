@@ -1,19 +1,18 @@
-import { Newsreader, Bricolage_Grotesque } from "next/font/google";
+import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
 import TopBar from "@/components/topbar";
 import Footer from "@/components/footer";
 import { SearchProvider } from "@/components/SearchContext";
 import { SessionProvider } from "next-auth/react";
-import useIsDesktop from "@/hooks/useIsDesktop";
-const newsreader = Newsreader({
-  variable: "--font-display",
-  style: ["italic"],
-  weight: ["500", "600"],
+
+const inter = Inter({
+  variable: "--font-sans",
   subsets: ["latin"],
 });
-const isDesktop=useIsDesktop;
+
 const bricolage = Bricolage_Grotesque({
-  variable: "--font-sans",
+  variable: "--font-display",
+  weight: ["600", "700"],
   subsets: ["latin"],
 });
 
@@ -37,17 +36,13 @@ export default function RootLayout({ children }) {
   return (
     <html
       lang="en"
-      className={`${newsreader.variable} ${bricolage.variable} h-full antialiased`}
+      className={`${inter.variable} ${bricolage.variable} h-full antialiased`}
       suppressHydrationWarning
     >
-      <head></head>
-      <body className="min-h-full flex flex-col text-body" style={{ fontFamily: "var(--font-sans)" }}>
-        {/*<video className="site-bg-video bg-video-light" autoPlay muted loop playsInline>
-          <source src="/videos/light-bg.mp4" type="video/mp4" />
-        </video>
-        <video className="site-bg-video bg-video-dark" autoPlay muted loop playsInline>
-          <source src="/videos/dark-bg.mp4" type="video/mp4" />
-        </video>*/}
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: themeInitScript }} />
+      </head>
+      <body className="min-h-full flex flex-col text-body bg-bg" style={{ fontFamily: "var(--font-sans)" }}>
         <SessionProvider>
           <SearchProvider>
             <TopBar />

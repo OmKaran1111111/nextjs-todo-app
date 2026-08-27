@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useSearch } from "./SearchContext";
+import { Icon } from "@/components/ui/Icon";
 
 const Footer = () => {
   const pathname = usePathname();
@@ -43,14 +44,14 @@ const Footer = () => {
         </Link>
       </div>
 
-      <div className="fixed z-[101] bottom-[15px] right-[15px] text-[30px]">
+      <div className="fixed z-[101] bottom-[15px] right-[15px]">
         <Link
           href="/tasks?add=1"
-          className={baseLinkClass}
+          className="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-primary-contrast shadow-card-lg no-underline transition-transform duration-150 hover:-translate-y-0.5 active:scale-95"
           aria-label="Add task"
           onClick={handleAddClick}
         >
-          ➕
+          <Icon name="plus" size={20} />
         </Link>
       </div>
     </footer>

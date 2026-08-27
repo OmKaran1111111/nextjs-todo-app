@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { Icon } from "./Icon";
 
 // A sticky side card, e.g. the "Add / Edit" form next to a roster table.
 // Use SplitLayout as the parent to get the responsive row/column switch.
@@ -13,7 +14,7 @@ export function SplitLayout({ children, className = "" }) {
 export function FormPanel({ children, className = "" }) {
   return (
     <aside
-      className={`w-full flex-shrink-0 rounded-[1.25rem] border border-[var(--color-border)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card)] backdrop-blur-2xl backdrop-saturate-200 lg:sticky lg:top-[100px] lg:w-[340px] lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto ${className}`}
+      className={`w-full flex-shrink-0 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-6 shadow-[var(--shadow-card)] lg:sticky lg:top-[100px] lg:w-[340px] lg:max-h-[calc(100vh-130px)] lg:overflow-y-auto ${className}`}
     >
       {children}
     </aside>
@@ -37,22 +38,20 @@ export function PanelHeader({ title, subtitle, onCloseHref }) {
         <Link
           href={onCloseHref}
           aria-label="Cancel edit"
-          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-none bg-[var(--color-surface-muted)] text-base text-[var(--color-heading)] no-underline transition-all duration-200 hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]"
+          className="flex h-8 w-8 flex-shrink-0 items-center justify-center rounded-full border-none bg-[var(--color-surface-muted)] text-[var(--color-heading)] no-underline transition-colors duration-150 hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]"
         >
-          ✕
+          <Icon name="close" />
         </Link>
       )}
     </div>
   );
 }
 
-// A non-sticky side panel that sits inline until the "split" breakpoint,
-// then becomes a sticky right-hand column. Used together with the global
-// `.page-shell-inner--split` class for the two-column switch.
+
 export function SidePanel({ children, className = "" }) {
   return (
     <aside
-      className={`box-border mt-7 w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-surface)] px-5 pt-5 pb-6 shadow-[var(--shadow-card)] backdrop-blur-2xl backdrop-saturate-200 md:mt-0 md:sticky md:top-[90px] md:w-[380px] md:max-w-[380px] md:flex-none ${className}`}
+      className={`box-border mt-7 w-full rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] px-5 pt-5 pb-6 shadow-[var(--shadow-card)] md:mt-0 md:sticky md:top-[90px] md:w-[380px] md:max-w-[380px] md:flex-none ${className}`}
     >
       {children}
     </aside>

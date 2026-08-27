@@ -3,13 +3,8 @@
 import { useState, useEffect } from "react";
 import PriorityDropdown from "@/components/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
-
-const PRIORITY_INFO = {
-  1: { label: "Priority 1 · Urgent", colorClass: "text-danger" },
-  2: { label: "Priority 2 · High", colorClass: "text-warning" },
-  3: { label: "Priority 3 · Medium", colorClass: "text-info" },
-  4: { label: "Priority 4 · None", colorClass: "text-faint" },
-};
+import { Icon } from "@/components/ui/Icon";
+import { TONE_TEXT, getPriority } from "@/lib/priority";
 
 const confirmGroupClass = "inline-flex items-center gap-2 shrink-0";
 const confirmTextClass = "text-xs text-muted whitespace-nowrap";
@@ -40,22 +35,22 @@ const TaskDetails = ({
 
   if (!task) {
     return (
-      <div className="flex h-full min-h-[260px] items-center justify-center rounded-3xl border border-border bg-surface-soft backdrop-blur-[40px] [backdrop-filter:blur(40px)_saturate(150%)] p-8 text-center text-muted">
+      <div className="flex h-full min-h-[260px] items-center justify-center rounded-3xl border border-border bg-bg-elevated p-8 text-center text-muted">
         No tasks yet — add one to see its details here.
       </div>
     );
   }
 
-  const priorityInfo = PRIORITY_INFO[task.priority || 4];
+  const priorityInfo = getPriority(task.priority || 4);
 
   return (
-    <div className="flex h-full flex-col rounded-3xl border border-border bg-surface-soft backdrop-blur-[40px] [backdrop-filter:blur(40px)_saturate(150%)] p-5 sm:p-6 shadow-card-lg">
+    <div className="flex h-full flex-col rounded-3xl border border-border bg-bg-elevated p-5 sm:p-6 shadow-card-lg">
       {onBack && (
         <button
           onClick={onBack}
           className="mb-4 flex w-max items-center gap-1 rounded-full bg-surface-muted border-0 py-1.5 px-3 text-sm text-heading transition-all duration-150 cursor-pointer hover:bg-surface-hover"
         >
-          ← Back
+          <Icon name="chevronLeft" size={14} /> Back
         </button>
       )}
 
@@ -96,9 +91,9 @@ const TaskDetails = ({
           <button
             onClick={() => setConfirmingDelete(true)}
             title="Delete task"
-            className="shrink-0 rounded-full bg-transparent border-0 py-1.5 px-1.5 text-lg text-muted transition-all duration-150 cursor-pointer hover:bg-danger-soft hover:text-danger"
+            className="shrink-0 rounded-full bg-transparent border-0 py-1.5 px-1.5 text-muted transition-all duration-150 cursor-pointer hover:bg-danger-soft hover:text-danger"
           >
-            ✕
+            <Icon name="close" size={16} />
           </button>
         )}
       </div>
@@ -121,15 +116,15 @@ const TaskDetails = ({
           currentPriority={task.priority || 4}
           onSelect={(newPriority) => onUpdatePriority(task.id, newPriority)}
         />
-        <span className={`text-sm font-semibold ${priorityInfo.colorClass}`}>
-          {priorityInfo.label}
+        <span className={`text-sm font-semibold ${TONE_TEXT[priorityInfo.tone]}`}>
+          {priorityInfo.shortLabel}
         </span>
       </div>
 
       <div className="mt-4 flex flex-wrap items-center gap-2">
         <span className="text-sm text-muted">Deadline</span>
-        <span className="relative inline-block cursor-pointer text-xl">
-          📅
+        <span className="relative inline-flex items-center justify-center h-8 w-8 cursor-pointer text-muted rounded-lg hover:bg-surface-hover">
+          <Icon name="calendar" size={16} />
           <input
             type="date"
             className="absolute top-0 left-0 h-full w-full cursor-pointer opacity-0"
@@ -138,7 +133,7 @@ const TaskDetails = ({
             onChange={(e) => onUpdateDeadline(task.id, e.target.value)}
           />
         </span>
-        <span className="text-sm text-danger">
+        <span className="text-sm text-body">
           {task.deadline || "No deadline set"}
         </span>
         <RemainingTime targetDate={task.deadline} />
@@ -190,9 +185,9 @@ const TaskDetails = ({
                 ) : (
                   <button
                     onClick={() => setConfirmingSubtaskId(subtask.id)}
-                    className="shrink-0 bg-transparent border-0 text-muted text-sm cursor-pointer p-1 transition-all duration-150 hover:text-danger"
+                    className="shrink-0 bg-transparent border-0 text-muted cursor-pointer p-1 transition-all duration-150 hover:text-danger"
                   >
-                    ✕
+                    <Icon name="close" size={14} />
                   </button>
                 )}
               </li>
