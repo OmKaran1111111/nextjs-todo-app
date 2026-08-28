@@ -1,6 +1,16 @@
 import nodemailer from "nodemailer";
 
-function logToConsole(email, subjectLabel, codeLabel, code) {
+interface SendResult {
+  success: true;
+  mode: "console";
+}
+
+function logToConsole(
+  email: string,
+  subjectLabel: string,
+  codeLabel: string,
+  code: string,
+): void {
   console.log("\n=================== [LOCAL DEV MAIL LOG] ===================");
   console.log(`TO:                ${email}`);
   console.log(`SUBJECT:           ${subjectLabel}`);
@@ -20,7 +30,10 @@ function getTransporter() {
   });
 }
 
-export async function sendVerificationCode(email, code) {
+export async function sendVerificationCode(
+  email: string,
+  code: string,
+): Promise<SendResult | nodemailer.SentMessageInfo> {
   if (process.env.NODE_ENV !== "production") {
     logToConsole(email, "Your verification code", "VERIFICATION CODE:", code);
     return { success: true, mode: "console" };
@@ -34,7 +47,10 @@ export async function sendVerificationCode(email, code) {
   });
 }
 
-export async function sendPasswordResetCode(email, code) {
+export async function sendPasswordResetCode(
+  email: string,
+  code: string,
+): Promise<SendResult | nodemailer.SentMessageInfo> {
   if (process.env.NODE_ENV !== "production") {
     logToConsole(email, "Your password reset code", "RESET CODE:", code);
     return { success: true, mode: "console" };

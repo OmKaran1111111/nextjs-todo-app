@@ -7,7 +7,7 @@ const UpcomingDeadlines = ({ tasks }) => {
     .slice(0, 5);
 
   return (
-    <div className="w-full max-w-[300px] flex flex-col gap-3 rounded-xl bg-bg-elevated border border-border shadow-card p-4">
+    <div className="w-full flex flex-col gap-3 rounded-xl bg-bg-elevated border border-border shadow-card p-4">
       <span className="text-sm font-bold text-heading">
         Upcoming Deadlines
       </span>

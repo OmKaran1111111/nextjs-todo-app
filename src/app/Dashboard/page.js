@@ -6,6 +6,7 @@ import InfoBoxes from "@/components/infoboxes";
 import PriorityBreakdown from "@/components/PriorityBreakdown";
 import UpcomingDeadlines from "@/components/Upcomingdeadlines";
 import { TaskListSkeleton } from "@/components/Skeleton";
+import { PageHeader } from "@/components/ui/PageHeader";
 import useTasks from "@/hooks/useTasks";
 
 const DonutChart = dynamic(() => import("@/components/donutchart"), {
@@ -19,7 +20,7 @@ const Dashboard = () => {
     return (
       <main className="page-shell page-shell--cozy">
         <div className="page-shell-inner page-shell-inner--fluid">
-          <div className="flex w-full flex-col gap-4 md:grid md:min-h-[calc(100vh-145px)] md:grid-cols-2 md:grid-rows-2 md:gap-8">
+          <div className="flex w-full flex-col gap-6 md:gap-8">
             <TaskListSkeleton rows={4} />
           </div>
         </div>
@@ -81,17 +82,29 @@ const Dashboard = () => {
   return (
     <main className="page-shell page-shell--cozy">
       <div className="page-shell-inner page-shell-inner--fluid">
-        <div className="flex w-full flex-col gap-4 md:grid md:min-h-[calc(100vh-145px)] md:grid-cols-2 md:grid-rows-2 md:gap-8">
+        <div className="flex w-full flex-col gap-6 md:gap-8">
+          <PageHeader title="Dashboard" />
+
           <InfoBoxes
             totalTasks={numberOfTasks}
             completedTasks={noOfComp}
             remainingTasks={numberOfTasks - noOfComp}
-            remainingOnTime={remainingBeforeDeadline}
             remainingOverdue={remainingAfterDeadline}
           />
-          <DonutChart data={data} colors={COLORS} labels={labels} />
-          <PriorityBreakdown tasks={tasks} />
-          <UpcomingDeadlines tasks={tasks} />
+
+          <div className="grid grid-cols-1 gap-6 md:grid-cols-[1.3fr_1fr] md:items-start md:gap-8">
+            <div className="flex flex-col gap-3 rounded-xl border border-border bg-bg-elevated p-4 shadow-card">
+              <span className="text-sm font-bold text-heading">
+                Completion Overview
+              </span>
+              <DonutChart data={data} colors={COLORS} labels={labels} />
+            </div>
+
+            <div className="flex flex-col gap-6">
+              <PriorityBreakdown tasks={tasks} />
+              <UpcomingDeadlines tasks={tasks} />
+            </div>
+          </div>
         </div>
       </div>
     </main>

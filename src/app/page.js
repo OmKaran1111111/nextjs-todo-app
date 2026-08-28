@@ -133,7 +133,7 @@ const Todo_App = () => {
         <div className="page-shell-inner max-w-[72rem]">
           <div className="md:flex md:items-start md:gap-6">
             <div className="md:w-[380px] md:flex-shrink-0">
-              <h3 className="mb-3 px-1 text-xl leading-7 font-bold text-[var(--color-heading)]">
+              <h3 className="mb-3 px-1 text-base font-bold text-heading">
                 Tasks
               </h3>
               <TaskListSkeleton />
@@ -168,7 +168,7 @@ const Todo_App = () => {
       <div className="page-shell-inner max-w-[72rem]">
         <div className="md:flex md:items-start md:gap-6">
           <div className="md:w-[380px] md:flex-shrink-0">
-            <h3 className="mb-3 px-1 text-xl leading-7 font-bold text-[var(--color-heading)]">
+            <h3 className="mb-3 px-1 text-base font-bold text-heading">
               Tasks
             </h3>
 

@@ -9,6 +9,7 @@ import { SidePanel, PanelHeader } from "@/components/ui/Panel";
 import { TableWrapper, Table, Th, Td } from "@/components/ui/Table";
 import { PillBadge } from "@/components/ui/Badge";
 import { ActionButton, PrimaryButton } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 import Link from "next/link";
 
 export const dynamic = "force-dynamic";
@@ -42,14 +43,14 @@ export default async function Roles({ searchParams }) {
         className={`page-shell-inner ${showSidePanel ? "page-shell-inner--split" : ""}`}
       >
         <section className={`min-w-0 flex-1 ${showSidePanel ? "[&_table]:min-w-[420px] [&_th]:px-[0.6rem] [&_th]:py-[0.45rem] [&_th]:text-[0.78rem] [&_td]:px-[0.6rem] [&_td]:py-[0.45rem] [&_td]:text-[0.78rem]" : ""}`}>
-          <div className="mb-4 flex items-center justify-between">
-            <h2 className="m-0 text-[1.05rem] font-bold text-[var(--color-heading)]">
-              All roles
-            </h2>
-            <PrimaryButton href="?add=true" className="mt-0">
-              New role
-            </PrimaryButton>
-          </div>
+          <PageHeader
+            title="All roles"
+            action={
+              <PrimaryButton href="?add=true" className="mt-0">
+                New role
+              </PrimaryButton>
+            }
+          />
 
           <TableWrapper>
             <Table>

@@ -1,8 +1,24 @@
 import db from "@/lib/db";
 
-export function checkRateLimit(key, { maxRequests, windowMs }) {
+export interface RateLimitOptions {
+  maxRequests: number;
+  windowMs: number;
+}
+
+export interface RateLimitResult {
+  allowed: boolean;
+  retryAfterMs: number;
+}
+
+interface RateLimitRow {
+  key: string;
+  count: number;
+  windowStart: string;
+}
+
+export function checkRateLimit(key: string, { maxRequests, windowMs }: RateLimitOptions): RateLimitResult {
   const now = Date.now();
-  const row = db.prepare("SELECT * FROM rate_limits WHERE key = ?").get(key);
+  const row = db.prepare("SELECT * FROM rate_limits WHERE key = ?").get(key) as RateLimitRow | undefined;
 
   if (!row) {
     db.prepare(
@@ -29,6 +45,6 @@ export function checkRateLimit(key, { maxRequests, windowMs }) {
   return { allowed: true, retryAfterMs: 0 };
 }
 
-export function resetRateLimit(key) {
+export function resetRateLimit(key: string): void {
   db.prepare("DELETE FROM rate_limits WHERE key = ?").run(key);
 }

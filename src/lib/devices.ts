@@ -1,11 +1,35 @@
 import db from "@/lib/db";
 import crypto from "crypto";
+import type { Device, PairingCode } from "@/lib/db";
 
 const SESSION_MAX_AGE_MS = 30 * 24 * 60 * 60 * 1000;
 const PAIRING_CODE_TTL_MS = 10 * 60 * 1000;
 const MIN_SUPPORTED_APP_VERSION = "2.0";
 
-function parseUserAgent(ua = "") {
+interface ParsedUserAgent {
+  browserName: string;
+  browserVersion: string;
+  os: string;
+}
+
+interface DeviceWithOwner extends Device {
+  ownerEmail: string;
+  ownerName: string | null;
+}
+
+interface DeviceStatus {
+  label: string;
+  tone: "danger" | "warning" | "success" | "muted";
+}
+
+interface CreateDeviceSessionArgs {
+  userId: string;
+  userAgent?: string;
+  deviceName?: string;
+  appVersion?: string;
+}
+
+function parseUserAgent(ua: string = ""): ParsedUserAgent {
   if (!ua) return { browserName: "Unknown", browserVersion: "", os: "Unknown" };
 
   let os = "Unknown";
@@ -17,7 +41,7 @@ function parseUserAgent(ua = "") {
 
   let browserName = "Unknown";
   let browserVersion = "";
-  let match;
+  let match: RegExpMatchArray | null;
   if ((match = ua.match(/Edg\/([\d.]+)/))) {
     browserName = "Edge";
     browserVersion = match[1];
@@ -41,15 +65,23 @@ function parseUserAgent(ua = "") {
   return { browserName, browserVersion: shortVersion, os };
 }
 
-function resolveDeviceName({ deviceName, browserName, os }) {
+function resolveDeviceName({
+  deviceName,
+  browserName,
+  os,
+}: {
+  deviceName?: string;
+  browserName: string;
+  os: string;
+}): string {
   if (deviceName && deviceName.trim()) return deviceName.trim();
   if (browserName === "Unknown" && os === "Unknown") return "Unknown device";
   return `${browserName} on ${os}`;
 }
 
-function isOutdatedAppVersion(appVersion) {
+function isOutdatedAppVersion(appVersion?: string | null): boolean {
   if (!appVersion) return false;
-  const toParts = (v) =>
+  const toParts = (v: string): number[] =>
     v
       .replace(/^v/i, "")
       .split(".")
@@ -60,7 +92,12 @@ function isOutdatedAppVersion(appVersion) {
   return minor < minMinor;
 }
 
-export function createDeviceSession({ userId, userAgent, deviceName, appVersion }) {
+export function createDeviceSession({
+  userId,
+  userAgent,
+  deviceName,
+  appVersion,
+}: CreateDeviceSessionArgs): string {
   const { browserName, browserVersion, os } = parseUserAgent(userAgent);
   const id = crypto.randomUUID();
   const now = new Date();
@@ -88,20 +125,22 @@ export function createDeviceSession({ userId, userAgent, deviceName, appVersion 
   return id;
 }
 
-export function getDeviceById(id) {
-  return db.prepare("SELECT * FROM devices WHERE id = ?").get(id) || null;
+export function getDeviceById(id: string): Device | null {
+  return (db.prepare("SELECT * FROM devices WHERE id = ?").get(id) as Device | undefined) || null;
 }
 
-export function touchDeviceLastActive(id) {
+export function touchDeviceLastActive(id: string): void {
   if (!id) return;
   db.prepare("UPDATE devices SET lastActiveAt = ? WHERE id = ?").run(new Date().toISOString(), id);
 }
 
-export function getDevicesForUser(userId) {
-  return db.prepare("SELECT * FROM devices WHERE userId = ? ORDER BY lastActiveAt DESC").all(userId);
+export function getDevicesForUser(userId: string): Device[] {
+  return db
+    .prepare("SELECT * FROM devices WHERE userId = ? ORDER BY lastActiveAt DESC")
+    .all(userId) as Device[];
 }
 
-export function getAllDevicesWithOwners() {
+export function getAllDevicesWithOwners(): DeviceWithOwner[] {
   return db
     .prepare(
       `SELECT devices.*, users.email AS ownerEmail, users.name AS ownerName
@@ -109,10 +148,10 @@ export function getAllDevicesWithOwners() {
        JOIN users ON users.id = devices.userId
        ORDER BY devices.lastActiveAt DESC`,
     )
-    .all();
+    .all() as DeviceWithOwner[];
 }
 
-export function revokeDevice(id, requestingUserId, isAdmin) {
+export function revokeDevice(id: string, requestingUserId: string, isAdmin: boolean): boolean {
   const device = getDeviceById(id);
   if (!device) return false;
   if (!isAdmin && device.userId !== requestingUserId) return false;
@@ -126,7 +165,7 @@ export function revokeDevice(id, requestingUserId, isAdmin) {
 const ACTIVE_THRESHOLD_MS = 5 * 60 * 1000; // seen in the last 5 minutes
 const IDLE_THRESHOLD_MS = 24 * 60 * 60 * 1000; // seen in the last 24 hours
 
-export function getDeviceStatus(device) {
+export function getDeviceStatus(device: Device): DeviceStatus {
   if (device.revoked) return { label: "Revoked", tone: "danger" };
   if (new Date(device.expiresAt) < new Date()) return { label: "Expired", tone: "warning" };
   if (isOutdatedAppVersion(device.appVersion)) return { label: "Outdated app version", tone: "warning" };
@@ -140,7 +179,7 @@ export function getDeviceStatus(device) {
   return { label: "Inactive", tone: "muted" };
 }
 
-export function createPairingCode(userId) {
+export function createPairingCode(userId: string): { code: string; expiresAt: string } {
   const code = Math.floor(100000 + Math.random() * 900000).toString();
   const expiresAt = new Date(Date.now() + PAIRING_CODE_TTL_MS).toISOString();
 
@@ -152,9 +191,11 @@ export function createPairingCode(userId) {
   return { code, expiresAt };
 }
 
-export function consumePairingCode(code) {
+export function consumePairingCode(code: string): PairingCode | null {
   return db.transaction(() => {
-    const record = db.prepare("SELECT * FROM pairing_codes WHERE code = ?").get(code);
+    const record = db.prepare("SELECT * FROM pairing_codes WHERE code = ?").get(code) as
+      | PairingCode
+      | undefined;
     if (!record) return null;
     if (record.used) return null;
     if (new Date(record.expiresAt) < new Date()) return null;

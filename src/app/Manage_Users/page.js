@@ -14,6 +14,7 @@ import { TableWrapper, Table, Th, Td, rowClasses } from "@/components/ui/Table";
 import { Avatar } from "@/components/ui/Avatar";
 import { PillBadge, DotBadge, RevokedStamp } from "@/components/ui/Badge";
 import { ActionButton } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -154,14 +155,7 @@ export default async function Manage_Users({ searchParams }) {
           </FormPanel>
 
           <section className="min-w-0 flex-1">
-            <div className="mb-4 flex items-baseline justify-between">
-              <h2 className="m-0 text-[1.05rem] font-bold text-[var(--color-heading)]">
-                All users
-              </h2>
-              <span className="text-[0.8rem] text-[var(--color-faint)]">
-                {users.length} total
-              </span>
-            </div>
+            <PageHeader title="All users" meta={`${users.length} total`} />
 
             {users.length === 0 ? (
               <EmptyState title="No users yet" text="Accounts you add will show up here." />

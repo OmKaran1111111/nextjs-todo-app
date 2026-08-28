@@ -1,9 +1,95 @@
 import Database from "better-sqlite3";
 import path from "path";
 
-let _db = null;
+export interface User {
+  id: string;
+  email: string;
+  name: string | null;
+  passwordHash: string;
+  verified: number;
+  createdAt: string;
+  role: string;
+  isBanned: number;
+}
 
-function initDb() {
+export interface VerificationCode {
+  email: string;
+  name: string | null;
+  passwordHash: string | null;
+  code: string;
+  expiresAt: string;
+  attempts: number;
+}
+
+export interface PasswordReset {
+  email: string;
+  code: string;
+  expiresAt: string;
+  attempts: number;
+}
+
+export interface RateLimit {
+  key: string;
+  count: number;
+  windowStart: string;
+}
+
+export interface Task {
+  id: string;
+  userId: string;
+  text: string;
+  priority: number;
+  completed: number;
+  completedAt: string | null;
+  deadline: string | null;
+  subtasks: string;
+  createdAt: string;
+}
+
+export interface Device {
+  id: string;
+  userId: string;
+  deviceName: string | null;
+  browserName: string | null;
+  browserVersion: string | null;
+  os: string | null;
+  appVersion: string | null;
+  userAgent: string | null;
+  createdAt: string;
+  lastActiveAt: string;
+  expiresAt: string;
+  revoked: number;
+  revokedAt: string | null;
+}
+
+export interface PairingCode {
+  code: string;
+  userId: string;
+  expiresAt: string;
+  used: number;
+  createdAt: string;
+}
+
+export interface Role {
+  name: string;
+  description: string | null;
+  isSystem: number;
+  createdAt: string;
+}
+
+export interface RolePermission {
+  role: string;
+  permission: string;
+}
+
+type SqliteMasterRow = { sql: string };
+type CountRow = { count: number };
+type RoleNameRow = { role: string };
+type TableInfoRow = { name: string };
+
+let _db: Database.Database | null = null;
+
+function initDb(): Database.Database {
   const db = new Database(path.join(process.cwd(), "src", "data", "app.db"));
   db.pragma("journal_mode = WAL");
   db.pragma("foreign_keys = ON");
@@ -102,7 +188,7 @@ function initDb() {
 
   const usersTableSql = db
     .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='users'")
-    .get();
+    .get() as SqliteMasterRow | undefined;
 
   if (usersTableSql && !usersTableSql.sql.includes("COLLATE NOCASE")) {
     db.transaction(() => {
@@ -132,7 +218,7 @@ function initDb() {
 
   const tasksTableSql = db
     .prepare("SELECT sql FROM sqlite_master WHERE type='table' AND name='tasks'")
-    .get();
+    .get() as SqliteMasterRow | undefined;
 
   if (tasksTableSql && tasksTableSql.sql.includes("users_old")) {
     db.transaction(() => {
@@ -169,11 +255,15 @@ function initDb() {
   return db;
 }
 
-function ensureColumn(db, table, column, definition) {
-  const exists = db
-    .prepare(`PRAGMA table_info(${table})`)
-    .all()
-    .some((col) => col.name === column);
+function ensureColumn(
+  db: Database.Database,
+  table: string,
+  column: string,
+  definition: string
+): void {
+  const exists = (db.prepare(`PRAGMA table_info(${table})`).all() as TableInfoRow[]).some(
+    (col) => col.name === column
+  );
   if (!exists) {
     db.exec(`ALTER TABLE ${table} ADD COLUMN ${column} ${definition}`);
   }
@@ -189,23 +279,23 @@ const ALL_PERMISSION_KEYS = [
   "devices:view_own",
   "devices:manage_own",
   "devices:manage_all",
-];
+] as const;
 
 const DEFAULT_USER_PERMISSIONS = [
   "tasks:view_own",
   "tasks:manage_own",
   "devices:view_own",
   "devices:manage_own",
-];
+] as const;
 
-function seedDefaultRoles(db) {
-  const roleCount = db.prepare("SELECT COUNT(*) AS count FROM roles").get().count;
+function seedDefaultRoles(db: Database.Database): void {
+  const roleCount = (db.prepare("SELECT COUNT(*) AS count FROM roles").get() as CountRow).count;
   if (roleCount > 0) {
-
-    const distinctRoles = db
-      .prepare("SELECT DISTINCT role FROM users WHERE role IS NOT NULL AND role != ''")
-      .all()
-      .map((r) => r.role);
+    const distinctRoles = (
+      db
+        .prepare("SELECT DISTINCT role FROM users WHERE role IS NOT NULL AND role != ''")
+        .all() as RoleNameRow[]
+    ).map((r) => r.role);
 
     const insertRole = db.prepare(
       "INSERT OR IGNORE INTO roles (name, description, isSystem, createdAt) VALUES (?, ?, 0, ?)"
@@ -217,9 +307,11 @@ function seedDefaultRoles(db) {
     db.transaction(() => {
       for (const roleName of distinctRoles) {
         insertRole.run(roleName, null, new Date().toISOString());
-        const hasPerms = db
-          .prepare("SELECT COUNT(*) AS count FROM role_permissions WHERE role = ?")
-          .get(roleName).count;
+        const hasPerms = (
+          db
+            .prepare("SELECT COUNT(*) AS count FROM role_permissions WHERE role = ?")
+            .get(roleName) as CountRow
+        ).count;
         if (hasPerms === 0) {
           for (const perm of DEFAULT_USER_PERMISSIONS) insertPerm.run(roleName, perm);
         }
@@ -245,22 +337,19 @@ function seedDefaultRoles(db) {
   })();
 }
 
-function getDb() {
+function getDb(): Database.Database {
   if (!_db) {
     _db = initDb();
   }
   return _db;
 }
 
-const dbProxy = new Proxy(
-  {},
-  {
-    get(_target, prop) {
-      const real = getDb();
-      const value = real[prop];
-      return typeof value === "function" ? value.bind(real) : value;
-    },
-  }
-);
+const dbProxy = new Proxy({} as Database.Database, {
+  get(_target, prop: string | symbol) {
+    const real = getDb();
+    const value = (real as any)[prop];
+    return typeof value === "function" ? value.bind(real) : value;
+  },
+});
 
 export default dbProxy;

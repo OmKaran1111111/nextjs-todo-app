@@ -9,6 +9,7 @@ import { EmptyState } from "@/components/ui/EmptyState";
 import { TableWrapper, Table, Th, Td, rowClasses } from "@/components/ui/Table";
 import { DotBadge, RevokedStamp } from "@/components/ui/Badge";
 import { ActionButton } from "@/components/ui/Button";
+import { PageHeader } from "@/components/ui/PageHeader";
 
 export const dynamic = "force-dynamic";
 
@@ -34,6 +35,8 @@ export default async function Devices() {
   return (
     <main className="page-shell page-shell--roomy page-shell--full-height">
       <div className="page-shell-inner">
+        <PageHeader title="Devices" meta={`${devices.length} total`} />
+
         {devices.length === 0 ? (
           <EmptyState
             title="No devices yet"

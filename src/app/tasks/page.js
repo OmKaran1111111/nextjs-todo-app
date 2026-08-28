@@ -324,7 +324,7 @@ const TaskList = () => {
       <div className="min-h-screen px-5 pt-[90px] pb-[60px]">
         <div className="mx-auto max-w-[1100px]">
           <div className="mb-[0.85rem] flex flex-wrap items-center justify-between gap-3">
-            <h3 className="mb-[0.2rem] text-[1.15rem] font-bold text-[var(--color-heading)]">Tasks</h3>
+            <h3 className="mb-[0.2rem] text-base font-bold text-heading">Tasks</h3>
           </div>
           <TaskListSkeleton />
         </div>
@@ -346,10 +346,10 @@ const TaskList = () => {
           <div className="w-full">
             <div className="mb-[0.85rem] flex flex-wrap items-center justify-between gap-3">
               <div>
-                <h3 className="mb-[0.2rem] text-[1.15rem] font-bold text-[var(--color-heading)]">
+                <h3 className="mb-[0.2rem] text-base font-bold text-heading">
                   {viewUserId ? `Tasks — ${viewUserName || "user"}` : "Tasks"}
                 </h3>
-                <span className="text-[0.8rem] text-[var(--color-faint)]">
+                <span className="text-xs text-faint">
                   {filteredTasks.length} {searchQuery ? "filtered" : "total"}
                 </span>
                 {viewUserId && (

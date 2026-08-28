@@ -2,8 +2,8 @@
 
 import { useEffect, useState } from "react";
 
-const useIsDesktop = (breakpoint = 768) => {
-  const [isDesktop, setIsDesktop] = useState(false);
+const useIsDesktop = (breakpoint: number = 768): boolean => {
+  const [isDesktop, setIsDesktop] = useState<boolean>(false);
 
   useEffect(() => {
     const mediaQuery = window.matchMedia(`(min-width: ${breakpoint}px)`);

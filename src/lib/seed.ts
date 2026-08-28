@@ -1,15 +1,19 @@
-import db from "./db.js";
+import db from "./db";
 import bcrypt from "bcryptjs";
 import crypto from "crypto";
 
-async function seed() {
+interface ExistingUserRow {
+  id: string;
+}
+
+async function seed(): Promise<void> {
   const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
   const adminPassword = process.env.ADMIN_PASSWORD || "Admin123!";
   const adminName = process.env.ADMIN_NAME || "Admin";
 
   const existing = db
     .prepare("SELECT id FROM users WHERE email = ?")
-    .get(adminEmail);
+    .get(adminEmail) as ExistingUserRow | undefined;
 
   if (existing) {
     console.log(`Admin user (${adminEmail}) already exists — skipping seed.`);

@@ -1,10 +1,27 @@
 "use client";
 
-export function buildGlassDisplacementMap({ width, height, radius = 28, edgeBand = 24, strength = 1 }) {
+interface BuildGlassDisplacementMapArgs {
+  width: number;
+  height: number;
+  radius?: number;
+  edgeBand?: number;
+  strength?: number;
+}
+
+export function buildGlassDisplacementMap({
+  width,
+  height,
+  radius = 28,
+  edgeBand = 24,
+  strength = 1,
+}: BuildGlassDisplacementMapArgs): string {
   const canvas = document.createElement("canvas");
   canvas.width = Math.max(1, Math.round(width));
   canvas.height = Math.max(1, Math.round(height));
   const ctx = canvas.getContext("2d");
+  if (!ctx) {
+    throw new Error("Failed to acquire 2D canvas context");
+  }
   const imageData = ctx.createImageData(canvas.width, canvas.height);
   const data = imageData.data;
 
@@ -12,7 +29,7 @@ export function buildGlassDisplacementMap({ width, height, radius = 28, edgeBand
   const halfH = canvas.height / 2;
   const r = Math.min(radius, halfW, halfH);
 
-  const sdf = (x, y) => {
+  const sdf = (x: number, y: number): number => {
     const px = Math.abs(x) - halfW + r;
     const py = Math.abs(y) - halfH + r;
     const qx = Math.max(px, 0);
@@ -48,6 +65,5 @@ export function buildGlassDisplacementMap({ width, height, radius = 28, edgeBand
   return canvas.toDataURL();
 }
 
-
-export const FLAT_DISPLACEMENT_MAP =
+export const FLAT_DISPLACEMENT_MAP: string =
   "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='1' height='1'%3E%3Crect width='1' height='1' fill='rgb(128,128,128)'/%3E%3C/svg%3E";

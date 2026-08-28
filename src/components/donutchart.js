@@ -51,7 +51,7 @@ const DonutChart = ({ data, colors, labels }) => {
   const chartColors = total === 0 ? ["var(--color-faint)"] : colors;
 
   return (
-    <div className="w-full max-w-[600px] flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8 self-center mx-auto md:mr-0">
+    <div className="w-full flex flex-col md:flex-row items-center justify-center gap-4 md:gap-8">
       <ul className="flex flex-row md:flex-col flex-wrap gap-3 md:gap-2.5 justify-center order-2 md:order-1 list-none p-0 m-0">
         {data.map((entry, index) => (
           <li key={entry.name} className="flex items-center gap-2 text-[13px] text-heading">
