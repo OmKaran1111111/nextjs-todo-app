@@ -383,6 +383,102 @@ body {
   }
 }
 
+@keyframes overdrivePop {
+  0% {
+    transform: scale(1);
+  }
+  35% {
+    transform: scale(1.22);
+  }
+  65% {
+    transform: scale(0.94);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes overdriveBreathe {
+  0%,
+  100% {
+    box-shadow: 0 0 0 0 color-mix(in srgb, currentColor 45%, transparent);
+  }
+  50% {
+    box-shadow: 0 0 0 4px color-mix(in srgb, currentColor 0%, transparent);
+  }
+}
+
+@keyframes overdriveRise {
+  from {
+    opacity: 0;
+    transform: translateY(6px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes overdriveMenuIn {
+  0% {
+    opacity: 0;
+    transform: scale(0.4);
+  }
+  60% {
+    opacity: 1;
+    transform: scale(1.04);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+.overdrive-pop {
+  animation: overdrivePop 420ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.overdrive-menu-in {
+  animation: overdriveMenuIn 260ms cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.overdrive-live-dot {
+  border-radius: 999px;
+  animation: overdriveBreathe 2.4s ease-in-out infinite;
+}
+
+.overdrive-row-enter {
+  animation: overdriveRise 320ms cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+/* Same-document View Transitions: named per row/panel so the browser   */
+/* cross-fades + morphs bounding boxes automatically. Kept subtle       */
+/* (short duration, no exotic clip-path work) per the "toned down" pick. */
+::view-transition-old(*),
+::view-transition-new(*) {
+  animation-duration: 220ms;
+  animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.vt-panel {
+  view-transition-name: overdrive-panel;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .overdrive-pop,
+  .overdrive-live-dot,
+  .overdrive-row-enter {
+    animation: none !important;
+  }
+  .overdrive-menu-in {
+    animation: none !important;
+  }
+  ::view-transition-old(*),
+  ::view-transition-new(*) {
+    animation: none !important;
+  }
+}
+
 .page-shell {
   padding-left: 1.25rem;
   padding-right: 1.25rem;
