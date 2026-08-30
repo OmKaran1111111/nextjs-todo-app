@@ -1,4 +1,4 @@
-import NextAuth from "next-auth";
+import NextAuth, { type User } from "next-auth";
 import { CredentialsSignin } from "next-auth";
 import GitHub from "next-auth/providers/github";
 import Google from "next-auth/providers/google";
@@ -8,7 +8,11 @@ import { verifyPassword } from "@/lib/users";
 import { getPermissionsForRole } from "@/lib/permissions";
 import { authConfig } from "@/auth.config";
 import { checkRateLimit, resetRateLimit } from "@/lib/rateLimit";
-import { createDeviceSession, getDeviceById, consumePairingCode } from "@/lib/devices";
+import {
+  createDeviceSession,
+  getDeviceById,
+  consumePairingCode,
+} from "@/lib/devices";
 import db from "@/lib/db";
 import crypto from "crypto";
 
@@ -17,17 +21,28 @@ const LOGIN_WINDOW_MS = 15 * 60 * 1000;
 const PAIRING_MAX_ATTEMPTS = 5;
 const PAIRING_WINDOW_MS = 10 * 60 * 1000;
 
+interface DbUserRow {
+  id: string;
+  role: string;
+}
+
+interface BannedRow {
+  isBanned: 0 | 1;
+}
+
 class BannedError extends CredentialsSignin {
   code = "banned";
 }
+
 export const { handlers, auth, signIn, signOut } = NextAuth({
   ...authConfig,
   providers: [
     Credentials({
       credentials: { email: {}, password: {} },
-      authorize: async (credentials) => {
+      authorize: async (credentials): Promise<User | null> => {
         if (!credentials?.email || !credentials?.password) return null;
-        const email = credentials.email.trim().toLowerCase();
+        const email = (credentials.email as string).trim().toLowerCase();
+        const password = credentials.password as string;
         const limitKey = `login:${email}`;
 
         const { allowed } = checkRateLimit(limitKey, {
@@ -42,9 +57,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         let user;
         try {
-          user = await verifyPassword(email, credentials.password);
+          user = await verifyPassword(email, password);
         } catch (err) {
-          if (err.message === "Banned") throw new BannedError();
+          if ((err as Error).message === "Banned") throw new BannedError();
           throw err;
         }
         if (user) {
@@ -57,7 +72,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
       id: "pairing-code",
       name: "Pairing Code",
       credentials: { code: {}, deviceName: {}, appVersion: {} },
-      authorize: async (credentials, request) => {
+      authorize: async (credentials, request): Promise<User | null> => {
         const code = credentials?.code?.toString().trim();
         if (!code) return null;
 
@@ -75,7 +90,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         const user = db
           .prepare("SELECT id, email, name FROM users WHERE id = ?")
-          .get(record.userId);
+          .get(record.userId) as
+          | { id: string; email: string; name: string }
+          | undefined;
         if (!user) return null;
 
         return {
@@ -117,7 +134,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         if (email) {
           const dbUser = db
             .prepare("SELECT isBanned FROM users WHERE email = ?")
-            .get(email);
+            .get(email) as BannedRow | undefined;
           if (dbUser?.isBanned) {
             return false;
           }
@@ -150,7 +167,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
 
         let dbUser = db
           .prepare("SELECT id, role FROM users WHERE email = ?")
-          .get(email);
+          .get(email) as DbUserRow | undefined;
 
         if (!dbUser) {
           const userId = user?.id || token.sub || crypto.randomUUID();

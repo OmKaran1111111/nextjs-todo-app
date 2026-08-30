@@ -110,7 +110,7 @@ const TopBar = () => {
     };
   }, [isOpen, isPinned, isDesktop]);
 
-  const hiddenRoutes = ["/login", "/sign-in", "/signup", "/sign-up"];
+  const hiddenRoutes = ["/login", "/sign-in", "/signup", "/sign-up","/forgot-password"];
   if (pathname && hiddenRoutes.includes(pathname)) {
     return null;
   }

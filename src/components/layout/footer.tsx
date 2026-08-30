@@ -18,7 +18,7 @@ const Footer = () => {
   const linkClass = (path: string) =>
     `${baseLinkClass} ${isActive(path) ? activeLinkClass : ""}`;
 
-  const hiddenRoutes = ["/login", "/sign-in", "/signup", "/sign-up"];
+  const hiddenRoutes = ["/login", "/sign-in", "/signup", "/sign-up", "/forgot-password"];
   if (pathname && hiddenRoutes.includes(pathname)) {
     return null;
   }

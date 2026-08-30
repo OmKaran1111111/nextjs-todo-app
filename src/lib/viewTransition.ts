@@ -1,4 +1,4 @@
-export function runWithViewTransition(update) {
+export function runWithViewTransition(update: () => void): void {
   const prefersReduced =
     typeof window !== "undefined" &&
     window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;

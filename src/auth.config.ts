@@ -1,4 +1,6 @@
-export const authConfig = {
+import type { NextAuthConfig } from "next-auth";
+
+export const authConfig: NextAuthConfig = {
   providers: [],
   pages: {
     signIn: "/login",
@@ -28,7 +30,11 @@ export const authConfig = {
       const isAdmin = auth?.user?.role === "admin";
 
       if (pathname.startsWith("/Manage_Users")) {
-        return isAdmin || permissions.includes("users:manage") || permissions.includes("users:view");
+        return (
+          isAdmin ||
+          permissions.includes("users:manage") ||
+          permissions.includes("users:view")
+        );
       }
 
       if (pathname.startsWith("/Roles")) {
@@ -47,9 +53,9 @@ export const authConfig = {
     },
     async session({ session, token }) {
       if (session?.user) {
-        session.user.id = token.id;
-        session.user.role = token.role;
-        session.user.permissions = token.permissions || [];
+        session.user.id = token.id as string;
+        session.user.role = token.role as string;
+        session.user.permissions = (token.permissions as string[]) || [];
       }
       return session;
     },

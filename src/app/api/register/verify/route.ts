@@ -1,12 +1,19 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import db from "@/lib/db";
+import db, { type VerificationCode } from "@/lib/db";
 import { insertVerifiedUser } from "@/lib/users";
 
-export async function POST(req) {
-  const { email: rawEmail, code } = await req.json();
+interface VerifyBody {
+  email?: string;
+  code?: string;
+}
+
+export async function POST(req: NextRequest) {
+  const { email: rawEmail, code }: VerifyBody = await req.json();
   const email = rawEmail?.trim().toLowerCase();
-  const pending = db.prepare("SELECT * FROM verification_codes WHERE email = ?").get(email);
+  const pending = db
+    .prepare("SELECT * FROM verification_codes WHERE email = ?")
+    .get(email) as VerificationCode | undefined;
 
   if (!pending) {
     return NextResponse.json({ error: "Invalid code." }, { status: 400 });
@@ -29,6 +36,10 @@ export async function POST(req) {
       { error: `Invalid code. ${MAX_ATTEMPTS - pending.attempts - 1} attempts remaining.` },
       { status: 400 },
     );
+  }
+
+  if (!pending.passwordHash) {
+    return NextResponse.json({ error: "Invalid code." }, { status: 400 });
   }
 
   insertVerifiedUser({

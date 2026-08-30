@@ -1,15 +1,17 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
 import { getTasksForUser, createTaskForUser } from "@/lib/tasks";
 import { touchDeviceLastActive } from "@/lib/devices";
 
-export async function GET(request) {
+export async function GET(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
   }
 
-  touchDeviceLastActive(session.user.deviceId);
+  if (session.user.deviceId) {
+    touchDeviceLastActive(session.user.deviceId);
+  }
 
   const { searchParams } = new URL(request.url);
   const requestedUserId = searchParams.get("userId");
@@ -27,7 +29,7 @@ export async function GET(request) {
   return NextResponse.json({ tasks });
 }
 
-export async function POST(request) {
+export async function POST(request: NextRequest) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -53,7 +55,9 @@ export async function POST(request) {
     deadline: body.deadline,
   });
 
-  touchDeviceLastActive(session.user.deviceId);
+  if (session.user.deviceId) {
+    touchDeviceLastActive(session.user.deviceId);
+  }
 
   return NextResponse.json({ task }, { status: 201 });
 }

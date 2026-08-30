@@ -2,6 +2,7 @@
 
 import type { Dispatch, ReactNode, SetStateAction } from "react";
 import { Icon } from "@/components/ui/Icon";
+import type { FormFieldConfig, PriorityOption } from "./DynamicForm";
 
 const inputPanelClass =
   "py-[0.6rem] px-[0.75rem] rounded-[0.65rem] border border-border bg-[color-mix(in_srgb,var(--color-bg-elevated)_50%,transparent)] text-[0.9rem] text-heading font-normal outline outline-2 outline-transparent outline-offset-2 transition-all duration-200 ease-[cubic-bezier(0.4,0,0.2,1)] focus:bg-bg-elevated focus:border-primary focus:shadow-[0_0_0_4px_var(--color-info-soft)]";
@@ -15,65 +16,6 @@ const authInputClass =
 type FieldIconName = "mail" | "lock";
 
 const FIELD_ICON_NAMES: Record<FieldIconName, FieldIconName> = { mail: "mail", lock: "lock" };
-
-export interface SelectOption {
-  value: string;
-  label: string;
-}
-
-export interface PriorityOption {
-  value: string;
-  label: string;
-  dotTone?: string;
-}
-
-export interface CheckboxOption {
-  key: string;
-  label: string;
-  description?: string;
-}
-
-export interface CheckboxFieldGroup {
-  id: string;
-  label: string;
-  options: CheckboxOption[];
-}
-
-export type FormFieldType =
-  | "hidden"
-  | "custom"
-  | "select"
-  | "priority"
-  | "date"
-  | "checkbox-group"
-  | "password"
-  | "text"
-  | "email"
-  | "number"
-  | (string & {});
-
-export interface FormFieldConfig {
-  type?: FormFieldType;
-  name: string;
-  label?: string;
-  labelClassName?: string;
-  className?: string;
-  placeholder?: string;
-  defaultValue?: string;
-  required?: boolean;
-  pattern?: string;
-  title?: string;
-  minLength?: number;
-  maxLength?: number;
-  icon?: FieldIconName;
-  options?: SelectOption[] | PriorityOption[];
-  groups?: CheckboxFieldGroup[];
-  checkedKeys?: string[];
-  gridClassName?: string;
-  optionClassName?: string;
-  optionActiveClassName?: string;
-  render?: (field: FormFieldConfig) => ReactNode;
-}
 
 interface FieldWrapProps {
   field: FormFieldConfig;
@@ -125,8 +67,8 @@ interface FormFieldProps {
   isTask?: boolean;
   visiblePasswords: Set<string>;
   togglePasswordVisibility: (name: string) => void;
-  priorityValues: Record<string, string>;
-  setPriorityValues: Dispatch<SetStateAction<Record<string, string>>>;
+  priorityValues: Record<string, string | undefined>;
+  setPriorityValues: Dispatch<SetStateAction<Record<string, string | undefined>>>;
 }
 
 export default function FormField({
@@ -172,7 +114,7 @@ export default function FormField({
 
     case "priority": {
       const selected = priorityValues[field.name] ?? field.defaultValue;
-      const options = (field.options ?? []) as PriorityOption[];
+      const options: PriorityOption[] = field.options;
       return (
         <div>
           {field.label && (
@@ -335,4 +277,4 @@ export default function FormField({
         </FieldWrap>
       );
   }
-} 
+}

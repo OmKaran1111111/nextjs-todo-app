@@ -1,12 +1,18 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import db from "@/lib/db";
+import db, { type PasswordReset } from "@/lib/db";
 import { updateUserPassword } from "@/lib/users";
 
 const MAX_ATTEMPTS = 5;
 
-export async function POST(req) {
-  const { email: rawEmail, code, newPassword } = await req.json();
+interface ConfirmBody {
+  email?: string;
+  code?: string;
+  newPassword?: string;
+}
+
+export async function POST(req: NextRequest) {
+  const { email: rawEmail, code, newPassword }: ConfirmBody = await req.json();
   if (!rawEmail || !code || !newPassword) {
     return NextResponse.json(
       { error: "Email, code, and new password are required." },
@@ -21,7 +27,9 @@ export async function POST(req) {
   }
 
   const email = rawEmail.trim().toLowerCase();
-  const pending = db.prepare("SELECT * FROM password_resets WHERE email = ?").get(email);
+  const pending = db
+    .prepare("SELECT * FROM password_resets WHERE email = ?")
+    .get(email) as PasswordReset | undefined;
 
   if (!pending) {
     return NextResponse.json({ error: "Invalid or expired code." }, { status: 400 });

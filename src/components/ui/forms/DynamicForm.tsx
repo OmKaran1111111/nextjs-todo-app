@@ -33,18 +33,20 @@ interface BaseFieldProps {
   className?: string;
   labelClassName?: string;
   after?: ReactNode | (() => ReactNode);
+  icon?: "mail" | "lock";
 }
+
+type CustomFieldConfig = BaseFieldProps & {
+  type: "custom";
+  render: (field: CustomFieldConfig) => ReactNode;
+};
 
 export type FormFieldConfig =
   | (BaseFieldProps & {
       type: "hidden";
       defaultValue?: string | number | null;
     })
-  | (BaseFieldProps & {
-      type: "custom";
-      // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      render: (field: any) => ReactNode;
-    })
+  | CustomFieldConfig
   | (BaseFieldProps & {
       type: "select";
       defaultValue?: string;
@@ -75,7 +77,6 @@ export type FormFieldConfig =
       required?: boolean;
       minLength?: number;
       maxLength?: number;
-      icon?: "mail" | "lock";
     })
   | (BaseFieldProps & {
       type?: "text" | "email" | undefined;
@@ -86,7 +87,6 @@ export type FormFieldConfig =
       title?: string;
       minLength?: number;
       maxLength?: number;
-      icon?: "mail" | "lock";
     });
 
 type FormValues = Record<string, FormDataEntryValue | FormDataEntryValue[] | null>;

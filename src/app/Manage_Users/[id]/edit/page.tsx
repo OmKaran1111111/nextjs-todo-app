@@ -2,17 +2,49 @@ import { notFound } from "next/navigation";
 import { getUserById } from "@/lib/users";
 import { getAllRoles } from "@/lib/permissions";
 import { updateUserAction } from "@/app/actions";
-import DynamicForm from "@/components/DynamicForm";
+import DynamicForm, { type FormFieldConfig } from "@/components/ui/forms/DynamicForm";
 import { FormPanel } from "@/components/ui/Panel";
 
 export const dynamic = "force-dynamic";
 
-export default async function EditUser({ params }) {
+interface EditUserProps {
+  params: Promise<{ id: string }>;
+}
+
+export default async function EditUser({ params }: EditUserProps) {
   const { id } = await params;
   const user = getUserById(id);
   if (!user) notFound();
 
   const roles = getAllRoles();
+
+  const fields: FormFieldConfig[] = [
+    { type: "hidden", name: "id", defaultValue: user.id },
+    {
+      type: "text",
+      name: "name",
+      label: "Name",
+      defaultValue: user.name || "",
+      placeholder: "User Name",
+    },
+    {
+      type: "email",
+      name: "email",
+      label: "Email",
+      defaultValue: user.email,
+      required: true,
+    },
+    {
+      type: "select",
+      name: "role",
+      label: "Role",
+      defaultValue: user.role || "user",
+      options: roles.map((role) => ({
+        value: role.name,
+        label: role.name.charAt(0).toUpperCase() + role.name.slice(1),
+      })),
+    },
+  ];
 
   return (
     <main className="page-shell page-shell--roomy page-shell--full-height">
@@ -35,33 +67,7 @@ export default async function EditUser({ params }) {
             action={updateUserAction}
             submitLabel="Save changes"
             cancelHref="/Manage_Users"
-            fields={[
-              { type: "hidden", name: "id", defaultValue: user.id },
-              {
-                type: "text",
-                name: "name",
-                label: "Name",
-                defaultValue: user.name || "",
-                placeholder: "User Name",
-              },
-              {
-                type: "email",
-                name: "email",
-                label: "Email",
-                defaultValue: user.email,
-                required: true,
-              },
-              {
-                type: "select",
-                name: "role",
-                label: "Role",
-                defaultValue: user.role || "user",
-                options: roles.map((role) => ({
-                  value: role.name,
-                  label: role.name.charAt(0).toUpperCase() + role.name.slice(1),
-                })),
-              },
-            ]}
+            fields={fields}
           />
         </FormPanel>
       </div>

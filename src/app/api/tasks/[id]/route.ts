@@ -1,8 +1,12 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@/auth";
-import { updateTask, deleteTask } from "@/lib/tasks";
+import { updateTask, deleteTask, type UpdateTaskInput } from "@/lib/tasks";
 
-export async function PATCH(request, { params }) {
+interface RouteParams {
+  params: Promise<{ id: string }>;
+}
+
+export async function PATCH(request: NextRequest, { params }: RouteParams) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -12,7 +16,7 @@ export async function PATCH(request, { params }) {
   }
 
   const { id } = await params;
-  const updates = await request.json();
+  const updates: UpdateTaskInput = await request.json();
 
   const task = updateTask(id, updates);
   if (!task) {
@@ -22,7 +26,7 @@ export async function PATCH(request, { params }) {
   return NextResponse.json({ task });
 }
 
-export async function DELETE(_request, { params }) {
+export async function DELETE(_request: NextRequest, { params }: RouteParams) {
   const session = await auth();
   if (!session?.user?.id) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });

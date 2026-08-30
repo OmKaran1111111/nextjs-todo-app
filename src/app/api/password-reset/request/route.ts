@@ -1,4 +1,4 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
 import db from "@/lib/db";
 import { findUserByEmail } from "@/lib/users";
 import { sendPasswordResetCode } from "@/lib/mailer";
@@ -7,8 +7,12 @@ import { checkRateLimit } from "@/lib/rateLimit";
 const GENERIC_MESSAGE =
   "If an account exists for that email, we've sent a password reset code.";
 
-export async function POST(req) {
-  const { email: rawEmail } = await req.json();
+interface RequestBody {
+  email?: string;
+}
+
+export async function POST(req: NextRequest) {
+  const { email: rawEmail }: RequestBody = await req.json();
   if (!rawEmail) {
     return NextResponse.json({ error: "Email is required." }, { status: 400 });
   }
