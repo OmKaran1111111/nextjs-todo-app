@@ -13,12 +13,12 @@ import {
   type SortingState,
 } from "@tanstack/react-table";
 import RemainingTime from "@/components/RemainingTime";
-import Toast from "@/components/Toast";
+import Toast from "@/components/ui/Toast";
 import TaskDetails from "@/components/TaskDetails";
-import { TaskListSkeleton } from "@/components/Skeleton";
+import { TaskListSkeleton } from "@/components/ui/Skeleton";
 import useTasks from "@/hooks/useTasks";
 import { useSearch } from "@/components/SearchContext";
-import DynamicForm, { type PriorityOption } from "@/components/DynamicForm";
+import DynamicForm, { type PriorityOption } from "@/components/ui/forms/DynamicForm";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { PillBadge } from "@/components/ui/Badge";
 import { PrimaryButton, ActionButton } from "@/components/ui/Button";
@@ -26,17 +26,6 @@ import { Icon } from "@/components/ui/Icon";
 import { PRIORITIES, TONE_BADGE, TONE_DOT, getPriority } from "@/lib/priority";
 import { runWithViewTransition } from "@/lib/viewTransition";
 
-/* ------------------------------------------------------------------------ */
-/* Types                                                                    */
-/*                                                                           */
-/* Task is derived directly from useTasks' real return type instead of a    */
-/* hand-written interface, so it always matches the hook exactly (this is   */
-/* what was causing the addTask(...) / UseTasksResult mismatch before).     */
-/*                                                                           */
-/* DynamicForm's own `FormValues` / submit-result types aren't exported     */
-/* from that file, so we redeclare structurally-identical local versions —  */
-/* TypeScript matches by shape, so this is equivalent to importing them.    */
-/* ------------------------------------------------------------------------ */
 
 type Task = ReturnType<typeof useTasks>["tasks"][number];
 
@@ -116,11 +105,6 @@ const TaskList = () => {
   const [deleteTarget, setDeleteTarget] = useState<DeleteTarget | null>(null);
   const [isDeleting, setIsDeleting] = useState(false);
 
-  // Cast defensively: if this still resolves to `never`, the root cause is in
-  // SearchContext's own type (a common culprit is a generic store/reducer
-  // whose type parameter isn't being inferred, e.g. a Zustand `create<T>()`
-  // call missing its curried second call). Fix it there if possible; this
-  // cast is a safe local workaround either way.
   const { searchTerm: searchQuery, setSearchTerm: setSearchQuery, addTaskSignal } = useSearch() as {
     searchTerm: string;
     setSearchTerm: (value: string) => void;

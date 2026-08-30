@@ -1,18 +1,18 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import InfoBoxes from "@/components/infoboxes";
+import InfoBoxes from "@/components/ui/infoboxes";
 import PriorityBreakdown from "@/components/PriorityBreakdown";
 import UpcomingDeadlines from "@/components/Upcomingdeadlines";
-import { TaskListSkeleton } from "@/components/Skeleton";
+import { TaskListSkeleton } from "@/components/ui/Skeleton";
 import { PageHeader } from "@/components/ui/PageHeader";
 import useTasks from "@/hooks/useTasks";
-import type { DonutChartDatum } from "@/components/donutchart";
+import type { DonutChartDatum } from "@/components/ui/donutchart";
 
 
 type Task = ReturnType<typeof useTasks>["tasks"][number];
 
-const DonutChart = dynamic(() => import("@/components/donutchart"), {
+const DonutChart = dynamic(() => import("@/components/ui/donutchart"), {
   ssr: false,
 });
 

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import PriorityDropdown from "@/components/PriorityDropdown";
+import PriorityDropdown from "@/components/ui/forms/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import { Icon } from "@/components/ui/Icon";
 import { TONE_TEXT, getPriority } from "@/lib/priority";

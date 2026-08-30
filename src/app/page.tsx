@@ -2,11 +2,11 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import PriorityDropdown from "@/components/PriorityDropdown";
+import PriorityDropdown from "@/components/ui/forms/PriorityDropdown";
 import RemainingTime from "@/components/RemainingTime";
 import TaskDetails from "@/components/TaskDetails";
-import { TaskListSkeleton, TaskDetailsSkeleton } from "@/components/Skeleton";
-import Toast from "@/components/Toast";
+import { TaskListSkeleton, TaskDetailsSkeleton } from "@/components/ui/Skeleton";
+import Toast from "@/components/ui/Toast";
 import useIsDesktop from "@/hooks/useIsDesktop";
 import useTasks from "@/hooks/useTasks";
 import { useSearch } from "@/components/SearchContext";

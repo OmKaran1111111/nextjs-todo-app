@@ -4,7 +4,7 @@ import {
   updateRoleAction,
   deleteRoleAction,
 } from "@/app/actions";
-import DynamicForm, { type FormFieldConfig } from "@/components/DynamicForm";
+import DynamicForm, { type FormFieldConfig } from "@/components/ui/forms/DynamicForm";
 import { SidePanel, PanelHeader } from "@/components/ui/Panel";
 import { TableWrapper, Table, Th, Td } from "@/components/ui/Table";
 import { PillBadge } from "@/components/ui/Badge";

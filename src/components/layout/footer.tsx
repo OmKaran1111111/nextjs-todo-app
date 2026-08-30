@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { useSearch } from "./SearchContext";
+import { useSearch } from "../SearchContext";
 import { Icon } from "@/components/ui/Icon";
 
 const Footer = () => {

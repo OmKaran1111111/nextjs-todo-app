@@ -2,8 +2,8 @@
 
 import { useParams, useRouter } from "next/navigation";
 import TaskDetails from "@/components/TaskDetails";
-import { TaskDetailsSkeleton } from "@/components/Skeleton";
-import Toast from "@/components/Toast";
+import { TaskDetailsSkeleton } from "@/components/ui/Skeleton";
+import Toast from "@/components/ui/Toast";
 import useTasks from "@/hooks/useTasks";
 
 /*

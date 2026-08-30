@@ -2,8 +2,8 @@ import type { Metadata } from "next";
 import type { ReactNode } from "react";
 import { Inter, Bricolage_Grotesque } from "next/font/google";
 import "./globals.css";
-import TopBar from "@/components/topbar";
-import Footer from "@/components/footer";
+import TopBar from "@/components/layout/topbar";
+import Footer from "@/components/layout/footer";
 import { SearchProvider } from "@/components/SearchContext";
 import { SessionProvider } from "next-auth/react";
 

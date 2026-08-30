@@ -2,8 +2,8 @@
 
 import { useEffect, useState, type FormEvent } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Toast from "@/components/Toast";
-import { TaskDetailsSkeleton } from "@/components/Skeleton";
+import Toast from "@/components/ui/Toast";
+import { TaskDetailsSkeleton } from "@/components/ui/Skeleton";
 import useTasks from "@/hooks/useTasks";
 import { Card } from "@/components/ui/Card";
 import { Icon } from "@/components/ui/Icon";

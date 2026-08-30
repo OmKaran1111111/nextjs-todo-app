@@ -4,8 +4,8 @@ import { useLayoutEffect, useRef, useState } from "react";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import "./page.css";
-import LoginForm from "@/components/LoginForm";
-import DynamicForm from "@/components/DynamicForm";
+import LoginForm from "@/components/ui/forms/LoginForm";
+import DynamicForm from "@/components/ui/forms/DynamicForm";
 import { buildGlassDisplacementMap, FLAT_DISPLACEMENT_MAP } from "@/lib/liquidGlass";
 
 const Page = () => {

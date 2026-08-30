@@ -7,7 +7,7 @@ import {
   deleteUserAction,
   toggleBanAction,
 } from "@/app/actions";
-import DynamicForm from "@/components/DynamicForm";
+import DynamicForm from "@/components/ui/forms/DynamicForm";
 import { SplitLayout, FormPanel, PanelHeader } from "@/components/ui/Panel";
 import { EmptyState } from "@/components/ui/EmptyState";
 import { TableWrapper, Table, Th, Td, rowClasses } from "@/components/ui/Table";
