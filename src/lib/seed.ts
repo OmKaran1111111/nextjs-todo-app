@@ -6,7 +6,7 @@ interface ExistingUserRow {
   id: string;
 }
 
-async function seed(): Promise<void> {
+export async function seedAdminUser(): Promise<void> {
   const adminEmail = process.env.ADMIN_EMAIL || "admin@example.com";
   const adminPassword = process.env.ADMIN_PASSWORD || "Admin123!";
   const adminName = process.env.ADMIN_NAME || "Admin";
@@ -33,7 +33,14 @@ async function seed(): Promise<void> {
   console.log(`Login Password: ${adminPassword}`);
 }
 
-seed().catch((err) => {
-  console.error("❌ Seed failed:", err);
-  process.exit(1);
-});
+import { fileURLToPath } from "url";
+
+const isDirectRun =
+  !!process.argv[1] && fileURLToPath(import.meta.url) === process.argv[1];
+
+if (isDirectRun) {
+  seedAdminUser().catch((err) => {
+    console.error("❌ Seed failed:", err);
+    process.exit(1);
+  });
+}
