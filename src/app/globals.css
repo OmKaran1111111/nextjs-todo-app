@@ -2,88 +2,88 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 :root {
-  --color-bg: #eef3fb;
-  --color-bg-elevated: #ffffff;
+  --color-bg: #f6f0e4;
+  --color-bg-elevated: #fffdf7;
 
-  --color-surface: rgba(255, 255, 255, 0.6);
-  --color-surface-strong: rgba(255, 255, 255, 0.85);
-  --color-surface-soft: rgba(255, 255, 255, 0.35);
-  --color-surface-hover: rgba(255, 255, 255, 0.85);
-  --color-surface-muted: rgba(15, 23, 42, 0.04);
+  --color-surface: rgba(255, 253, 247, 0.7);
+  --color-surface-strong: rgba(255, 253, 247, 0.92);
+  --color-surface-soft: rgba(255, 253, 247, 0.4);
+  --color-surface-hover: rgba(255, 253, 247, 0.95);
+  --color-surface-muted: rgba(28, 22, 12, 0.05);
 
-  --color-border: rgba(15, 23, 42, 0.1);
-  --color-border-strong: rgba(15, 23, 42, 0.22);
-  --color-border-soft: rgba(15, 23, 42, 0.06);
+  --color-border: rgba(28, 22, 12, 0.14);
+  --color-border-strong: rgba(28, 22, 12, 0.3);
+  --color-border-soft: rgba(28, 22, 12, 0.08);
 
-  --color-heading: #101a2c;
-  --color-body: #33415c;
-  --color-muted: #5b6b85;
-  --color-faint: #8592a8;
-  --color-inverted: #f4f7fc;
+  --color-heading: #1d1610;
+  --color-body: #3c3323;
+  --color-muted: #6c5f49;
+  --color-faint: #96876c;
+  --color-inverted: #f6f0e4;
 
-  --color-primary: #0071e3;
-  --color-primary-hover: #0077ed;
-  --color-primary-contrast: #ffffff;
-  --color-accent: #9a5b5b;
-  --color-accent-hover: #85494a;
-  --color-accent-contrast: #ffffff;
+  --color-primary: #b0451e;
+  --color-primary-hover: #973a19;
+  --color-primary-contrast: #fff8ec;
+  --color-accent: #2e4f33;
+  --color-accent-hover: #24401f;
+  --color-accent-contrast: #f6f0e4;
 
-  --color-danger: #dc2626;
-  --color-danger-soft: rgba(220, 38, 38, 0.1);
-  --color-success: #16a34a;
-  --color-success-soft: rgba(22, 163, 74, 0.12);
-  --color-warning: #d97706;
-  --color-warning-soft: rgba(217, 119, 6, 0.12);
-  --color-info: #2563eb;
-  --color-info-soft: rgba(37, 99, 235, 0.12);
+  --color-danger: #ab2a1f;
+  --color-danger-soft: rgba(171, 42, 31, 0.12);
+  --color-success: #2e6b3d;
+  --color-success-soft: rgba(46, 107, 61, 0.13);
+  --color-warning: #9c650b;
+  --color-warning-soft: rgba(156, 101, 11, 0.14);
+  --color-info: #2b587d;
+  --color-info-soft: rgba(43, 88, 125, 0.12);
 
-  --shadow-card: 0 20px 60px rgba(15, 23, 42, 0.08);
-  --shadow-card-lg: 0 30px 60px rgba(15, 23, 42, 0.12);
-  --shadow-popover: 0 20px 45px rgba(15, 23, 42, 0.18);
+  --shadow-card: 3px 3px 0 rgba(29, 22, 16, 0.1);
+  --shadow-card-lg: 5px 5px 0 rgba(29, 22, 16, 0.14);
+  --shadow-popover: 6px 6px 0 rgba(29, 22, 16, 0.2);
 
   --page-backdrop:
     radial-gradient(
-      circle at 15% 10%,
-      rgba(120, 170, 220, 0.35),
+      circle at 12% 8%,
+      rgba(176, 69, 30, 0.1),
       transparent 45%
     ),
     radial-gradient(
-      circle at 85% 0%,
-      rgba(200, 220, 245, 0.5),
+      circle at 88% 0%,
+      rgba(46, 79, 51, 0.08),
       transparent 50%
     ),
-    linear-gradient(160deg, #dce8f7 0%, #eef3fb 45%, #f7fafd 100%);
+    linear-gradient(160deg, #f0e6d3 0%, #f6f0e4 45%, #faf6ec 100%);
   --auth-backdrop:
     radial-gradient(
       circle at 15% 20%,
-      rgba(120, 170, 220, 0.55),
+      rgba(176, 69, 30, 0.5),
       transparent 45%
     ),
     radial-gradient(
       circle at 85% 15%,
-      rgba(60, 90, 140, 0.35),
+      rgba(46, 79, 51, 0.4),
       transparent 50%
     ),
-    radial-gradient(circle at 30% 85%, rgba(20, 40, 70, 0.25), transparent 55%),
-    linear-gradient(160deg, #9fbcdc 0%, #6f97c2 40%, #3f5f8a 100%);
+    radial-gradient(circle at 30% 85%, rgba(20, 15, 8, 0.3), transparent 55%),
+    linear-gradient(160deg, #4a3722 0%, #2e2114 40%, #1a1309 100%);
   --auth-card-bg: linear-gradient(
     to bottom right,
-    rgba(255, 255, 255, 0.7),
-    rgba(210, 225, 245, 0.45)
+    rgba(255, 250, 240, 0.14),
+    rgba(255, 250, 240, 0.04)
   );
-  --auth-card-border: rgba(255, 255, 255, 0.6);
-  --auth-blob-1: rgba(255, 255, 255, 0.35);
-  --auth-blob-2: rgba(20, 40, 70, 0.18);
+  --auth-card-border: rgba(255, 250, 240, 0.22);
+  --auth-blob-1: rgba(224, 122, 74, 0.35);
+  --auth-blob-2: rgba(46, 79, 51, 0.35);
 
-  --color-auth-heading: #182642;
-  --color-auth-text: #1c2c46;
-  --color-auth-muted: #33456a;
-  --color-auth-border: rgba(28, 44, 70, 0.35);
-  --color-auth-button-bg: #16233d;
-  --color-auth-button-hover: #202f4d;
-  --color-auth-button-text: #f2f5fa;
-  --color-auth-icon-bg: #16233d;
-  --color-auth-icon-text: #eef3fa;
+  --color-auth-heading: #fbf3e4;
+  --color-auth-text: #f3e6cf;
+  --color-auth-muted: #cdb894;
+  --color-auth-border: rgba(251, 243, 228, 0.35);
+  --color-auth-button-bg: #fbf3e4;
+  --color-auth-button-hover: #ffffff;
+  --color-auth-button-text: #1d1610;
+  --color-auth-icon-bg: #fbf3e4;
+  --color-auth-icon-text: #1d1610;
   --auth-heading: var(--color-auth-heading);
   --auth-text: var(--color-auth-text);
   --auth-muted: var(--color-auth-muted);
@@ -114,80 +114,80 @@
 }
 
 .dark {
-  --color-bg: #090d16;
-  --color-bg-elevated: #101828;
+  --color-bg: #161209;
+  --color-bg-elevated: #1f1a10;
 
-  --color-surface: rgba(255, 255, 255, 0.09);
-  --color-surface-strong: rgba(255, 255, 255, 0.18);
-  --color-surface-soft: rgba(255, 255, 255, 0.05);
-  --color-surface-hover: rgba(255, 255, 255, 0.22);
-  --color-surface-muted: rgba(255, 255, 255, 0.04);
+  --color-surface: rgba(251, 243, 228, 0.07);
+  --color-surface-strong: rgba(251, 243, 228, 0.16);
+  --color-surface-soft: rgba(251, 243, 228, 0.04);
+  --color-surface-hover: rgba(251, 243, 228, 0.18);
+  --color-surface-muted: rgba(251, 243, 228, 0.05);
 
-  --color-border: rgba(255, 255, 255, 0.16);
-  --color-border-strong: rgba(255, 255, 255, 0.32);
-  --color-border-soft: rgba(255, 255, 255, 0.08);
+  --color-border: rgba(251, 243, 228, 0.16);
+  --color-border-strong: rgba(251, 243, 228, 0.32);
+  --color-border-soft: rgba(251, 243, 228, 0.09);
 
-  --color-heading: #dae5f4;
-  --color-body: #c7d3e6;
-  --color-muted: #a9b8cc;
-  --color-faint: #7a8aa0;
-  --color-inverted: #10192b;
+  --color-heading: #f4ecda;
+  --color-body: #dbcfb2;
+  --color-muted: #b1a488;
+  --color-faint: #7e735a;
+  --color-inverted: #161209;
 
-  --color-primary: #0a84ff;
-  --color-primary-hover: #3a9bff;
-  --color-primary-contrast: #ffffff;
-  --color-accent: #b07a7a;
-  --color-accent-hover: #c28f8f;
-  --color-accent-contrast: #201212;
+  --color-primary: #e37a45;
+  --color-primary-hover: #ef9160;
+  --color-primary-contrast: #1d1610;
+  --color-accent: #74b378;
+  --color-accent-hover: #8bc78f;
+  --color-accent-contrast: #161209;
 
-  --color-danger: #f87171;
-  --color-danger-soft: rgba(248, 113, 113, 0.14);
-  --color-success: #4ade80;
-  --color-success-soft: rgba(74, 222, 128, 0.14);
-  --color-warning: #fbbf24;
-  --color-warning-soft: rgba(251, 191, 36, 0.14);
-  --color-info: #60a5fa;
-  --color-info-soft: rgba(96, 165, 250, 0.14);
+  --color-danger: #f18178;
+  --color-danger-soft: rgba(241, 129, 120, 0.16);
+  --color-success: #74b378;
+  --color-success-soft: rgba(116, 179, 120, 0.16);
+  --color-warning: #e2ac48;
+  --color-warning-soft: rgba(226, 172, 72, 0.16);
+  --color-info: #72a8db;
+  --color-info-soft: rgba(114, 168, 219, 0.16);
 
-  --shadow-card: 0 20px 60px rgba(0, 0, 0, 0.35);
-  --shadow-card-lg: 0 30px 60px rgba(0, 0, 0, 0.45);
-  --shadow-popover: 0 20px 45px rgba(0, 0, 0, 0.5);
+  --shadow-card: 3px 3px 0 rgba(0, 0, 0, 0.4);
+  --shadow-card-lg: 5px 5px 0 rgba(0, 0, 0, 0.5);
+  --shadow-popover: 6px 6px 0 rgba(0, 0, 0, 0.6);
 
   --page-backdrop:
     radial-gradient(
-      circle at 20% 10%,
-      rgba(60, 90, 140, 0.35),
+      circle at 18% 8%,
+      rgba(227, 122, 69, 0.12),
       transparent 45%
     ),
-    radial-gradient(circle at 85% 90%, rgba(30, 50, 80, 0.4), transparent 55%),
-    linear-gradient(160deg, #0d1526 0%, #090d16 60%, #05070c 100%);
+    radial-gradient(circle at 85% 90%, rgba(116, 179, 120, 0.08), transparent 55%),
+    linear-gradient(160deg, #1c1710 0%, #161209 60%, #0d0a05 100%);
   --auth-backdrop:
     radial-gradient(
       circle at 15% 20%,
-      rgba(120, 170, 220, 0.4),
+      rgba(227, 122, 69, 0.4),
       transparent 45%
     ),
-    radial-gradient(circle at 85% 15%, rgba(60, 90, 140, 0.5), transparent 50%),
-    radial-gradient(circle at 30% 85%, rgba(10, 20, 35, 0.8), transparent 55%),
-    linear-gradient(160deg, #4c6a91 0%, #2c4568 40%, #0f1930 100%);
+    radial-gradient(circle at 85% 15%, rgba(116, 179, 120, 0.32), transparent 50%),
+    radial-gradient(circle at 30% 85%, rgba(10, 8, 4, 0.75), transparent 55%),
+    linear-gradient(160deg, #4a3722 0%, #2e2114 45%, #14100a 100%);
   --auth-card-bg: linear-gradient(
     to bottom right,
-    rgba(255, 255, 255, 0.12),
-    rgba(20, 35, 61, 0.35)
+    rgba(251, 243, 228, 0.1),
+    rgba(20, 16, 10, 0.4)
   );
-  --auth-card-border: rgba(255, 255, 255, 0.16);
-  --auth-blob-1: rgba(255, 255, 255, 0.12);
-  --auth-blob-2: rgba(0, 0, 0, 0.4);
+  --auth-card-border: rgba(251, 243, 228, 0.18);
+  --auth-blob-1: rgba(227, 122, 69, 0.22);
+  --auth-blob-2: rgba(0, 0, 0, 0.45);
 
-  --color-auth-heading: #eef3fb;
-  --color-auth-text: #dbe4f4;
-  --color-auth-muted: #a9b8cc;
-  --color-auth-border: rgba(219, 228, 244, 0.35);
-  --color-auth-button-bg: #dbe4f4;
-  --color-auth-button-hover: #eef3fb;
-  --color-auth-button-text: #16233d;
-  --color-auth-icon-bg: #dbe4f4;
-  --color-auth-icon-text: #16233d;
+  --color-auth-heading: #f4ecda;
+  --color-auth-text: #ecdfc4;
+  --color-auth-muted: #b1a488;
+  --color-auth-border: rgba(244, 236, 218, 0.35);
+  --color-auth-button-bg: #f4ecda;
+  --color-auth-button-hover: #fff9ea;
+  --color-auth-button-text: #1d1610;
+  --color-auth-icon-bg: #f4ecda;
+  --color-auth-icon-text: #1d1610;
   --auth-heading: var(--color-auth-heading);
   --auth-text: var(--color-auth-text);
   --auth-muted: var(--color-auth-muted);
@@ -331,11 +331,11 @@ body {
   border: none;
   outline: none;
   width: 100%;
-  color: #fff2bf;
+  color: #fbf3e4;
 }
 
 .authInput::placeholder {
-  color: #fff2bf;
+  color: #fbf3e4;
   text-shadow: 0 2px 8px rgba(0, 0, 0, 0.75);
   opacity: 0.7;
 }
@@ -344,8 +344,8 @@ body {
 .authInput:-webkit-autofill:hover,
 .authInput:-webkit-autofill:focus,
 .authInput:-webkit-autofill:active {
-  -webkit-text-fill-color: #fff2bf !important;
-  caret-color: #fff2bf;
+  -webkit-text-fill-color: #fbf3e4 !important;
+  caret-color: #fbf3e4;
   transition: background-color 600000s ease-in-out 0s;
 }
 

@@ -31,12 +31,11 @@ export default function AuthCard({ filterId, watch, children }: AuthCardProps) {
     const observer = new ResizeObserver(regenerate);
     observer.observe(el);
     return () => observer.disconnect();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [watch]);
 
   const cardStyle: CSSProperties = {
     background: "color-mix(in srgb, var(--auth-card-bg) 88%, transparent)",
-    filter: "drop-shadow(0 20px 46px rgba(10, 20, 45, 0.35))",
+    filter: "drop-shadow(0 20px 46px rgba(10, 8, 4, 0.4))",
     backdropFilter: `brightness(1.12) blur(2px) url(#${filterId})`,
     WebkitBackdropFilter: "brightness(1.12) blur(2px)",
   };
@@ -70,7 +69,7 @@ export default function AuthCard({ filterId, watch, children }: AuthCardProps) {
       >
         <div
           aria-hidden="true"
-          className="pointer-events-none absolute inset-0 z-0 rounded-[inherit] shadow-[inset_2px_2px_0_-2px_rgba(255,255,255,0.7),inset_0_0_3px_1px_rgba(255,255,255,0.7)]"
+          className="pointer-events-none absolute inset-0 z-0 rounded-[inherit] shadow-[inset_2px_2px_0_-2px_rgba(255,250,240,0.55),inset_0_0_3px_1px_rgba(255,250,240,0.55)]"
         />
         <div className="relative z-[1]">{children}</div>
       </div>
@@ -79,11 +78,11 @@ export default function AuthCard({ filterId, watch, children }: AuthCardProps) {
 }
 
 export const authText = {
-  headingLg: "mt-1 mb-7 text-center text-[30px] font-bold tracking-[0.025em] text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)]",
-  headingSm: "mt-0 mb-2 text-center text-[30px] font-bold tracking-[0.025em] text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)]",
-  info: "mb-6 text-center text-[13.5px] text-[#fff2bf] opacity-85 [text-shadow:0_2px_8px_rgba(0,0,0,0.75)]",
-  footer: "mt-5 text-center text-[13.5px] text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)]",
-  link: "cursor-pointer font-semibold text-[#fff2bf] [text-shadow:0_2px_8px_rgba(0,0,0,0.75)] hover:underline",
+  headingLg: "mt-1 mb-7 text-center text-[30px] font-bold tracking-[0.025em] text-[#fbf3e4] [font-family:var(--font-display)] [text-shadow:0_2px_10px_rgba(20,15,8,0.6)]",
+  headingSm: "mt-0 mb-2 text-center text-[30px] font-bold tracking-[0.025em] text-[#fbf3e4] [font-family:var(--font-display)] [text-shadow:0_2px_10px_rgba(20,15,8,0.6)]",
+  info: "mb-6 text-center text-[13.5px] text-[#f3e6cf] opacity-90 [text-shadow:0_2px_10px_rgba(20,15,8,0.6)]",
+  footer: "mt-5 text-center text-[13.5px] text-[#f3e6cf] [text-shadow:0_2px_10px_rgba(20,15,8,0.6)]",
+  link: "cursor-pointer font-semibold text-[#e37a45] [text-shadow:0_2px_10px_rgba(20,15,8,0.6)] hover:underline",
   submitBtn:
     "w-full rounded-2xl bg-[var(--auth-button-bg)] py-3.5 text-base font-semibold tracking-[0.025em] text-[var(--auth-button-text)] transition-all duration-150 hover:bg-[var(--auth-button-hover)] active:scale-[0.99] disabled:cursor-not-allowed disabled:opacity-60",
 };

@@ -21,11 +21,11 @@ import { useSearch } from "@/components/SearchContext";
 import DynamicForm, { type PriorityOption } from "@/components/ui/forms/DynamicForm";
 import { ConfirmModal } from "@/components/ui/ConfirmModal";
 import { PillBadge } from "@/components/ui/Badge";
+import { EmptyState } from "@/components/ui/EmptyState";
 import { PrimaryButton, ActionButton } from "@/components/ui/Button";
 import { Icon } from "@/components/ui/Icon";
 import { PRIORITIES, TONE_BADGE, TONE_DOT, getPriority } from "@/lib/priority";
 import { runWithViewTransition } from "@/lib/viewTransition";
-
 
 type Task = ReturnType<typeof useTasks>["tasks"][number];
 
@@ -45,7 +45,6 @@ interface DeleteTarget {
 
 type SidePanelMode = "view" | "add" | "edit" | null;
 
-// Matches DynamicForm's internal (unexported) `FormValues` / `SubmitResult` shapes.
 type FormValues = Record<string, FormDataEntryValue | FormDataEntryValue[] | null>;
 type SubmitResult = { error?: string; info?: string };
 
@@ -53,7 +52,7 @@ const SORT_OPTIONS: SortOption[] = [
   { key: "priority-asc", label: "Priority (Highest first)", id: "priority", desc: false },
   { key: "priority-desc", label: "Priority (Least first)", id: "priority", desc: true },
   { key: "deadline-asc", label: "Deadline (earliest first)", id: "deadline", desc: false },
-  { key: "deadline-desc", label: "Deadline (Latest first)", id: "deadline", desc: true },
+  { key: "deadline-desc", label: "Deadline (latest first)", id: "deadline", desc: true },
   { key: "text-asc", label: "Task Name (A → Z)", id: "text", desc: false },
   { key: "text-desc", label: "Task Name (Z → A)", id: "text", desc: true },
 ];
@@ -73,12 +72,21 @@ const COLUMN_LABELS: Record<string, string> = {
 };
 
 const cellBase =
-  "flex items-center justify-between gap-3 border-b border-[var(--color-border-soft)] px-[0.85rem] py-[0.55rem] align-middle text-[0.82rem] text-[var(--color-body)] before:flex-shrink-0 before:text-left before:text-[0.7rem] before:font-semibold before:tracking-wide before:text-[var(--color-faint)] before:uppercase before:content-[attr(data-label)] sm:table-cell sm:before:content-none sm:[&:not(:last-child)]:border-b sm:group-last:border-b-0";
+  "flex items-center justify-between gap-3 px-5 py-4 align-middle text-[0.85rem] text-[var(--color-body)] before:flex-shrink-0 before:text-left before:text-[0.68rem] before:font-semibold before:tracking-wide before:text-[var(--color-faint)] before:uppercase before:content-[attr(data-label)] sm:table-cell sm:before:content-none";
 
 const actionHover: Record<"view" | "edit" | "delete", string> = {
-  view: "hover:border-[var(--color-info)] hover:text-[var(--color-info)]",
-  edit: "hover:border-[var(--color-warning)] hover:text-[var(--color-warning)]",
+  view: "hover:border-[var(--color-info)] hover:bg-[var(--color-info-soft)] hover:text-[var(--color-info)]",
+  edit: "hover:border-[var(--color-warning)] hover:bg-[var(--color-warning-soft)] hover:text-[var(--color-warning)]",
   delete: "hover:border-[var(--color-danger)] hover:bg-[var(--color-danger-soft)] hover:text-[var(--color-danger)]",
+};
+
+// Left accent bar color per priority tone, used to make priority scannable
+// at a glance down the row edge without needing to read the pill.
+const TONE_ACCENT: Record<string, string> = {
+  danger: "var(--color-danger)",
+  warning: "var(--color-warning)",
+  info: "var(--color-info)",
+  muted: "var(--color-border-strong)",
 };
 
 const TaskList = () => {
@@ -149,9 +157,7 @@ const TaskList = () => {
 
   const filteredTasks = useMemo(() => {
     if (!searchQuery.trim()) return tasks;
-    return tasks.filter((task) =>
-      task.text.toLowerCase().includes(searchQuery.toLowerCase())
-    );
+    return tasks.filter((task) => task.text.toLowerCase().includes(searchQuery.toLowerCase()));
   }, [tasks, searchQuery]);
 
   const escapeCsvValue = (value: unknown): string => {
@@ -169,9 +175,7 @@ const TaskList = () => {
       t.completed ? "Yes" : "No",
       (t.subtasks || []).length,
     ]);
-    const csv = [headers, ...rows]
-      .map((row) => row.map(escapeCsvValue).join(","))
-      .join("\n");
+    const csv = [headers, ...rows].map((row) => row.map(escapeCsvValue).join(",")).join("\n");
 
     const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" });
     const url = URL.createObjectURL(blob);
@@ -249,21 +253,34 @@ const TaskList = () => {
         header: "Task Name",
         cell: ({ getValue, row }) => {
           const subtasks = row.original.subtasks || [];
+          const doneSubtasks = subtasks.filter((s) => s.completed).length;
           return (
-            <div className="flex flex-col items-end gap-1 text-right sm:items-start sm:text-left">
-              <span
-                className={
-                  row.original.completed
-                    ? "font-semibold text-[var(--color-faint)] line-through"
-                    : "font-semibold text-[var(--color-heading)]"
-                }
+            <div className="flex flex-col items-end gap-1.5 text-right sm:items-start sm:text-left">
+              <button
+                onClick={() => handleView(row.original)}
+                className={`group/name flex cursor-pointer items-center gap-2 border-none bg-transparent p-0 text-left text-[0.92rem] font-semibold ${
+                  row.original.completed ? "text-[var(--color-faint)] line-through" : "text-[var(--color-heading)]"
+                }`}
               >
-                {getValue() as string}
-              </span>
+                {row.original.completed && (
+                  <span className="flex h-4 w-4 shrink-0 items-center justify-center rounded-full bg-[var(--color-success-soft)] text-[var(--color-success)]">
+                    <Icon name="check" size={10} />
+                  </span>
+                )}
+                <span className="group-hover/name:underline">{getValue() as string}</span>
+              </button>
               {subtasks.length > 0 && (
-                <span className="text-[0.75rem] text-[var(--color-faint)]">
-                  {subtasks.filter((s) => s.completed).length}/{subtasks.length} subtasks
-                </span>
+                <div className="flex items-center gap-1.5">
+                  <div className="h-1 w-16 overflow-hidden rounded-full bg-[var(--color-surface-muted)]">
+                    <div
+                      className="h-full rounded-full bg-[var(--color-primary)] transition-[width] duration-300"
+                      style={{ width: `${(doneSubtasks / subtasks.length) * 100}%` }}
+                    />
+                  </div>
+                  <span className="text-[0.72rem] text-[var(--color-faint)]">
+                    {doneSubtasks}/{subtasks.length}
+                  </span>
+                </div>
               )}
             </div>
           );
@@ -276,8 +293,8 @@ const TaskList = () => {
         cell: ({ getValue }) => {
           const meta = getPriority((getValue() as number) || 4);
           return (
-            <PillBadge className={TONE_BADGE[meta.tone]}>
-              <span className={`mr-1 inline-block h-1.5 w-1.5 rounded-full ${TONE_DOT[meta.tone]}`} />
+            <PillBadge className={`${TONE_BADGE[meta.tone]} !py-[0.3rem] !text-[0.74rem] font-bold`}>
+              <span className={`mr-1.5 inline-block h-1.5 w-1.5 rounded-full ${TONE_DOT[meta.tone]}`} />
               {meta.label}
             </PillBadge>
           );
@@ -307,36 +324,36 @@ const TaskList = () => {
         header: "Actions",
         enableSorting: false,
         cell: ({ row }) => (
-          <div className="flex flex-wrap justify-end gap-[0.35rem] sm:justify-start">
+          <div className="flex justify-end gap-1 opacity-100 transition-opacity duration-150 sm:justify-start sm:opacity-0 sm:group-hover:opacity-100">
             <button
               type="button"
-              className={`inline-flex cursor-pointer items-center gap-1 rounded-[0.45rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2 py-[0.28rem] text-[0.72rem] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.view}`}
+              className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-muted)] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.view}`}
               onClick={() => handleView(row.original)}
               title="View task"
+              aria-label="View task"
             >
               <Icon name="eye" size={14} />
-              <span className="hidden xl:inline">View</span>
             </button>
             {isAdmin && (
               <button
                 type="button"
-                className={`inline-flex cursor-pointer items-center gap-1 rounded-[0.45rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2 py-[0.28rem] text-[0.72rem] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.edit}`}
+                className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-muted)] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.edit}`}
                 onClick={() => handleEdit(row.original)}
                 title="Edit task"
+                aria-label="Edit task"
               >
                 <Icon name="pencil" size={14} />
-                <span className="hidden xl:inline">Edit</span>
               </button>
             )}
             {isAdmin && (
               <button
                 type="button"
-                className={`inline-flex cursor-pointer items-center gap-1 rounded-[0.45rem] border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-2 py-[0.28rem] text-[0.72rem] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.delete}`}
+                className={`inline-flex h-8 w-8 cursor-pointer items-center justify-center rounded-lg border border-[var(--color-border)] bg-[var(--color-surface-muted)] text-[var(--color-body)] transition-all duration-150 ease-out ${actionHover.delete}`}
                 onClick={() => setDeleteTarget(row.original)}
                 title="Delete task"
+                aria-label="Delete task"
               >
                 <Icon name="trash" size={14} />
-                <span className="hidden xl:inline">Delete</span>
               </button>
             )}
           </div>
@@ -426,121 +443,157 @@ const TaskList = () => {
         }`}
       >
         <div className="min-w-0 flex-1">
-          <div className="w-full">
-            <div className="mb-[0.85rem] flex flex-wrap items-center justify-between gap-3">
-              <div>
-                <h3 className="mb-[0.2rem] text-base font-bold text-heading">
-                  {viewUserId ? `Tasks — ${viewUserName || "user"}` : "Tasks"}
-                </h3>
-                <span className="text-xs text-faint">
-                  {filteredTasks.length} {searchQuery ? "filtered" : "total"}
-                </span>
+          {/* Header */}
+          <div className="mb-5 flex flex-wrap items-end justify-between gap-3">
+            <div>
+              <h1 className="m-0 text-[1.5rem] font-bold text-heading [font-family:var(--font-display)]">
+                {viewUserId ? `Tasks — ${viewUserName || "user"}` : "Tasks"}
+              </h1>
+              <p className="mt-1 text-sm text-faint">
+                {filteredTasks.length} {searchQuery ? "filtered" : "total"}
                 {viewUserId && (
-                  <Link
-                    href="/Manage_Users"
-                    className="mt-[0.3rem] block text-[0.8rem] text-[var(--color-primary)] no-underline hover:underline"
-                  >
-                    ← Back to Manage Users
-                  </Link>
+                  <>
+                    {" · "}
+                    <Link
+                      href="/Manage_Users"
+                      className="text-[var(--color-primary)] no-underline hover:underline"
+                    >
+                      ← Back to Manage Users
+                    </Link>
+                  </>
                 )}
-              </div>
-              <div className="flex items-center gap-3">
-                <div className="flex items-center gap-[0.4rem]">
-                  <label htmlFor="task-sort-select" className="text-[0.8rem] font-semibold text-[var(--color-faint)]">
-                    Sort
-                  </label>
-                  <select
-                    id="task-sort-select"
-                    className="h-10 cursor-pointer rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface)] px-[0.6rem] text-[0.85rem] text-[var(--color-body)] focus:border-[var(--color-primary)] focus:outline-none"
-                    value={
-                      SORT_OPTIONS.find(
-                        (o) => o.id === sorting[0]?.id && o.desc === sorting[0]?.desc
-                      )?.key || ""
-                    }
-                    onChange={(e) => {
-                      const opt = SORT_OPTIONS.find((o) => o.key === e.target.value);
-                      if (opt) setSorting([{ id: opt.id, desc: opt.desc }]);
-                    }}
-                  >
-                    {SORT_OPTIONS.map((opt) => (
-                      <option key={opt.key} value={opt.key}>
-                        {opt.label}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-                <ActionButton tone="neutral" type="button" onClick={handleExportAll} className="!py-2 !text-[0.88rem]">
-                  <Icon name="download" size={14} className="mr-1 inline-block align-[-2px]" /> Export
-                </ActionButton>
-                <PrimaryButton
-                  type="button"
-                  className="!mt-0 !py-2"
-                  onClick={() => {
-                    runWithViewTransition(() => {
-                      setActiveTaskId(null);
-                      setSidePanelMode("add");
-                    });
-                  }}
-                >
-                  <Icon name="plus" size={14} className="mr-1 inline-block align-[-2px]" /> Add Task
-                </PrimaryButton>
-              </div>
+              </p>
             </div>
+            <div className="flex items-center gap-2">
+              <ActionButton tone="neutral" type="button" onClick={handleExportAll}>
+                <Icon name="download" size={14} className="mr-1 inline-block align-[-2px]" /> Export
+              </ActionButton>
+              <PrimaryButton
+                type="button"
+                className="!mt-0"
+                onClick={() => {
+                  runWithViewTransition(() => {
+                    setActiveTaskId(null);
+                    setSidePanelMode("add");
+                  });
+                }}
+              >
+                <Icon name="plus" size={14} className="mr-1 inline-block align-[-2px]" /> Add Task
+              </PrimaryButton>
+            </div>
+          </div>
 
-            <div
-              className={`w-full max-h-[60vh] overflow-y-auto rounded-[0.85rem] border border-[var(--color-border)] bg-[var(--color-bg-elevated)] shadow-[var(--shadow-card)] max-sm:overflow-visible max-sm:border-none max-sm:bg-transparent max-sm:shadow-none sm:overflow-x-auto ${
-                splitOpen ? "[&_table]:min-w-[420px] [&_th]:px-[0.6rem] [&_th]:py-[0.45rem] [&_th]:text-[0.78rem] [&_td]:px-[0.6rem] [&_td]:py-[0.45rem] [&_td]:text-[0.78rem]" : "[&_table]:min-w-[540px]"
-              }`}
-            >
-              <table className="w-full border-collapse max-sm:block max-sm:w-full">
-                <thead className="max-sm:hidden">
-                  {table.getHeaderGroups().map((headerGroup) => (
-                    <tr key={headerGroup.id}>
-                      {headerGroup.headers.map((header) => (
+          {/* Toolbar */}
+          <div className="mb-4 flex flex-wrap items-center justify-between gap-3 rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] p-3 shadow-[var(--shadow-card)]">
+            <div className="flex flex-1 items-center gap-2 rounded-xl border border-[var(--color-border)] bg-[var(--color-surface-muted)] px-3 py-2 min-w-[160px]">
+              <Icon name="search" size={15} className="shrink-0 text-faint" />
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e.target.value)}
+                placeholder="Search tasks..."
+                className="w-full min-w-0 border-none bg-transparent text-sm text-heading outline-none placeholder:text-faint"
+              />
+            </div>
+            <div className="flex items-center gap-[0.4rem]">
+              <label htmlFor="task-sort-select" className="text-[0.8rem] font-semibold text-[var(--color-faint)]">
+                Sort
+              </label>
+              <select
+                id="task-sort-select"
+                className="h-10 cursor-pointer rounded-[0.65rem] border border-[var(--color-border)] bg-[var(--color-surface)] px-[0.6rem] text-[0.85rem] text-[var(--color-body)] focus:border-[var(--color-primary)] focus:outline-none"
+                value={
+                  SORT_OPTIONS.find((o) => o.id === sorting[0]?.id && o.desc === sorting[0]?.desc)?.key || ""
+                }
+                onChange={(e) => {
+                  const opt = SORT_OPTIONS.find((o) => o.key === e.target.value);
+                  if (opt) setSorting([{ id: opt.id, desc: opt.desc }]);
+                }}
+              >
+                {SORT_OPTIONS.map((opt) => (
+                  <option key={opt.key} value={opt.key}>
+                    {opt.label}
+                  </option>
+                ))}
+              </select>
+            </div>
+          </div>
+
+          {/* Table */}
+          <div
+            className={`w-full max-h-[64vh] overflow-y-auto rounded-2xl border border-[var(--color-border)] bg-[var(--color-bg-elevated)] shadow-[var(--shadow-card-lg)] max-sm:max-h-none max-sm:overflow-visible max-sm:rounded-none max-sm:border-none max-sm:bg-transparent max-sm:shadow-none sm:overflow-x-auto ${
+              splitOpen
+                ? "[&_table]:min-w-[420px] [&_th]:px-4 [&_th]:py-3 [&_th]:text-[0.78rem] [&_td]:px-4 [&_td]:py-3 [&_td]:text-[0.78rem]"
+                : "[&_table]:min-w-[560px]"
+            }`}
+          >
+            <table className="w-full border-collapse max-sm:block max-sm:w-full">
+              <thead className="max-sm:hidden">
+                {table.getHeaderGroups().map((headerGroup) => (
+                  <tr key={headerGroup.id}>
+                    {headerGroup.headers.map((header) => {
+                      const canSort = header.column.getCanSort();
+                      const sortDir = header.column.getIsSorted();
+                      const isActions = header.column.id === "actions";
+                      return (
                         <th
                           key={header.id}
-                          className="sticky top-0 border-b border-[var(--color-border-strong)] bg-[var(--color-bg-elevated)] px-[0.85rem] py-[0.55rem] text-left text-[0.72rem] font-semibold tracking-wide text-[var(--color-faint)] uppercase whitespace-nowrap"
+                          className={`sticky top-0 z-[1] border-b border-[var(--color-border)] bg-[var(--color-surface-muted)] px-5 py-3.5 text-left text-[0.7rem] font-bold tracking-wider text-[var(--color-faint)] uppercase whitespace-nowrap ${
+                            canSort ? "cursor-pointer select-none hover:text-[var(--color-primary)]" : ""
+                          } ${isActions ? "text-right sm:text-left" : ""}`}
+                          onClick={canSort ? header.column.getToggleSortingHandler() : undefined}
                         >
-                          {flexRender(header.column.columnDef.header, header.getContext())}
+                          <span className="inline-flex items-center gap-1">
+                            {flexRender(header.column.columnDef.header, header.getContext())}
+                            {canSort && (
+                              <span className={`text-[0.65rem] ${sortDir ? "text-[var(--color-primary)]" : "text-[var(--color-faint)]/60"}`}>
+                                {sortDir === "asc" ? "↑" : sortDir === "desc" ? "↓" : "↕"}
+                              </span>
+                            )}
+                          </span>
                         </th>
-                      ))}
-                    </tr>
-                  ))}
-                </thead>
-                <tbody className="max-sm:block max-sm:w-full">
-                  {rows.length === 0 ? (
-                    <tr>
-                      <td colSpan={columns.length} className="px-4 py-7 text-center text-[var(--color-faint)]">
-                        {searchQuery ? "No matching tasks found." : "No tasks added yet!"}
-                      </td>
-                    </tr>
-                  ) : (
-                    rows.map((row) => (
+                      );
+                    })}
+                  </tr>
+                ))}
+              </thead>
+              <tbody className="max-sm:block max-sm:w-full">
+                {rows.length === 0 ? (
+                  <tr>
+                    <td colSpan={columns.length} className="px-4 py-12">
+                      <EmptyState
+                        title={searchQuery ? "No matching tasks" : "No tasks yet"}
+                        text={searchQuery ? "Try a different search term." : "Add your first task to get started."}
+                        className="border-none bg-transparent shadow-none"
+                      />
+                    </td>
+                  </tr>
+                ) : (
+                  rows.map((row) => {
+                    const meta = getPriority(row.original.priority || 4);
+                    return (
                       <tr
                         key={row.id}
                         ref={(el) => {
                           if (el) rowElsRef.current.set(row.original.id, el);
                           else rowElsRef.current.delete(row.original.id);
                         }}
-                        className={`group max-sm:mb-3 max-sm:block max-sm:w-full max-sm:rounded-[0.85rem] max-sm:border max-sm:border-[var(--color-border)] max-sm:bg-[var(--color-bg-elevated)] max-sm:px-[0.85rem] max-sm:py-[0.35rem] max-sm:shadow-[var(--shadow-card)] max-sm:last:mb-0 sm:hover:bg-[var(--color-surface-hover)] ${
+                        style={{ borderLeft: `3px solid ${TONE_ACCENT[meta.tone]}` }}
+                        className={`group border-b border-[var(--color-border-soft)] transition-colors duration-150 last:border-b-0 max-sm:mb-3 max-sm:block max-sm:w-full max-sm:rounded-[0.85rem] max-sm:border-b-0 max-sm:!border-l-4 max-sm:bg-[var(--color-bg-elevated)] max-sm:px-[0.85rem] max-sm:py-2 max-sm:shadow-[var(--shadow-card)] max-sm:last:mb-0 sm:hover:bg-[var(--color-surface-hover)] ${
                           row.original.completed ? "opacity-50" : ""
                         }`}
                       >
                         {row.getVisibleCells().map((cell) => (
-                          <td
-                            key={cell.id}
-                            data-label={COLUMN_LABELS[cell.column.id] || ""}
-                            className={cellBase}
-                          >
+                          <td key={cell.id} data-label={COLUMN_LABELS[cell.column.id] || ""} className={cellBase}>
                             {flexRender(cell.column.columnDef.cell, cell.getContext())}
                           </td>
                         ))}
                       </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
-            </div>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
           </div>
         </div>
 
@@ -572,10 +625,8 @@ const TaskList = () => {
             )}
 
             {sidePanelMode === "add" && (
-              <div className="my-[0.625rem] flex w-full flex-col gap-3">
-                <h4 className="m-0 mb-1 text-xl font-bold text-[var(--color-heading)]">
-                  Create a New Task
-                </h4>
+              <div className="my-[0.625rem] flex w-full flex-col gap-3 rounded-[1.25rem] border border-[var(--color-border-strong)] bg-[var(--color-surface)] p-6 shadow-[var(--shadow-card-lg)]">
+                <h4 className="m-0 mb-1 text-xl font-bold text-[var(--color-heading)]">Create a New Task</h4>
                 <DynamicForm
                   variant="task"
                   onSubmit={handleAddTaskSubmit}

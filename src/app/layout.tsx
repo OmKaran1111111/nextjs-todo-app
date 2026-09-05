@@ -1,21 +1,22 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Inter, Bricolage_Grotesque } from "next/font/google";
+import { Work_Sans, Fraunces } from "next/font/google";
 import "./globals.css";
 import TopBar from "@/components/layout/topbar";
 import Footer from "@/components/layout/footer";
 import { SearchProvider } from "@/components/SearchContext";
 import { SessionProvider } from "next-auth/react";
 
-const inter = Inter({
+const workSans = Work_Sans({
   variable: "--font-sans",
   subsets: ["latin"],
 });
 
-const bricolage = Bricolage_Grotesque({
+const fraunces = Fraunces({
   variable: "--font-display",
   weight: ["600", "700"],
   subsets: ["latin"],
+  style: ["normal"],
 });
 
 export const metadata: Metadata = {
@@ -42,7 +43,7 @@ export default function RootLayout({ children }: RootLayoutProps) {
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${bricolage.variable} h-full antialiased`}
+      className={`${workSans.variable} ${fraunces.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <head>

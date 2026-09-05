@@ -61,14 +61,19 @@ const TopBar = () => {
 
   const isActive = (path: string) => pathname === path;
 
-  const navConfig: NavItem[] = [
+  const primaryNav: NavItem[] = [
     { path: "/", label: "Home" },
     { path: "/Dashboard", label: "DashBoard" },
     { path: "/Devices", label: "Devices" },
     { path: "/tasks", label: "Task" },
+  ];
+
+  const adminNav: NavItem[] = [
     ...(canManageUsers ? [{ path: "/Manage_Users", label: "Users" }] : []),
     ...(canManageRoles ? [{ path: "/Roles", label: "Roles" }] : []),
   ];
+
+  const navConfig: NavItem[] = [...primaryNav, ...adminNav];
 
   const activeItem = navConfig.find((item) => isActive(item.path));
   const activeKey = activeItem?.path;
@@ -209,12 +214,12 @@ const TopBar = () => {
 
         <div className="relative flex-1 px-3">
           <span
-            className="absolute left-3 top-0 w-[3px] h-11 rounded-sm bg-accent transition-transform duration-[400ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]"
+            className="absolute left-0 right-0 top-0 h-11 rounded-xl bg-[var(--color-info-soft)] transition-transform duration-[400ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)]"
             style={{ transform: `translateY(${indicatorTop}px)` }}
           />
 
           <ul className="list-none m-0 p-0 flex flex-col">
-            {navConfig.map((item) => (
+            {primaryNav.map((item) => (
               <li
                 key={item.path}
                 ref={(el) => {
@@ -225,7 +230,7 @@ const TopBar = () => {
                 <Link
                   href={item.path}
                   onClick={closeSidebar}
-                  className={`flex items-center justify-between w-full h-11 pl-5 font-sans text-[0.95rem] no-underline bg-transparent border-0 cursor-pointer text-left transition-colors duration-[250ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:text-heading ${
+                  className={`flex items-center w-full h-11 pl-5 pr-4 font-sans text-[0.95rem] no-underline bg-transparent border-0 cursor-pointer text-left transition-colors duration-[250ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:text-heading ${
                     isActive(item.path)
                       ? "text-heading font-semibold"
                       : "text-muted font-medium"
@@ -237,9 +242,40 @@ const TopBar = () => {
               </li>
             ))}
           </ul>
+
+          {adminNav.length > 0 && (
+            <>
+              <div className="my-3 border-t border-border-soft" aria-hidden="true" />
+              <p className="mb-1 pl-5 text-xs font-medium text-faint">Admin tools</p>
+              <ul className="list-none m-0 p-0 flex flex-col">
+                {adminNav.map((item) => (
+                  <li
+                    key={item.path}
+                    ref={(el) => {
+                      rowRefs.current[item.path] = el;
+                    }}
+                    className="relative"
+                  >
+                    <Link
+                      href={item.path}
+                      onClick={closeSidebar}
+                      className={`flex items-center w-full h-11 pl-5 pr-4 font-sans text-[0.95rem] no-underline bg-transparent border-0 cursor-pointer text-left transition-colors duration-[250ms] [transition-timing-function:cubic-bezier(0.16,1,0.3,1)] hover:text-heading ${
+                        isActive(item.path)
+                          ? "text-heading font-semibold"
+                          : "text-muted font-medium"
+                      }`}
+                      aria-current={isActive(item.path) ? "page" : undefined}
+                    >
+                      {item.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </>
+          )}
         </div>
 
-        <div className="pt-3 px-5 border-t border-border-soft">
+        <div className="mx-3 border-t border-border-soft pt-3 [&_button]:flex [&_button]:w-full [&_button]:cursor-pointer [&_button]:items-center [&_button]:rounded-xl [&_button]:border [&_button]:border-transparent [&_button]:bg-transparent [&_button]:px-3 [&_button]:py-2.5 [&_button]:text-left [&_button]:text-sm [&_button]:font-medium [&_button]:text-muted [&_button]:transition-colors [&_button]:duration-150 [&_button]:hover:border-[color-mix(in_srgb,var(--color-danger)_30%,transparent)] [&_button]:hover:bg-danger-soft [&_button]:hover:text-danger">
           <Logout />
         </div>
       </div>
